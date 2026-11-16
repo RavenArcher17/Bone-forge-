@@ -1,0 +1,10 @@
+T. rex with a Triceratops head  (rextrikehead)
+
+Base trex, Head section from trike.
+Lineage by mass: Tyrannosaurus rex 87%, Triceratops 13%
+Mass 12,685.72 kg; balance point [103.6, 0.0, 299.6] cm
+
+
+Leg check: walks
+Legs hold it: the legs have 4.5 times the muscle their share of the weight needs.
+  hind: muscle 554.4 kN for 124.4 kN of weight (x4.45)

@@ -1,0 +1,2154 @@
+{
+ "creature": "Young Ankylosaurus with head 140%",
+ "units": "centimetres and degrees",
+ "body_tilt": {
+  "tail_clear": 17,
+  "down": 6,
+  "up": 6,
+  "down_everyday": 4,
+  "up_everyday": 4,
+  "kind": "quadruped"
+ },
+ "axes": "Unreal: X forward, Y right, Z up; origin on the ground under the hip sockets; _l = left side (-Y), _r = right side (+Y)",
+ "angles": "from the neutral standing pose. bend: side-plane rotation (+ raises neck/head/tail, swings hip/shoulder forward, bends knee/elbow/ankle/toes more, opens jaw). side: left/right, or + = away from the body for hip/shoulder. twist: roll around the bone.",
+ "use": "limits are the most the bones and ligaments allow; keep everyday moves to about two thirds of them",
+ "joints": [
+  {
+   "name": "root",
+   "parent": null,
+   "position_cm": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "section": "-",
+   "role": "on the ground under the hips; moves the whole creature",
+   "limits_deg": null
+  },
+  {
+   "name": "pelvis",
+   "parent": "root",
+   "position_cm": [
+    0.0,
+    0.0,
+    19.5
+   ],
+   "section": "Core",
+   "role": "hips; parent of legs and tail",
+   "limits_deg": {
+    "bend": [
+     -6,
+     6
+    ],
+    "side": [
+     -8,
+     8
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole-body tilt with the feet planted: limited by how far the front legs can shorten or lengthen against the hind legs over 2.1 m between hips and shoulders",
+   "tissue": [
+    [
+     -0.88,
+     -0.0,
+     -0.405,
+     8.55,
+     6.765,
+     2.49,
+     2.36
+    ],
+    [
+     -0.668,
+     0.0,
+     -0.87,
+     10.23,
+     7.455,
+     2.57,
+     2.32
+    ],
+    [
+     -0.456,
+     0.0,
+     -1.23,
+     11.505,
+     7.95,
+     2.65,
+     2.27
+    ],
+    [
+     -0.245,
+     0.0,
+     -1.53,
+     12.765,
+     8.385,
+     2.7,
+     2.25
+    ],
+    [
+     -0.033,
+     0.0,
+     -1.845,
+     14.235,
+     8.76,
+     2.74,
+     2.16
+    ],
+    [
+     0.18,
+     0.0,
+     -2.07,
+     14.565,
+     9.135,
+     2.82,
+     2.23
+    ],
+    [
+     0.392,
+     0.0,
+     -2.325,
+     14.925,
+     9.465,
+     2.86,
+     2.22
+    ],
+    [
+     0.604,
+     0.0,
+     -2.58,
+     15.36,
+     9.78,
+     2.9,
+     2.19
+    ],
+    [
+     0.817,
+     0.0,
+     -2.805,
+     15.72,
+     10.065,
+     3.08,
+     2.2
+    ]
+   ]
+  },
+  {
+   "name": "spine_01",
+   "parent": "pelvis",
+   "position_cm": [
+    7.2,
+    0.0,
+    20.7
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -2,
+     2
+    ],
+    "side": [
+     -2,
+     2
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "locked by armour and fused bones",
+   "tissue": [
+    [
+     0.029,
+     0.0,
+     -2.955,
+     16.08,
+     10.245,
+     3.09,
+     2.2
+    ],
+    [
+     0.239,
+     0.0,
+     -3.12,
+     16.2,
+     10.44,
+     3.12,
+     2.18
+    ],
+    [
+     0.449,
+     0.0,
+     -3.285,
+     16.32,
+     10.605,
+     3.16,
+     2.19
+    ],
+    [
+     0.659,
+     0.0,
+     -3.405,
+     16.47,
+     10.695,
+     3.21,
+     2.18
+    ],
+    [
+     0.869,
+     0.0,
+     -3.495,
+     16.575,
+     10.77,
+     3.23,
+     2.14
+    ]
+   ]
+  },
+  {
+   "name": "spine_02",
+   "parent": "spine_01",
+   "position_cm": [
+    14.55,
+    0.0,
+    21.3
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -2,
+     2
+    ],
+    "side": [
+     -2,
+     2
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "locked by armour and fused bones",
+   "tissue": [
+    [
+     0.079,
+     0.0,
+     -3.525,
+     16.605,
+     10.785,
+     3.25,
+     2.11
+    ],
+    [
+     0.29,
+     0.0,
+     -3.54,
+     16.425,
+     10.785,
+     3.26,
+     2.14
+    ],
+    [
+     0.5,
+     -0.0,
+     -3.54,
+     16.2,
+     10.77,
+     3.22,
+     2.15
+    ],
+    [
+     0.711,
+     0.0,
+     -3.525,
+     16.02,
+     10.695,
+     3.22,
+     2.15
+    ],
+    [
+     0.922,
+     -0.0,
+     -3.54,
+     15.855,
+     10.575,
+     3.22,
+     2.15
+    ]
+   ]
+  },
+  {
+   "name": "spine_03",
+   "parent": "spine_02",
+   "position_cm": [
+    21.9,
+    0.0,
+    21.0
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -2,
+     2
+    ],
+    "side": [
+     -2,
+     2
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "locked by armour and fused bones",
+   "tissue": [
+    [
+     0.131,
+     -0.0,
+     -3.51,
+     15.555,
+     10.425,
+     3.27,
+     2.17
+    ],
+    [
+     0.341,
+     0.0,
+     -3.45,
+     15.27,
+     10.215,
+     3.26,
+     2.13
+    ],
+    [
+     0.55,
+     -0.0,
+     -3.45,
+     14.91,
+     10.05,
+     3.27,
+     2.12
+    ],
+    [
+     0.759,
+     0.0,
+     -3.3,
+     14.625,
+     9.75,
+     3.27,
+     2.16
+    ],
+    [
+     0.969,
+     0.0,
+     -3.255,
+     14.325,
+     9.435,
+     3.34,
+     2.16
+    ]
+   ]
+  },
+  {
+   "name": "chest",
+   "parent": "spine_03",
+   "position_cm": [
+    29.25,
+    0.0,
+    20.1
+   ],
+   "section": "Core",
+   "role": "shoulders and ribcage; parent of arms and neck",
+   "limits_deg": {
+    "bend": [
+     -2,
+     2
+    ],
+    "side": [
+     -2,
+     2
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "locked by armour and fused bones",
+   "tissue": [
+    [
+     0.298,
+     0.0,
+     -3.15,
+     13.065,
+     9.09,
+     3.31,
+     2.16
+    ],
+    [
+     0.65,
+     0.0,
+     -3.045,
+     11.58,
+     8.7,
+     3.34,
+     2.16
+    ]
+   ]
+  },
+  {
+   "name": "neck_01",
+   "parent": "chest",
+   "position_cm": [
+    33.6,
+    0.0,
+    19.35
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -8,
+     8
+    ],
+    "side": [
+     -10,
+     10
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -15 to +15 up and down, ±20 sideways, split over 2 joints; armoured half-rings over the neck",
+   "tissue": [
+    [
+     0.001,
+     0.0,
+     -3.03,
+     9.63,
+     8.295,
+     3.4,
+     2.28
+    ],
+    [
+     0.358,
+     0.0,
+     -2.775,
+     8.79,
+     7.815,
+     3.35,
+     2.11
+    ],
+    [
+     0.716,
+     0.0,
+     -2.355,
+     8.085,
+     7.485,
+     3.11,
+     2.19
+    ]
+   ]
+  },
+  {
+   "name": "neck_02",
+   "parent": "neck_01",
+   "position_cm": [
+    37.8,
+    0.0,
+    18.3
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -8,
+     8
+    ],
+    "side": [
+     -10,
+     10
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -15 to +15 up and down, ±20 sideways, split over 2 joints; armoured half-rings over the neck",
+   "tissue": [
+    [
+     0.077,
+     0.0,
+     -2.04,
+     7.56,
+     7.32,
+     3.04,
+     2.2
+    ],
+    [
+     0.448,
+     0.0,
+     -1.65,
+     6.99,
+     6.75,
+     2.89,
+     2.25
+    ],
+    [
+     0.819,
+     0.0,
+     -1.2,
+     6.6,
+     5.73,
+     2.79,
+     2.28
+    ]
+   ]
+  },
+  {
+   "name": "head",
+   "parent": "neck_02",
+   "position_cm": [
+    41.7,
+    0.0,
+    16.8
+   ],
+   "section": "Head",
+   "role": "skull joint at the top of the neck",
+   "limits_deg": {
+    "bend": [
+     -20,
+     20
+    ],
+    "side": [
+     -20,
+     20
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "estimate",
+   "lineage": "Ankylosaurus"
+  },
+  {
+   "name": "jaw",
+   "parent": "head",
+   "position_cm": [
+    42.12,
+    0.0,
+    14.28
+   ],
+   "section": "Head",
+   "role": "jaw hinge",
+   "limits_deg": {
+    "bend": [
+     0,
+     30
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "lineage": "Ankylosaurus"
+  },
+  {
+   "name": "head_end",
+   "parent": "head",
+   "position_cm": [
+    55.77,
+    0.0,
+    16.38
+   ],
+   "section": "Head",
+   "role": "snout tip (end marker, no motion)",
+   "limits_deg": null,
+   "lineage": "Ankylosaurus"
+  },
+  {
+   "name": "jaw_end",
+   "parent": "jaw",
+   "position_cm": [
+    54.72,
+    0.0,
+    13.86
+   ],
+   "section": "Head",
+   "role": "lower jaw tip (end marker)",
+   "limits_deg": null,
+   "lineage": "Ankylosaurus"
+  },
+  {
+   "name": "tail_01",
+   "parent": "pelvis",
+   "position_cm": [
+    -6.3,
+    0.0,
+    18.0
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "study-based",
+   "source": "Arbour 2009, ankylosaur tail club swing",
+   "limit_note": "free tail base gives the club its swing",
+   "tissue": [
+    [
+     0.233,
+     0.0,
+     0.105,
+     7.695,
+     6.18,
+     2.41,
+     2.45
+    ],
+    [
+     0.473,
+     0.0,
+     -0.06,
+     7.065,
+     5.595,
+     2.46,
+     2.4
+    ],
+    [
+     0.712,
+     0.0,
+     -0.3,
+     6.225,
+     5.025,
+     2.52,
+     2.34
+    ],
+    [
+     0.951,
+     0.0,
+     -0.39,
+     5.595,
+     4.59,
+     2.55,
+     2.32
+    ]
+   ]
+  },
+  {
+   "name": "tail_02",
+   "parent": "tail_01",
+   "position_cm": [
+    -12.6,
+    0.0,
+    16.5
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "study-based",
+   "source": "Arbour 2009, ankylosaur tail club swing",
+   "limit_note": "free tail base gives the club its swing",
+   "tissue": [
+    [
+     0.187,
+     0.0,
+     -0.48,
+     5.01,
+     4.215,
+     2.61,
+     2.31
+    ],
+    [
+     0.423,
+     0.0,
+     -0.585,
+     4.38,
+     3.795,
+     2.67,
+     2.27
+    ],
+    [
+     0.658,
+     0.0,
+     -0.705,
+     3.9,
+     3.555,
+     2.75,
+     2.22
+    ],
+    [
+     0.893,
+     0.0,
+     -0.81,
+     3.42,
+     3.345,
+     2.87,
+     2.18
+    ]
+   ]
+  },
+  {
+   "name": "tail_03",
+   "parent": "tail_02",
+   "position_cm": [
+    -19.05,
+    0.0,
+    15.15
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "study-based",
+   "source": "Arbour 2009, ankylosaur tail club swing",
+   "limit_note": "free tail base gives the club its swing",
+   "tissue": [
+    [
+     0.132,
+     0.0,
+     -0.975,
+     2.865,
+     3.135,
+     3.18,
+     2.16
+    ],
+    [
+     0.373,
+     0.0,
+     -1.095,
+     2.61,
+     3.0,
+     3.35,
+     2.12
+    ],
+    [
+     0.615,
+     0.0,
+     -1.215,
+     2.355,
+     2.865,
+     3.56,
+     2.09
+    ],
+    [
+     0.857,
+     0.0,
+     -1.335,
+     2.025,
+     2.745,
+     3.89,
+     2.05
+    ]
+   ]
+  },
+  {
+   "name": "tail_04",
+   "parent": "tail_03",
+   "position_cm": [
+    -25.35,
+    0.0,
+    13.95
+   ],
+   "section": "Tail",
+   "role": "club handle (stiff)",
+   "limits_deg": {
+    "bend": [
+     -1,
+     1
+    ],
+    "side": [
+     -1,
+     1
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Arbour 2009, ankylosaur tail club swing",
+   "limit_note": "club handle: interlocking bones swing as one stiff shaft",
+   "tissue": [
+    [
+     0.097,
+     0.0,
+     -1.395,
+     1.785,
+     2.655,
+     4.0,
+     2.02
+    ],
+    [
+     0.334,
+     -0.0,
+     -1.425,
+     1.71,
+     2.565,
+     4.0,
+     2.0
+    ],
+    [
+     0.571,
+     0.0,
+     -1.44,
+     1.635,
+     2.46,
+     4.0,
+     2.01
+    ],
+    [
+     0.808,
+     0.0,
+     -1.395,
+     1.56,
+     2.37,
+     4.0,
+     2.02
+    ]
+   ]
+  },
+  {
+   "name": "tail_05",
+   "parent": "tail_04",
+   "position_cm": [
+    -31.8,
+    0.0,
+    12.9
+   ],
+   "section": "Tail",
+   "role": "club handle (stiff)",
+   "limits_deg": {
+    "bend": [
+     -1,
+     1
+    ],
+    "side": [
+     -1,
+     1
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Arbour 2009, ankylosaur tail club swing",
+   "limit_note": "club handle: interlocking bones swing as one stiff shaft",
+   "tissue": [
+    [
+     0.046,
+     0.0,
+     -1.335,
+     1.5,
+     2.265,
+     4.0,
+     2.03
+    ],
+    [
+     0.284,
+     0.0,
+     -1.245,
+     1.455,
+     2.145,
+     4.0,
+     2.03
+    ],
+    [
+     0.521,
+     -0.0,
+     -1.155,
+     1.425,
+     2.055,
+     4.0,
+     2.04
+    ],
+    [
+     0.759,
+     0.0,
+     -1.005,
+     1.395,
+     1.98,
+     3.67,
+     2.08
+    ],
+    [
+     0.997,
+     0.0,
+     -0.75,
+     1.35,
+     1.875,
+     3.58,
+     2.19
+    ]
+   ]
+  },
+  {
+   "name": "tail_06",
+   "parent": "tail_05",
+   "position_cm": [
+    -38.25,
+    0.0,
+    12.0
+   ],
+   "section": "Tail",
+   "role": "club handle (stiff)",
+   "limits_deg": {
+    "bend": [
+     -1,
+     1
+    ],
+    "side": [
+     -1,
+     1
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Arbour 2009, ankylosaur tail club swing",
+   "limit_note": "club handle: interlocking bones swing as one stiff shaft"
+  },
+  {
+   "name": "tail_club",
+   "parent": "tail_06",
+   "position_cm": [
+    -41.7,
+    0.0,
+    12.0
+   ],
+   "section": "Tail",
+   "role": "tail club",
+   "limits_deg": {
+    "bend": [
+     0,
+     0
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "fixed to the handle"
+  },
+  {
+   "name": "thigh_l",
+   "parent": "pelvis",
+   "position_cm": [
+    0.0,
+    -11.25,
+    17.25
+   ],
+   "section": "Hip",
+   "role": "hip socket",
+   "limits_deg": {
+    "bend": [
+     -25,
+     25
+    ],
+    "side": [
+     0,
+     15
+    ],
+    "twist": [
+     -8,
+     8
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     -0.413,
+     -0.165,
+     0.075,
+     1.86,
+     4.965,
+     2.0,
+     2.0
+    ],
+    [
+     -0.24,
+     -0.18,
+     -0.06,
+     3.885,
+     5.61,
+     4.0,
+     4.0
+    ],
+    [
+     -0.067,
+     0.675,
+     -0.0,
+     5.16,
+     5.94,
+     2.25,
+     2.38
+    ],
+    [
+     0.105,
+     0.24,
+     -0.03,
+     4.74,
+     6.075,
+     2.16,
+     2.09
+    ],
+    [
+     0.277,
+     0.03,
+     -0.135,
+     4.35,
+     6.105,
+     2.11,
+     2.15
+    ],
+    [
+     0.449,
+     0.12,
+     -0.165,
+     4.38,
+     5.925,
+     2.06,
+     2.14
+    ],
+    [
+     0.622,
+     0.18,
+     -0.195,
+     4.26,
+     5.49,
+     2.14,
+     2.06
+    ],
+    [
+     0.794,
+     0.165,
+     -0.27,
+     4.11,
+     5.055,
+     2.21,
+     2.07
+    ],
+    [
+     0.963,
+     0.135,
+     -0.24,
+     3.96,
+     4.68,
+     2.05,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "calf_l",
+   "parent": "thigh_l",
+   "position_cm": [
+    2.7,
+    -14.7,
+    9.3
+   ],
+   "section": "Hip",
+   "role": "knee",
+   "limits_deg": {
+    "bend": [
+     -10,
+     50
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.198,
+     0.195,
+     -0.57,
+     3.765,
+     4.095,
+     2.09,
+     2.18
+    ],
+    [
+     0.454,
+     0.225,
+     -0.72,
+     3.495,
+     4.05,
+     2.04,
+     2.48
+    ],
+    [
+     0.71,
+     0.195,
+     -0.285,
+     3.09,
+     3.18,
+     3.31,
+     2.01
+    ],
+    [
+     0.963,
+     0.075,
+     -0.75,
+     2.895,
+     2.34,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "foot_l",
+   "parent": "calf_l",
+   "position_cm": [
+    1.2,
+    -14.25,
+    3.45
+   ],
+   "section": "Hip",
+   "role": "ankle",
+   "limits_deg": {
+    "bend": [
+     -25,
+     25
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "ball_l",
+   "parent": "foot_l",
+   "position_cm": [
+    3.3,
+    -14.25,
+    1.2
+   ],
+   "section": "Hip",
+   "role": "toe joints (ball of the foot)",
+   "limits_deg": {
+    "bend": [
+     -30,
+     30
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "toe_end_l",
+   "parent": "ball_l",
+   "position_cm": [
+    6.0,
+    -14.25,
+    0.45
+   ],
+   "section": "Hip",
+   "role": "toe tip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "upperarm_l",
+   "parent": "chest",
+   "position_cm": [
+    30.9,
+    -9.3,
+    14.25
+   ],
+   "section": "Shoulder",
+   "role": "shoulder socket",
+   "limits_deg": {
+    "bend": [
+     -25,
+     30
+    ],
+    "side": [
+     -10,
+     20
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "semi-sprawled, elbows out",
+   "tissue": [
+    [
+     -0.429,
+     0.015,
+     0.285,
+     2.205,
+     3.39,
+     4.0,
+     2.0
+    ],
+    [
+     -0.217,
+     0.315,
+     -0.135,
+     3.75,
+     4.56,
+     2.06,
+     2.0
+    ],
+    [
+     -0.004,
+     0.51,
+     -0.03,
+     4.11,
+     4.695,
+     2.28,
+     3.22
+    ],
+    [
+     0.208,
+     0.0,
+     0.075,
+     3.45,
+     4.605,
+     2.12,
+     2.26
+    ],
+    [
+     0.419,
+     0.15,
+     0.105,
+     3.36,
+     4.47,
+     2.13,
+     2.07
+    ],
+    [
+     0.631,
+     0.24,
+     0.225,
+     3.24,
+     4.11,
+     2.03,
+     2.07
+    ],
+    [
+     0.843,
+     0.21,
+     0.3,
+     3.18,
+     3.765,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "lowerarm_l",
+   "parent": "upperarm_l",
+   "position_cm": [
+    28.8,
+    -12.9,
+    8.25
+   ],
+   "section": "Shoulder",
+   "role": "elbow",
+   "limits_deg": {
+    "bend": [
+     -9,
+     56
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "elbow opens from 85 to 150 degrees (180 = straight); drawn pose is 141",
+   "tissue": [
+    [
+     0.058,
+     0.15,
+     0.24,
+     3.15,
+     3.585,
+     2.0,
+     2.01
+    ],
+    [
+     0.335,
+     0.315,
+     0.045,
+     2.88,
+     3.36,
+     2.37,
+     2.17
+    ],
+    [
+     0.617,
+     0.195,
+     0.3,
+     2.595,
+     2.76,
+     2.09,
+     2.17
+    ],
+    [
+     0.897,
+     -0.015,
+     0.255,
+     2.43,
+     2.58,
+     2.12,
+     2.02
+    ]
+   ]
+  },
+  {
+   "name": "hand_l",
+   "parent": "lowerarm_l",
+   "position_cm": [
+    30.6,
+    -12.0,
+    3.15
+   ],
+   "section": "Shoulder",
+   "role": "wrist",
+   "limits_deg": {
+    "bend": [
+     -15,
+     15
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "finger_end_l",
+   "parent": "hand_l",
+   "position_cm": [
+    33.0,
+    -12.0,
+    0.45
+   ],
+   "section": "Shoulder",
+   "role": "fingertip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "thigh_r",
+   "parent": "pelvis",
+   "position_cm": [
+    0.0,
+    11.25,
+    17.25
+   ],
+   "section": "Hip",
+   "role": "hip socket",
+   "limits_deg": {
+    "bend": [
+     -25,
+     25
+    ],
+    "side": [
+     0,
+     15
+    ],
+    "twist": [
+     -8,
+     8
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     -0.413,
+     0.165,
+     0.075,
+     1.86,
+     4.965,
+     2.0,
+     2.0
+    ],
+    [
+     -0.24,
+     0.18,
+     -0.06,
+     3.885,
+     5.61,
+     4.0,
+     4.0
+    ],
+    [
+     -0.067,
+     -0.675,
+     -0.0,
+     5.16,
+     5.94,
+     2.25,
+     2.38
+    ],
+    [
+     0.105,
+     -0.24,
+     -0.03,
+     4.74,
+     6.075,
+     2.16,
+     2.09
+    ],
+    [
+     0.277,
+     -0.03,
+     -0.135,
+     4.35,
+     6.105,
+     2.11,
+     2.15
+    ],
+    [
+     0.449,
+     -0.12,
+     -0.165,
+     4.38,
+     5.925,
+     2.06,
+     2.14
+    ],
+    [
+     0.622,
+     -0.18,
+     -0.195,
+     4.26,
+     5.49,
+     2.14,
+     2.06
+    ],
+    [
+     0.794,
+     -0.165,
+     -0.27,
+     4.11,
+     5.055,
+     2.21,
+     2.07
+    ],
+    [
+     0.963,
+     -0.135,
+     -0.24,
+     3.96,
+     4.68,
+     2.05,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "calf_r",
+   "parent": "thigh_r",
+   "position_cm": [
+    2.7,
+    14.7,
+    9.3
+   ],
+   "section": "Hip",
+   "role": "knee",
+   "limits_deg": {
+    "bend": [
+     -10,
+     50
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.198,
+     -0.195,
+     -0.57,
+     3.765,
+     4.095,
+     2.09,
+     2.18
+    ],
+    [
+     0.454,
+     -0.225,
+     -0.72,
+     3.495,
+     4.05,
+     2.04,
+     2.48
+    ],
+    [
+     0.71,
+     -0.195,
+     -0.285,
+     3.09,
+     3.18,
+     3.31,
+     2.01
+    ],
+    [
+     0.963,
+     -0.075,
+     -0.75,
+     2.895,
+     2.34,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "foot_r",
+   "parent": "calf_r",
+   "position_cm": [
+    1.2,
+    14.25,
+    3.45
+   ],
+   "section": "Hip",
+   "role": "ankle",
+   "limits_deg": {
+    "bend": [
+     -25,
+     25
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "ball_r",
+   "parent": "foot_r",
+   "position_cm": [
+    3.3,
+    14.25,
+    1.2
+   ],
+   "section": "Hip",
+   "role": "toe joints (ball of the foot)",
+   "limits_deg": {
+    "bend": [
+     -30,
+     30
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "toe_end_r",
+   "parent": "ball_r",
+   "position_cm": [
+    6.0,
+    14.25,
+    0.45
+   ],
+   "section": "Hip",
+   "role": "toe tip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "upperarm_r",
+   "parent": "chest",
+   "position_cm": [
+    30.9,
+    9.3,
+    14.25
+   ],
+   "section": "Shoulder",
+   "role": "shoulder socket",
+   "limits_deg": {
+    "bend": [
+     -25,
+     30
+    ],
+    "side": [
+     -10,
+     20
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "semi-sprawled, elbows out",
+   "tissue": [
+    [
+     -0.429,
+     -0.015,
+     0.285,
+     2.205,
+     3.39,
+     4.0,
+     2.0
+    ],
+    [
+     -0.217,
+     -0.315,
+     -0.135,
+     3.75,
+     4.56,
+     2.06,
+     2.0
+    ],
+    [
+     -0.004,
+     -0.51,
+     -0.03,
+     4.11,
+     4.695,
+     2.28,
+     3.22
+    ],
+    [
+     0.208,
+     -0.0,
+     0.075,
+     3.45,
+     4.605,
+     2.12,
+     2.26
+    ],
+    [
+     0.419,
+     -0.15,
+     0.105,
+     3.36,
+     4.47,
+     2.13,
+     2.07
+    ],
+    [
+     0.631,
+     -0.24,
+     0.225,
+     3.24,
+     4.11,
+     2.03,
+     2.07
+    ],
+    [
+     0.843,
+     -0.21,
+     0.3,
+     3.18,
+     3.765,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "lowerarm_r",
+   "parent": "upperarm_r",
+   "position_cm": [
+    28.8,
+    12.9,
+    8.25
+   ],
+   "section": "Shoulder",
+   "role": "elbow",
+   "limits_deg": {
+    "bend": [
+     -9,
+     56
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "elbow opens from 85 to 150 degrees (180 = straight); drawn pose is 141",
+   "tissue": [
+    [
+     0.058,
+     -0.15,
+     0.24,
+     3.15,
+     3.585,
+     2.0,
+     2.01
+    ],
+    [
+     0.335,
+     -0.315,
+     0.045,
+     2.88,
+     3.36,
+     2.37,
+     2.17
+    ],
+    [
+     0.617,
+     -0.195,
+     0.3,
+     2.595,
+     2.76,
+     2.09,
+     2.17
+    ],
+    [
+     0.897,
+     0.015,
+     0.255,
+     2.43,
+     2.58,
+     2.12,
+     2.02
+    ]
+   ]
+  },
+  {
+   "name": "hand_r",
+   "parent": "lowerarm_r",
+   "position_cm": [
+    30.6,
+    12.0,
+    3.15
+   ],
+   "section": "Shoulder",
+   "role": "wrist",
+   "limits_deg": {
+    "bend": [
+     -15,
+     15
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "finger_end_r",
+   "parent": "hand_r",
+   "position_cm": [
+    33.0,
+    12.0,
+    0.45
+   ],
+   "section": "Shoulder",
+   "role": "fingertip (end marker)",
+   "limits_deg": null
+  }
+ ],
+ "mass_kg": {
+  "total": 24.0586,
+  "by_section": {
+   "Hip (leg)": 0.9542,
+   "Shoulder (arm)": 0.4561,
+   "Core": 16.7058,
+   "Neck": 1.8265,
+   "Tail": 1.8407,
+   "Head": 2.2752
+  }
+ },
+ "balance_point_cm": [
+  17.355,
+  0.0,
+  18.87
+ ],
+ "collision_capsules": [
+  {
+   "bone": "tail_05",
+   "from_joint": "tail_06",
+   "to_joint": "tail_05",
+   "radius_cm": 1.695,
+   "length_cm": 6.495,
+   "mass_kg": 0.0565
+  },
+  {
+   "bone": "tail_04",
+   "from_joint": "tail_05",
+   "to_joint": "tail_04",
+   "radius_cm": 2.01,
+   "length_cm": 6.495,
+   "mass_kg": 0.0836
+  },
+  {
+   "bone": "tail_03",
+   "from_joint": "tail_04",
+   "to_joint": "tail_03",
+   "radius_cm": 2.64,
+   "length_cm": 6.495,
+   "mass_kg": 0.1557
+  },
+  {
+   "bone": "tail_02",
+   "from_joint": "tail_03",
+   "to_joint": "tail_02",
+   "radius_cm": 3.885,
+   "length_cm": 6.495,
+   "mass_kg": 0.3974
+  },
+  {
+   "bone": "tail_01",
+   "from_joint": "tail_02",
+   "to_joint": "tail_01",
+   "radius_cm": 5.955,
+   "length_cm": 6.495,
+   "mass_kg": 1.1475
+  },
+  {
+   "bone": "pelvis",
+   "from_joint": "tail_01",
+   "to_joint": "pelvis",
+   "radius_cm": 9.42,
+   "length_cm": 6.495,
+   "mass_kg": 1.4539
+  },
+  {
+   "bone": "pelvis",
+   "from_joint": "pelvis",
+   "to_joint": "spine_01",
+   "radius_cm": 12.105,
+   "length_cm": 7.365,
+   "mass_kg": 2.9634
+  },
+  {
+   "bone": "spine_01",
+   "from_joint": "spine_01",
+   "to_joint": "spine_02",
+   "radius_cm": 13.2,
+   "length_cm": 7.35,
+   "mass_kg": 3.7491
+  },
+  {
+   "bone": "spine_02",
+   "from_joint": "spine_02",
+   "to_joint": "spine_03",
+   "radius_cm": 13.2,
+   "length_cm": 7.35,
+   "mass_kg": 3.7496
+  },
+  {
+   "bone": "spine_03",
+   "from_joint": "spine_03",
+   "to_joint": "chest",
+   "radius_cm": 12.33,
+   "length_cm": 7.365,
+   "mass_kg": 3.1179
+  },
+  {
+   "bone": "chest",
+   "from_joint": "chest",
+   "to_joint": "neck_01",
+   "radius_cm": 10.335,
+   "length_cm": 4.365,
+   "mass_kg": 1.6721
+  },
+  {
+   "bone": "neck_01",
+   "from_joint": "neck_01",
+   "to_joint": "neck_02",
+   "radius_cm": 8.01,
+   "length_cm": 4.365,
+   "mass_kg": 1.1683
+  },
+  {
+   "bone": "neck_02",
+   "from_joint": "neck_02",
+   "to_joint": "head",
+   "radius_cm": 6.51,
+   "length_cm": 4.185,
+   "mass_kg": 0.6582
+  },
+  {
+   "bone": "head",
+   "from_joint": "head",
+   "to_joint": "head_end",
+   "radius_cm": 6.846,
+   "length_cm": 14.07,
+   "mass_kg": 2.2751
+  },
+  {
+   "bone": "thigh (l, r)",
+   "from_joint": "thigh_l",
+   "to_joint": "calf_l",
+   "radius_cm": 3.285,
+   "length_cm": 8.4,
+   "mass_kg": 0.2367
+  },
+  {
+   "bone": "calf (l, r)",
+   "from_joint": "calf_l",
+   "to_joint": "foot_l",
+   "radius_cm": 1.89,
+   "length_cm": 6.045,
+   "mass_kg": 0.0526
+  },
+  {
+   "bone": "foot (l, r)",
+   "from_joint": "foot_l",
+   "to_joint": "ball_l",
+   "radius_cm": 2.415,
+   "length_cm": 3.075,
+   "mass_kg": 0.0627
+  },
+  {
+   "bone": "ball (l, r)",
+   "from_joint": "ball_l",
+   "to_joint": "toe_end_l",
+   "radius_cm": 3.21,
+   "length_cm": 2.805,
+   "mass_kg": 0.1251
+  },
+  {
+   "bone": "upperarm (l, r)",
+   "from_joint": "upperarm_l",
+   "to_joint": "lowerarm_l",
+   "radius_cm": 2.22,
+   "length_cm": 6.36,
+   "mass_kg": 0.0944
+  },
+  {
+   "bone": "lowerarm (l, r)",
+   "from_joint": "lowerarm_l",
+   "to_joint": "hand_l",
+   "radius_cm": 1.995,
+   "length_cm": 5.415,
+   "mass_kg": 0.0658
+  },
+  {
+   "bone": "hand (l, r)",
+   "from_joint": "hand_l",
+   "to_joint": "finger_end_l",
+   "radius_cm": 2.235,
+   "length_cm": 3.615,
+   "mass_kg": 0.0679
+  }
+ ],
+ "gaits": {
+  "walk": {
+   "speed_m_s": 0.41,
+   "stride_m": 0.2,
+   "stride_time_s": 0.49,
+   "name": "walk"
+  },
+  "fast": {
+   "speed_m_s": 1.13,
+   "stride_m": 0.31,
+   "stride_time_s": 0.27,
+   "name": "fast walk (amble)"
+  }
+ },
+ "footfall_order": "left hind, left front, right hind, right front (quarter-stride apart)",
+ "tissue_note": "tissue: the flesh around a bone, the body's muscle anchors: stations [t along the bone (0 its joint, 1 the next), centre across (cm, + right), centre up, half-width, half-height], in the bone's frame; the flesh flows from station to station along each chain of bones (body_tools/grow_body.py measures them from the hand-built body and grows bodies from them). Feet, hands, heads and other bone parts keep their own meshes.",
+ "leg_check": {
+  "weight_n": 236.0,
+  "muscle_stress_n_cm2": 30.0,
+  "walk_margin": 2.0,
+  "pairs": {
+   "hind": {
+    "muscle_n": 4044.2,
+    "load_n": 103.5,
+    "ratio": 39.09
+   },
+   "front": {
+    "muscle_n": 2546.1,
+    "load_n": 132.6,
+    "ratio": 19.21
+   }
+  },
+  "verdict": "walks",
+  "summary": "Legs hold it: the front legs have 19.2 times the muscle their share of the weight needs."
+ },
+ "swim_check": {
+  "density_kg_m3": 1030.0,
+  "water_kg_m3": 1000.0,
+  "verdict": "sinks",
+  "summary": "Sinks: 1,030 kg per cubic metre, denser than water. It walks along the bottom, and in water deeper than its head it would drown.",
+  "speed_ms": 0.0
+ },
+ "climb_check": {
+  "grip_by_species": {
+   "trex": 0.9,
+   "raptor": 1.0,
+   "ptera": 1.0,
+   "brachio": 0.8,
+   "trike": 0.75,
+   "ankylo": 0.75
+  },
+  "climb_push": 1.5,
+  "crawl_share": 0.25,
+  "lean_in": 0.5,
+  "max_deg": 36.9,
+  "grip": 0.75,
+  "grip_deg": 36.9,
+  "strength_deg": 89.0,
+  "speed_share": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "speed_step_deg": 5,
+  "verdict": "grip",
+  "why": "its hoof-like toes slip",
+  "summary": "Climbs slopes up to 37 degrees: steeper than that its hoof-like toes slip. It keeps full speed all the way up."
+ },
+ "flight_muscle_kg": 0.4522,
+ "gait_check": {
+  "base": "ankylo",
+  "leg_height_cm": 15.7,
+  "base_leg_height_cm": 104.5,
+  "ratio": 19.21,
+  "base_ratio": 3.81,
+  "summary": "Gaits from its legs: 0.2 m high against the Ankylosaurus's 1.0 m, 19.2 times as strong as their load against 3.8: it walks at 0.4 m/s (0.2 m strides) and its fast walk (amble) reaches 1.1 m/s."
+ },
+ "splice": {
+  "base": "ankylo",
+  "donor": "ankylo",
+  "section": "Head",
+  "swapped": "Young Ankylosaurus with head 140%",
+  "lineage_kg": {
+   "Ankylosaurus": 24.06
+  },
+  "lineage_share": {
+   "Ankylosaurus": 1.0
+  },
+  "wings": false,
+  "notes": [
+   "Grown at 15% of its size: 24.1 kg."
+  ],
+  "made_by": "splice/compose.py (body grown by body_tools/grow_body.py)",
+  "flags": [],
+  "recipe": {
+   "base": "ankylo",
+   "size": 0.15,
+   "sections": {
+    "Head": {
+     "scale": 1.4
+    }
+   }
+  }
+ }
+}

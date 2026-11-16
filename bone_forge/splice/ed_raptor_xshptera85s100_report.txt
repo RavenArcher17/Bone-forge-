@@ -1,0 +1,15 @@
+Velociraptor with extra Pteranodon wings  (ed_raptor_xshptera85s100)
+
+Base raptor, moved section from raptor.
+Lineage by mass: Velociraptor 73%, Pteranodon 27%
+Mass 31.60 kg; balance point [16.9, 0.0, 46.6] cm
+
+a third pair of wings, 100% size, hung from the spine 03: folded at rest
+
+Leg check: walks
+Legs hold it: the legs have 16.1 times the muscle their share of the weight needs.
+  hind: muscle 5.0 kN for 0.3 kN of weight (x16.14)
+
+Flight check: glides
+Glides only: wing loading 156 N/m² is under the 245 limit, but flight muscle is 3% of its weight (needs 15%), so it can't flap upward. It launches from a height or a running jump and sinks slowly.
+  weight 310 N / wing area 1.99 m² = 156 N/m² (limit 245); flight muscle 0.92 kg = 2.9% (needs 15%)

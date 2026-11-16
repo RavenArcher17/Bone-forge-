@@ -1,0 +1,16 @@
+Bone Forge import: rextrikehead  (Unreal 5.8.4-58902052+++UE5+Release-5.8)
+--- 1. Body OBJ as a Static Mesh: C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\body_shapes\rextrikehead_body.obj
+Imported rextrikehead_body.obj -> /Game/BoneForge/Rextrikehead/ObjCheck: body_grown_0 (StaticMesh), leg_foot_l_1 (StaticMesh), leg_foot_r_2 (StaticMesh), arm_hand_l_3 (StaticMesh), arm_hand_r_4 (StaticMesh), leg_toes_l_20 (StaticMesh), leg_claws_l_21 (StaticMesh), leg_toes_r_22 (StaticMesh), leg_claws_r_23 (StaticMesh), arm_fingers_l_24 (StaticMesh), arm_claws_l_25 (StaticMesh), arm_fingers_r_26 (StaticMesh), arm_claws_r_27 (StaticMesh), head_1 (StaticMesh), jaw_2 (StaticMesh), tongue_3 (StaticMesh), teeth_upper_4 (StaticMesh), teeth_lower_5 (StaticMesh), frill_10 (StaticMesh), horn_brow_11 (StaticMesh), horn_brow_12 (StaticMesh), horn_nose_13 (StaticMesh), horn_jugal_14 (StaticMesh), horn_jugal_15 (StaticMesh), eye_l_16 (StaticMesh), eyelid_l_17 (StaticMesh), eyelid_half_l_18 (StaticMesh), eyelid_closed_l_19 (StaticMesh), nostril_l_20 (StaticMesh), eye_r_21 (StaticMesh), eyelid_r_22 (StaticMesh), eyelid_half_r_23 (StaticMesh), eyelid_closed_r_24 (StaticMesh), nostril_r_25 (StaticMesh)
+    Imported size: 1181 x 521 x 250 cm (X x Y x Z); tallest axis 11.81 m, height on Z 2.50 m
+    Imported faces +X, up is -Y, right side toward +Z, scale 1 (1 OBJ unit = 1 cm). (A box can't show a left/right mirror, so it may also be mirrored.)
+    fix_rotation: set the importer's rotation to Roll 90, Pitch 0, Yaw 0 and its uniform scale to 1.
+--- 2. Skeleton from the rig JSON
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\rextrikehead_skeletal.glb: 39 bones, 82449 vertices, 163929 triangles, max 4 bones per vertex
+Imported rextrikehead_skeletal.glb -> /Game/BoneForge/_AxisProbe: M_Rextrikehead_Skin (MaterialInstanceConstant), M_Rextrikehead_Scute (MaterialInstanceConstant), M_Rextrikehead_Keratin (MaterialInstanceConstant), M_Rextrikehead_Mouth (MaterialInstanceConstant), M_Rextrikehead_Teeth (MaterialInstanceConstant), M_Rextrikehead_Eye (MaterialInstanceConstant), M_Rextrikehead_LidHalf (MaterialInstanceConstant), M_Rextrikehead_LidClosed (MaterialInstanceConstant), rextrikehead_skeletal_Skeleton (Skeleton), rextrikehead_skeletal (SkeletalMesh), rextrikehead_skeletal_PhysicsAsset (PhysicsAsset)
+Importer axis map is as expected: glTF (x, y, z) m -> Unreal (x, z, y) * 100 cm.
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\rextrikehead_skeletal.glb: 39 bones, 82449 vertices, 163929 triangles, max 4 bones per vertex
+Imported rextrikehead_skeletal.glb -> /Game/BoneForge/Rextrikehead: rextrikehead_skeletal_Skeleton (Skeleton), rextrikehead_skeletal (SkeletalMesh), rextrikehead_skeletal_PhysicsAsset (PhysicsAsset)
+Skeletal Mesh /Game/BoneForge/Rextrikehead/rextrikehead_skeletal/SkeletalMeshes/rextrikehead_skeletal.rextrikehead_skeletal, Skeleton /Game/BoneForge/Rextrikehead/rextrikehead_skeletal/SkeletalMeshes/rextrikehead_skeletal_Skeleton.rextrikehead_skeletal_Skeleton, 39 bones
+    All 39 bone positions match the rig JSON (worst 0.000 cm, tail_06).
+    Every bone's X axis points at its child joint (bend = Pitch, side = Yaw, twist = Roll).
+--- Result: OBJ needs a fix (see above), skeleton matches the rig JSON.

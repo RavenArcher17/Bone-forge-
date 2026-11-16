@@ -1,0 +1,12 @@
+T. rex with extra Brachiosaurus legs  (ed_trex_xhibrachio90)
+
+Base trex, moved section from trex.
+Lineage by mass: Tyrannosaurus rex 88%, Brachiosaurus 12%
+Mass 13,931.28 kg; balance point [109.3, 0.0, 278.8] cm
+
+a third pair of legs, 72% size, hung from the chest: they walk
+
+Leg check: walks
+Legs hold it: the extra legs have 4.8 times the muscle their share of the weight needs.
+  hind: muscle 554.4 kN for 64.5 kN of weight (x8.59)
+  extra: muscle 343.6 kN for 72.2 kN of weight (x4.76)

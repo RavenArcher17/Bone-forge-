@@ -1,0 +1,16 @@
+Bone Forge import: trike  (Unreal 5.8.4-58902052+++UE5+Release-5.8)
+--- 1. Body OBJ as a Static Mesh: C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\body_shapes\trike_grown.obj
+Imported trike_grown.obj -> /Game/BoneForge/Trike/ObjCheck: body_grown_0 (StaticMesh), head_1 (StaticMesh), jaw_2 (StaticMesh), tongue_3 (StaticMesh), teeth_upper_4 (StaticMesh), teeth_lower_5 (StaticMesh), leg_foot_l_6 (StaticMesh), leg_foot_r_7 (StaticMesh), arm_hand_l_8 (StaticMesh), arm_hand_r_9 (StaticMesh), frill_10 (StaticMesh), horn_brow_11 (StaticMesh), horn_brow_12 (StaticMesh), horn_nose_13 (StaticMesh), horn_jugal_14 (StaticMesh), horn_jugal_15 (StaticMesh), eye_l_16 (StaticMesh), eyelid_l_17 (StaticMesh), eyelid_half_l_18 (StaticMesh), eyelid_closed_l_19 (StaticMesh), nostril_l_20 (StaticMesh), eye_r_21 (StaticMesh), eyelid_r_22 (StaticMesh), eyelid_half_r_23 (StaticMesh), eyelid_closed_r_24 (StaticMesh), nostril_r_25 (StaticMesh), leg_toes_l_26 (StaticMesh), leg_claws_l_27 (StaticMesh), arm_fingers_l_28 (StaticMesh), arm_claws_l_29 (StaticMesh), leg_toes_r_30 (StaticMesh), leg_claws_r_31 (StaticMesh), arm_fingers_r_32 (StaticMesh), arm_claws_r_33 (StaticMesh)
+    Imported size: 790 x 332 x 276 cm (X x Y x Z); tallest axis 7.90 m, height on Z 2.76 m
+    Imported faces +X, up is -Y, right side toward +Z, scale 1 (1 OBJ unit = 1 cm). (A box can't show a left/right mirror, so it may also be mirrored.)
+    fix_rotation: set the importer's rotation to Roll 90, Pitch 0, Yaw 0 and its uniform scale to 1.
+--- 2. Skeleton from the rig JSON
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\trike_skeletal.glb: 36 bones, 121087 vertices, 240825 triangles, max 4 bones per vertex
+Imported trike_skeletal.glb -> /Game/BoneForge/_AxisProbe: M_Trike_Skin (MaterialInstanceConstant), M_Trike_Mouth (MaterialInstanceConstant), M_Trike_Teeth (MaterialInstanceConstant), M_Trike_Keratin (MaterialInstanceConstant), M_Trike_Eye (MaterialInstanceConstant), M_Trike_LidHalf (MaterialInstanceConstant), M_Trike_LidClosed (MaterialInstanceConstant), M_Trike_Scute (MaterialInstanceConstant), trike_skeletal_Skeleton (Skeleton), trike_skeletal (SkeletalMesh), trike_skeletal_PhysicsAsset (PhysicsAsset)
+Importer axis map is as expected: glTF (x, y, z) m -> Unreal (x, z, y) * 100 cm.
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\trike_skeletal.glb: 36 bones, 121087 vertices, 240825 triangles, max 4 bones per vertex
+Imported trike_skeletal.glb -> /Game/BoneForge/Trike: trike_skeletal_Skeleton (Skeleton), trike_skeletal (SkeletalMesh), trike_skeletal_PhysicsAsset (PhysicsAsset)
+Skeletal Mesh /Game/BoneForge/Trike/trike_skeletal/SkeletalMeshes/trike_skeletal.trike_skeletal, Skeleton /Game/BoneForge/Trike/trike_skeletal/SkeletalMeshes/trike_skeletal_Skeleton.trike_skeletal_Skeleton, 36 bones
+    All 36 bone positions match the rig JSON (worst 0.000 cm, jaw_end).
+    Every bone's X axis points at its child joint (bend = Pitch, side = Yaw, twist = Roll).
+--- Result: OBJ needs a fix (see above), skeleton matches the rig JSON.

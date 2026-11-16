@@ -1,0 +1,11 @@
+Ankylosaurus with Brachiosaurus legs 29% (110% thick)  (ed_ankylo_hibrachio29t110)
+
+Base ankylo, Hip section from brachio.
+Lineage by mass: Ankylosaurus 98%, Brachiosaurus 2%
+Mass 6,554.15 kg; balance point [103.5, 0.0, 128.2] cm
+
+
+Leg check: walks
+Legs hold it: the hind legs have 2.1 times the muscle their share of the weight needs.
+  hind: muscle 67.4 kN for 32.0 kN of weight (x2.11)
+  front: muscle 113.2 kN for 32.3 kN of weight (x3.5)

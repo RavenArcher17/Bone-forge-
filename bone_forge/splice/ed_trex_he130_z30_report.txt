@@ -1,0 +1,11 @@
+Young T. rex with head 130%  (ed_trex_he130_z30)
+
+Base trex, Head section from trex.
+Lineage by mass: Tyrannosaurus rex 100%
+Mass 365.51 kg; balance point [41.19, 0.0, 91.02] cm
+
+Grown at 30% of its size: 365.5 kg.
+
+Leg check: walks
+Legs hold it: the legs have 13.9 times the muscle their share of the weight needs.
+  hind: muscle 49.9 kN for 3.6 kN of weight (x13.92)

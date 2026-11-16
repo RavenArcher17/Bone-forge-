@@ -1,0 +1,21 @@
+Pteranodon with T. rex legs 28% (150% thick), T. rex neck 42% (55% thick), T. rex head 44%, Brachiosaurus tail 9%, arms 163% (125% thick), tail bone 1 229%, tail bone 2 189% (tail bone 2 15% moved out), tail bone 3 180%, tail bone 4 180% (joint 40% moved out), tail bone 5 171% (joint 40% moved out), tail bone 6 240% (joint 40% moved out), tail bone 7 218% (joint 40% moved out), hands 83%, forearms 116%, upper arms 90%  (ed_ptera_b52878f4959e)
+
+Base ptera, several section from ptera.
+Lineage by mass: Brachiosaurus 5%, Pteranodon 27%, Tyrannosaurus rex 68%
+Mass 257.02 kg; balance point [93.0, 0.0, 88.4] cm
+
+the body tilts 10° tail-up about its shoulders so its hips sit on the new legs (+10 cm), the front legs staying upright
+thigh_l: mounted 6 cm out from the Pteranodon's socket, clear of the other side's (its flesh is wider than the hips)
+thigh_r: mounted 6 cm out from the Pteranodon's socket, clear of the other side's (its flesh is wider than the hips)
+its head rides on the Tyrannosaurus rex's neck, 35 cm from where it was
+upperarm_l: walking, shoulder turned to put the foot on the ground; turned upperarm_l bend +24° side +26°
+upperarm_r: walking, shoulder turned to put the foot on the ground; turned upperarm_r bend +24° side +26°
+
+Leg check: walks
+Legs hold it: the front legs have 3.4 times the muscle their share of the weight needs.
+  hind: muscle 97.8 kN for 0.0 kN of weight (x97794053628.69)
+  front: muscle 8.7 kN for 2.5 kN of weight (x3.44)
+
+Flight check: grounded
+Can't fly: wing loading 490 N/m² is 2 times the 245 limit. The body is too heavy for these wings; it would need wings 8 m across.
+  weight 2,521 N / wing area 5.15 m² = 490 N/m² (limit 245); flight muscle 7.40 kg = 2.9% (needs 15%)

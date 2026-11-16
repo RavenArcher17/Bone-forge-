@@ -1,0 +1,13 @@
+T. rex with legs 120%, Triceratops head, Ankylosaurus tail  (ed_trex_hi120_hetrike_taankylo)
+
+Base trex, several section from ankylo.
+Lineage by mass: Ankylosaurus 9%, Tyrannosaurus rex 77%, Triceratops 14%
+Mass 11,049.36 kg; balance point [168.7, 0.0, 348.8] cm
+
+the body sits 60 cm higher on the new legs
+thigh_l: mounted 3 cm out from the T. rex's socket, clear of the other side's (its flesh is wider than the hips)
+thigh_r: mounted 3 cm out from the T. rex's socket, clear of the other side's (its flesh is wider than the hips)
+
+Leg check: walks
+Legs hold it: the legs have 7.4 times the muscle their share of the weight needs.
+  hind: muscle 798.3 kN for 108.4 kN of weight (x7.36)

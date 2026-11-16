@@ -1,0 +1,17 @@
+T. rex with Brachiosaurus arms 90%  (ed_trex_shbrachio90)
+
+Base trex, Shoulder section from brachio.
+Lineage by mass: Tyrannosaurus rex 83%, Brachiosaurus 17%
+Mass 14,712.50 kg; balance point [81.2, 0.0, 341.1] cm
+
+the body tilts 41° head-up about its hips so the front limbs, too long to carry, stand on the ground (+182 cm)
+upperarm_l: mounted 17 cm out from the T. rex's socket, at the widest of its body
+upperarm_l: walking, shoulder turned to put the foot on the ground; turned upperarm_l bend -2° side +2°
+upperarm_r: mounted 17 cm out from the T. rex's socket, at the widest of its body
+upperarm_r: walking, shoulder turned to put the foot on the ground; turned upperarm_r bend -2° side +2°
+its tail lifts 30° from the root to keep off the ground (30° of bend where its joints have 16°: held so)
+
+Leg check: walks
+Legs hold it: the hind legs have 5.9 times the muscle their share of the weight needs.
+  hind: muscle 554.4 kN for 93.4 kN of weight (x5.93)
+  front: muscle 425.1 kN for 50.9 kN of weight (x8.35)

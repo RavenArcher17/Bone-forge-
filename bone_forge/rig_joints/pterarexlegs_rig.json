@@ -1,0 +1,2839 @@
+{
+ "creature": "Pteranodon on T. rex legs",
+ "units": "centimetres and degrees",
+ "body_tilt": {
+  "tail_clear": 90,
+  "down": 31,
+  "up": 41,
+  "down_everyday": 20,
+  "up_everyday": 29,
+  "kind": "biped"
+ },
+ "axes": "Unreal: X forward, Y right, Z up; origin on the ground under the hip sockets; _l = left side (-Y), _r = right side (+Y)",
+ "angles": "from the neutral standing pose. bend: side-plane rotation (+ raises neck/head/tail, swings hip/shoulder forward, bends knee/elbow/ankle/toes more, opens jaw). side: left/right, or + = away from the body for hip/shoulder. twist: roll around the bone.",
+ "use": "limits are the most the bones and ligaments allow; keep everyday moves to about two thirds of them",
+ "joints": [
+  {
+   "name": "root",
+   "parent": null,
+   "position_cm": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "section": "-",
+   "role": "on the ground under the hips; moves the whole creature",
+   "limits_deg": null
+  },
+  {
+   "name": "pelvis",
+   "parent": "root",
+   "position_cm": [
+    0.0,
+    0.0,
+    308.0
+   ],
+   "section": "Core",
+   "role": "hips; parent of legs and tail",
+   "limits_deg": {
+    "bend": [
+     -31,
+     41
+    ],
+    "side": [
+     -8,
+     8
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole-body tilt with the feet planted: limited by how far the front legs can shorten or lengthen against the hind legs over 0.6 m between hips and shoulders",
+   "tissue": [
+    [
+     -0.691,
+     0.0,
+     2.0,
+     5.8,
+     9.7,
+     2.0,
+     2.0
+    ],
+    [
+     -0.452,
+     -0.0,
+     0.6,
+     7.3,
+     10.9,
+     2.28,
+     2.49
+    ],
+    [
+     -0.213,
+     0.0,
+     -0.1,
+     8.2,
+     11.3,
+     2.46,
+     2.42
+    ],
+    [
+     0.026,
+     0.0,
+     -0.7,
+     9.0,
+     11.7,
+     2.53,
+     2.0
+    ],
+    [
+     0.266,
+     -0.0,
+     -1.9,
+     9.8,
+     12.6,
+     2.0,
+     2.3
+    ],
+    [
+     0.506,
+     0.0,
+     -2.6,
+     10.7,
+     12.9,
+     2.7,
+     2.0
+    ],
+    [
+     0.746,
+     0.0,
+     -3.3,
+     11.3,
+     13.0,
+     2.0,
+     2.0
+    ],
+    [
+     0.986,
+     0.0,
+     -3.9,
+     11.9,
+     13.3,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "spine_01",
+   "parent": "pelvis",
+   "position_cm": [
+    13.0,
+    0.0,
+    316.0
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -3,
+     3
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.24,
+     0.0,
+     -5.0,
+     12.2,
+     13.9,
+     2.0,
+     2.18
+    ],
+    [
+     0.494,
+     -0.0,
+     -5.6,
+     12.5,
+     14.1,
+     3.2,
+     2.0
+    ],
+    [
+     0.748,
+     0.0,
+     -6.1,
+     12.7,
+     14.2,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "spine_02",
+   "parent": "spine_01",
+   "position_cm": [
+    25.0,
+    0.0,
+    324.0
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -3,
+     3
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.001,
+     0.0,
+     -6.6,
+     12.9,
+     14.2,
+     3.56,
+     2.0
+    ],
+    [
+     0.247,
+     0.0,
+     -6.5,
+     12.9,
+     14.4,
+     3.41,
+     2.0
+    ],
+    [
+     0.493,
+     0.0,
+     -6.4,
+     13.0,
+     14.5,
+     3.63,
+     2.0
+    ],
+    [
+     0.739,
+     0.0,
+     -6.1,
+     12.9,
+     14.5,
+     3.63,
+     2.11
+    ],
+    [
+     0.986,
+     0.0,
+     -5.8,
+     12.9,
+     14.3,
+     3.51,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "spine_03",
+   "parent": "spine_02",
+   "position_cm": [
+    39.0,
+    0.0,
+    329.0
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -3,
+     3
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.237,
+     0.0,
+     -5.5,
+     12.7,
+     14.0,
+     3.45,
+     2.0
+    ],
+    [
+     0.488,
+     0.0,
+     -5.1,
+     12.5,
+     13.5,
+     3.49,
+     2.0
+    ],
+    [
+     0.739,
+     0.0,
+     -4.6,
+     12.2,
+     12.9,
+     3.38,
+     2.0
+    ],
+    [
+     0.988,
+     0.0,
+     -4.1,
+     11.9,
+     11.9,
+     2.0,
+     2.16
+    ]
+   ]
+  },
+  {
+   "name": "chest",
+   "parent": "spine_03",
+   "position_cm": [
+    53.0,
+    0.0,
+    333.0
+   ],
+   "section": "Core",
+   "role": "shoulders and ribcage; parent of arms and neck",
+   "limits_deg": {
+    "bend": [
+     -3,
+     3
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     -2,
+     2
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.27,
+     0.0,
+     -3.4,
+     10.7,
+     10.4,
+     2.0,
+     2.0
+    ],
+    [
+     0.558,
+     0.0,
+     -3.8,
+     9.5,
+     9.4,
+     3.75,
+     2.0
+    ],
+    [
+     0.845,
+     0.0,
+     -4.1,
+     8.2,
+     8.4,
+     4.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "neck_01",
+   "parent": "chest",
+   "position_cm": [
+    62.0,
+    0.0,
+    342.0
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -10,
+     17
+    ],
+    "side": [
+     -13,
+     13
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -30 to +50 up and down, ±40 sideways, split over 3 joints",
+   "tissue": [
+    [
+     0.136,
+     0.0,
+     -4.9,
+     6.6,
+     7.1,
+     4.0,
+     2.05
+    ],
+    [
+     0.439,
+     0.0,
+     -4.8,
+     6.2,
+     6.3,
+     4.0,
+     2.0
+    ],
+    [
+     0.742,
+     0.0,
+     -5.1,
+     5.8,
+     6.0,
+     4.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "neck_02",
+   "parent": "neck_01",
+   "position_cm": [
+    67.0,
+    0.0,
+    353.0
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -10,
+     17
+    ],
+    "side": [
+     -13,
+     13
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -30 to +50 up and down, ±40 sideways, split over 3 joints",
+   "tissue": [
+    [
+     0.046,
+     0.0,
+     -5.3,
+     5.5,
+     5.8,
+     4.0,
+     2.0
+    ],
+    [
+     0.359,
+     0.0,
+     -5.7,
+     5.3,
+     6.1,
+     4.0,
+     2.0
+    ],
+    [
+     0.672,
+     0.0,
+     -5.8,
+     5.1,
+     6.5,
+     4.0,
+     2.0
+    ],
+    [
+     0.985,
+     0.0,
+     -5.9,
+     5.0,
+     6.9,
+     4.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "neck_03",
+   "parent": "neck_02",
+   "position_cm": [
+    71.0,
+    0.0,
+    364.0
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -10,
+     17
+    ],
+    "side": [
+     -13,
+     13
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -30 to +50 up and down, ±40 sideways, split over 3 joints",
+   "tissue": [
+    [
+     0.276,
+     0.0,
+     -5.8,
+     5.0,
+     7.0,
+     4.0,
+     2.0
+    ],
+    [
+     0.566,
+     0.0,
+     -5.8,
+     5.0,
+     6.7,
+     4.0,
+     2.0
+    ],
+    [
+     0.856,
+     0.0,
+     -5.5,
+     5.0,
+     5.6,
+     4.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "head",
+   "parent": "neck_03",
+   "position_cm": [
+    75.0,
+    0.0,
+    376.0
+   ],
+   "section": "Head",
+   "role": "skull joint at the top of the neck",
+   "limits_deg": {
+    "bend": [
+     -30,
+     30
+    ],
+    "side": [
+     -30,
+     30
+    ],
+    "twist": [
+     -15,
+     15
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "jaw",
+   "parent": "head",
+   "position_cm": [
+    85.0,
+    0.0,
+    370.0
+   ],
+   "section": "Head",
+   "role": "jaw hinge",
+   "limits_deg": {
+    "bend": [
+     0,
+     45
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "head_end",
+   "parent": "head",
+   "position_cm": [
+    195.0,
+    0.0,
+    356.0
+   ],
+   "section": "Head",
+   "role": "snout tip (end marker, no motion)",
+   "limits_deg": null
+  },
+  {
+   "name": "jaw_end",
+   "parent": "jaw",
+   "position_cm": [
+    193.0,
+    0.0,
+    355.0
+   ],
+   "section": "Head",
+   "role": "lower jaw tip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "crest_end",
+   "parent": "head",
+   "position_cm": [
+    10.0,
+    0.0,
+    424.0
+   ],
+   "section": "Head",
+   "role": "crest tip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "tail_01",
+   "parent": "pelvis",
+   "position_cm": [
+    -12.0,
+    0.0,
+    302.0
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -10,
+     10
+    ],
+    "side": [
+     -10,
+     10
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.058,
+     0.0,
+     -3.0,
+     5.0,
+     8.9,
+     2.0,
+     2.0
+    ],
+    [
+     0.314,
+     0.0,
+     -3.8,
+     4.4,
+     7.8,
+     4.0,
+     2.06
+    ],
+    [
+     0.57,
+     0.0,
+     2.1,
+     3.2,
+     2.8,
+     2.0,
+     4.0
+    ],
+    [
+     0.826,
+     0.0,
+     0.6,
+     2.6,
+     4.4,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "tail_02",
+   "parent": "tail_01",
+   "position_cm": [
+    -25.0,
+    0.0,
+    296.0
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -10,
+     10
+    ],
+    "side": [
+     -10,
+     10
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     1.176,
+     0.0,
+     -0.0,
+     2.0,
+     5.0,
+     2.43,
+     2.4
+    ]
+   ]
+  },
+  {
+   "name": "thigh_l",
+   "parent": "pelvis",
+   "position_cm": [
+    0.0,
+    -39.2,
+    300.0
+   ],
+   "section": "Hip",
+   "role": "hip socket",
+   "limits_deg": {
+    "bend": [
+     -40,
+     35
+    ],
+    "side": [
+     -5,
+     20
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "scaled down from measured bird hips (Manafzadeh & Padian 2018), where ligaments cut the bare-bone range by about half",
+   "tissue": [
+    [
+     -0.143,
+     1.8,
+     -0.9,
+     45.3,
+     69.7,
+     2.15,
+     2.1
+    ],
+    [
+     0.016,
+     -0.3,
+     0.0,
+     48.4,
+     76.5,
+     2.0,
+     2.05
+    ],
+    [
+     0.176,
+     -0.1,
+     -1.6,
+     51.1,
+     79.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.335,
+     1.0,
+     -2.4,
+     52.0,
+     80.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.493,
+     1.6,
+     -3.2,
+     50.2,
+     77.9,
+     2.0,
+     2.0
+    ],
+    [
+     0.653,
+     1.9,
+     -2.3,
+     46.6,
+     70.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.812,
+     1.7,
+     -4.7,
+     43.0,
+     65.1,
+     2.2,
+     2.18
+    ],
+    [
+     0.968,
+     2.1,
+     -6.5,
+     39.9,
+     58.9,
+     2.15,
+     2.0
+    ]
+   ],
+   "lineage": "Tyrannosaurus rex",
+   "mount_from_cm": [
+    0.0,
+    -8.0,
+    300.0
+   ]
+  },
+  {
+   "name": "calf_l",
+   "parent": "thigh_l",
+   "position_cm": [
+    38.0,
+    -54.2,
+    185.0
+   ],
+   "section": "Hip",
+   "role": "knee",
+   "limits_deg": {
+    "bend": [
+     -20,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.13,
+     2.6,
+     -12.0,
+     36.9,
+     52.0,
+     2.15,
+     2.0
+    ],
+    [
+     0.299,
+     2.2,
+     -12.7,
+     34.9,
+     50.4,
+     2.09,
+     2.04
+    ],
+    [
+     0.465,
+     1.5,
+     -8.0,
+     31.9,
+     47.4,
+     2.14,
+     2.0
+    ],
+    [
+     0.632,
+     0.7,
+     -3.5,
+     29.3,
+     41.0,
+     2.27,
+     2.0
+    ],
+    [
+     0.8,
+     -0.1,
+     1.8,
+     26.9,
+     31.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.965,
+     -0.1,
+     -0.6,
+     25.3,
+     28.3,
+     2.0,
+     2.0
+    ]
+   ],
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "foot_l",
+   "parent": "calf_l",
+   "position_cm": [
+    2.0,
+    -41.2,
+    76.0
+   ],
+   "section": "Hip",
+   "role": "ankle",
+   "limits_deg": {
+    "bend": [
+     -40,
+     40
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "ball_l",
+   "parent": "foot_l",
+   "position_cm": [
+    38.0,
+    -44.2,
+    12.0
+   ],
+   "section": "Hip",
+   "role": "toe joints (ball of the foot)",
+   "limits_deg": {
+    "bend": [
+     -40,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "toe_end_l",
+   "parent": "ball_l",
+   "position_cm": [
+    98.0,
+    -44.2,
+    5.0
+   ],
+   "section": "Hip",
+   "role": "toe tip (end marker)",
+   "limits_deg": null,
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "thigh_r",
+   "parent": "pelvis",
+   "position_cm": [
+    0.0,
+    39.2,
+    300.0
+   ],
+   "section": "Hip",
+   "role": "hip socket",
+   "limits_deg": {
+    "bend": [
+     -40,
+     35
+    ],
+    "side": [
+     -5,
+     20
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "scaled down from measured bird hips (Manafzadeh & Padian 2018), where ligaments cut the bare-bone range by about half",
+   "tissue": [
+    [
+     -0.143,
+     -1.8,
+     -0.9,
+     45.3,
+     69.7,
+     2.15,
+     2.1
+    ],
+    [
+     0.016,
+     0.3,
+     0.0,
+     48.4,
+     76.5,
+     2.0,
+     2.05
+    ],
+    [
+     0.176,
+     0.1,
+     -1.6,
+     51.1,
+     79.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.335,
+     -1.0,
+     -2.4,
+     52.0,
+     80.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.493,
+     -1.6,
+     -3.2,
+     50.2,
+     77.9,
+     2.0,
+     2.0
+    ],
+    [
+     0.653,
+     -1.9,
+     -2.3,
+     46.6,
+     70.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.812,
+     -1.7,
+     -4.7,
+     43.0,
+     65.1,
+     2.2,
+     2.18
+    ],
+    [
+     0.968,
+     -2.1,
+     -6.5,
+     39.9,
+     58.9,
+     2.15,
+     2.0
+    ]
+   ],
+   "lineage": "Tyrannosaurus rex",
+   "mount_from_cm": [
+    0.0,
+    8.0,
+    300.0
+   ]
+  },
+  {
+   "name": "calf_r",
+   "parent": "thigh_r",
+   "position_cm": [
+    38.0,
+    54.2,
+    185.0
+   ],
+   "section": "Hip",
+   "role": "knee",
+   "limits_deg": {
+    "bend": [
+     -20,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.13,
+     -2.6,
+     -12.0,
+     36.9,
+     52.0,
+     2.15,
+     2.0
+    ],
+    [
+     0.299,
+     -2.2,
+     -12.7,
+     34.9,
+     50.4,
+     2.09,
+     2.04
+    ],
+    [
+     0.465,
+     -1.5,
+     -8.0,
+     31.9,
+     47.4,
+     2.14,
+     2.0
+    ],
+    [
+     0.632,
+     -0.7,
+     -3.5,
+     29.3,
+     41.0,
+     2.27,
+     2.0
+    ],
+    [
+     0.8,
+     0.1,
+     1.8,
+     26.9,
+     31.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.965,
+     0.1,
+     -0.6,
+     25.3,
+     28.3,
+     2.0,
+     2.0
+    ]
+   ],
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "foot_r",
+   "parent": "calf_r",
+   "position_cm": [
+    2.0,
+    41.2,
+    76.0
+   ],
+   "section": "Hip",
+   "role": "ankle",
+   "limits_deg": {
+    "bend": [
+     -40,
+     40
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "ball_r",
+   "parent": "foot_r",
+   "position_cm": [
+    38.0,
+    44.2,
+    12.0
+   ],
+   "section": "Hip",
+   "role": "toe joints (ball of the foot)",
+   "limits_deg": {
+    "bend": [
+     -40,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "toe_end_r",
+   "parent": "ball_r",
+   "position_cm": [
+    98.0,
+    44.2,
+    5.0
+   ],
+   "section": "Hip",
+   "role": "toe tip (end marker)",
+   "limits_deg": null,
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "upperarm_l",
+   "parent": "chest",
+   "position_cm": [
+    55.0,
+    -12.0,
+    326.0
+   ],
+   "section": "Shoulder",
+   "role": "shoulder socket",
+   "limits_deg": {
+    "bend": [
+     -150,
+     50
+    ],
+    "side": [
+     -30,
+     90
+    ],
+    "twist": [
+     -30,
+     30
+    ]
+   },
+   "basis": "study-based",
+   "source": "Prondvai & Hone 2009, pterosaur wing joint motion",
+   "limit_note": "side = wing flap up (+) and down (-). Widened 2026-11-03 for flight: the walking range was bend -45..45, side -30..60; the flight stroke (testing-ground clips, measured) raises the wing above the back, reading up to side 84 and bend -142 on the upstroke (the bend reading swings fast when the wing is that high).",
+   "tissue": [
+    [
+     -0.085,
+     6.4,
+     -3.9,
+     1.4,
+     3.7,
+     2.51,
+     2.33
+    ],
+    [
+     0.009,
+     6.4,
+     -3.9,
+     1.7,
+     3.9,
+     3.25,
+     2.71
+    ],
+    [
+     0.103,
+     6.2,
+     -3.7,
+     2.0,
+     4.0,
+     3.32,
+     2.9
+    ],
+    [
+     0.197,
+     5.9,
+     -3.4,
+     2.3,
+     4.2,
+     4.0,
+     3.3
+    ],
+    [
+     0.29,
+     5.4,
+     -2.9,
+     2.6,
+     4.3,
+     4.0,
+     3.3
+    ],
+    [
+     0.383,
+     4.7,
+     -2.3,
+     2.9,
+     4.4,
+     3.75,
+     4.0
+    ],
+    [
+     0.476,
+     4.0,
+     -1.7,
+     3.1,
+     4.4,
+     3.59,
+     3.76
+    ],
+    [
+     0.57,
+     3.1,
+     -1.2,
+     3.3,
+     4.4,
+     3.16,
+     3.66
+    ],
+    [
+     0.664,
+     2.1,
+     -0.8,
+     3.5,
+     4.4,
+     3.2,
+     3.02
+    ],
+    [
+     0.758,
+     1.0,
+     -0.6,
+     3.6,
+     4.4,
+     2.51,
+     2.56
+    ],
+    [
+     0.851,
+     0.2,
+     -0.9,
+     3.5,
+     4.5,
+     2.26,
+     2.21
+    ],
+    [
+     0.941,
+     0.2,
+     -1.5,
+     3.4,
+     4.5,
+     2.2,
+     2.08
+    ]
+   ]
+  },
+  {
+   "name": "lowerarm_l",
+   "parent": "upperarm_l",
+   "position_cm": [
+    45.0,
+    -25.0,
+    291.0
+   ],
+   "section": "Shoulder",
+   "role": "elbow",
+   "limits_deg": {
+    "bend": [
+     -44,
+     76
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "study-based",
+   "source": "Prondvai & Hone 2009, pterosaur wing joint motion",
+   "limit_note": "elbow opens from 40 to 160 degrees (180 = straight); drawn pose is 116",
+   "tissue": [
+    [
+     0.035,
+     -0.2,
+     -2.6,
+     3.7,
+     4.8,
+     2.0,
+     3.5
+    ],
+    [
+     0.162,
+     -0.4,
+     -3.9,
+     4.0,
+     4.5,
+     2.05,
+     3.2
+    ],
+    [
+     0.294,
+     -0.5,
+     -4.5,
+     4.9,
+     4.1,
+     2.0,
+     3.07
+    ],
+    [
+     0.427,
+     -0.3,
+     -4.9,
+     5.8,
+     3.6,
+     2.01,
+     2.81
+    ],
+    [
+     0.558,
+     -0.2,
+     -4.9,
+     6.2,
+     3.7,
+     2.98,
+     2.64
+    ],
+    [
+     0.689,
+     1.1,
+     -4.7,
+     5.0,
+     4.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.821,
+     1.6,
+     -4.6,
+     4.3,
+     4.5,
+     2.0,
+     2.0
+    ],
+    [
+     0.954,
+     2.0,
+     -4.2,
+     3.5,
+     5.0,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "hand_l",
+   "parent": "lowerarm_l",
+   "position_cm": [
+    65.0,
+    -30.0,
+    273.0
+   ],
+   "section": "Shoulder",
+   "role": "wrist",
+   "limits_deg": {
+    "bend": [
+     -20,
+     20
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "study-based",
+   "source": "Prondvai & Hone 2009, pterosaur wing joint motion",
+   "limit_note": "wrist is restricted",
+   "tissue": [
+    [
+     0.051,
+     1.7,
+     -3.7,
+     3.9,
+     5.2,
+     4.0,
+     2.0
+    ],
+    [
+     0.129,
+     1.5,
+     -3.7,
+     4.0,
+     5.4,
+     4.0,
+     2.0
+    ],
+    [
+     0.209,
+     1.7,
+     -3.6,
+     3.9,
+     5.4,
+     4.0,
+     2.0
+    ],
+    [
+     0.288,
+     1.8,
+     -3.4,
+     3.9,
+     5.5,
+     4.0,
+     2.0
+    ],
+    [
+     0.368,
+     2.4,
+     -3.2,
+     3.2,
+     5.5,
+     4.0,
+     2.0
+    ],
+    [
+     0.448,
+     2.4,
+     -3.0,
+     3.2,
+     5.5,
+     4.0,
+     2.0
+    ],
+    [
+     0.527,
+     2.3,
+     -2.8,
+     3.2,
+     5.6,
+     4.0,
+     2.0
+    ],
+    [
+     0.607,
+     2.3,
+     -2.6,
+     3.2,
+     5.6,
+     4.0,
+     2.0
+    ],
+    [
+     0.686,
+     2.2,
+     -2.4,
+     3.2,
+     5.6,
+     4.0,
+     2.0
+    ],
+    [
+     0.766,
+     2.1,
+     -2.2,
+     3.2,
+     5.5,
+     4.0,
+     2.0
+    ],
+    [
+     0.845,
+     2.2,
+     -2.0,
+     2.9,
+     5.4,
+     4.0,
+     2.0
+    ],
+    [
+     0.925,
+     2.5,
+     -1.6,
+     2.4,
+     4.9,
+     2.0,
+     2.0
+    ],
+    [
+     1.004,
+     0.1,
+     -1.6,
+     4.4,
+     4.7,
+     2.0,
+     2.39
+    ],
+    [
+     1.084,
+     0.0,
+     -1.6,
+     4.1,
+     4.2,
+     2.04,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "wingfinger_01_l",
+   "parent": "hand_l",
+   "position_cm": [
+    83.0,
+    -32.0,
+    231.0
+   ],
+   "section": "Shoulder",
+   "role": "wing knuckle at the end of the long hand bone; 3 small clawed fingers sit here",
+   "limits_deg": {
+    "bend": [
+     -170,
+     0
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Prondvai & Hone 2009, pterosaur wing joint motion",
+   "limit_note": "wing knuckle: standing pose is fully folded; -170 opens the wing (one-plane hinge)"
+  },
+  {
+   "name": "pteroid_l",
+   "parent": "hand_l",
+   "position_cm": [
+    59.0,
+    -27.0,
+    286.0
+   ],
+   "section": "Shoulder",
+   "role": "pteroid bone, sets the front membrane",
+   "limits_deg": {
+    "bend": [
+     0,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "+ = turns forward to stretch the front membrane in flight"
+  },
+  {
+   "name": "wingfinger_02_l",
+   "parent": "wingfinger_01_l",
+   "position_cm": [
+    60.0,
+    -36.0,
+    281.0
+   ],
+   "section": "Shoulder",
+   "role": "wing finger joint",
+   "limits_deg": {
+    "bend": [
+     -5,
+     5
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "the long wing finger bones are nearly rigid"
+  },
+  {
+   "name": "wingfinger_03_l",
+   "parent": "wingfinger_02_l",
+   "position_cm": [
+    37.0,
+    -38.0,
+    321.0
+   ],
+   "section": "Shoulder",
+   "role": "wing finger joint",
+   "limits_deg": {
+    "bend": [
+     -5,
+     5
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "the long wing finger bones are nearly rigid"
+  },
+  {
+   "name": "wingfinger_04_l",
+   "parent": "wingfinger_03_l",
+   "position_cm": [
+    10.0,
+    -40.0,
+    348.0
+   ],
+   "section": "Shoulder",
+   "role": "wing finger joint",
+   "limits_deg": {
+    "bend": [
+     -5,
+     5
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "the long wing finger bones are nearly rigid"
+  },
+  {
+   "name": "wing_end_l",
+   "parent": "wingfinger_04_l",
+   "position_cm": [
+    -15.0,
+    -42.0,
+    364.0
+   ],
+   "section": "Shoulder",
+   "role": "wing tip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "upperarm_r",
+   "parent": "chest",
+   "position_cm": [
+    55.0,
+    12.0,
+    326.0
+   ],
+   "section": "Shoulder",
+   "role": "shoulder socket",
+   "limits_deg": {
+    "bend": [
+     -150,
+     50
+    ],
+    "side": [
+     -30,
+     90
+    ],
+    "twist": [
+     -30,
+     30
+    ]
+   },
+   "basis": "study-based",
+   "source": "Prondvai & Hone 2009, pterosaur wing joint motion",
+   "limit_note": "side = wing flap up (+) and down (-). Widened 2026-11-03 for flight: the walking range was bend -45..45, side -30..60; the flight stroke (testing-ground clips, measured) raises the wing above the back, reading up to side 84 and bend -142 on the upstroke (the bend reading swings fast when the wing is that high).",
+   "tissue": [
+    [
+     -0.085,
+     -6.4,
+     -3.9,
+     1.4,
+     3.7,
+     2.51,
+     2.33
+    ],
+    [
+     0.009,
+     -6.4,
+     -3.9,
+     1.7,
+     3.9,
+     3.25,
+     2.71
+    ],
+    [
+     0.103,
+     -6.2,
+     -3.7,
+     2.0,
+     4.0,
+     3.32,
+     2.9
+    ],
+    [
+     0.197,
+     -5.9,
+     -3.4,
+     2.3,
+     4.2,
+     4.0,
+     3.3
+    ],
+    [
+     0.29,
+     -5.4,
+     -2.9,
+     2.6,
+     4.3,
+     4.0,
+     3.3
+    ],
+    [
+     0.383,
+     -4.7,
+     -2.3,
+     2.9,
+     4.4,
+     3.75,
+     4.0
+    ],
+    [
+     0.476,
+     -4.0,
+     -1.7,
+     3.1,
+     4.4,
+     3.59,
+     3.76
+    ],
+    [
+     0.57,
+     -3.1,
+     -1.2,
+     3.3,
+     4.4,
+     3.16,
+     3.66
+    ],
+    [
+     0.664,
+     -2.1,
+     -0.8,
+     3.5,
+     4.4,
+     3.2,
+     3.02
+    ],
+    [
+     0.758,
+     -1.0,
+     -0.6,
+     3.6,
+     4.4,
+     2.51,
+     2.56
+    ],
+    [
+     0.851,
+     -0.2,
+     -0.9,
+     3.5,
+     4.5,
+     2.26,
+     2.21
+    ],
+    [
+     0.941,
+     -0.2,
+     -1.5,
+     3.4,
+     4.5,
+     2.2,
+     2.08
+    ]
+   ]
+  },
+  {
+   "name": "lowerarm_r",
+   "parent": "upperarm_r",
+   "position_cm": [
+    45.0,
+    25.0,
+    291.0
+   ],
+   "section": "Shoulder",
+   "role": "elbow",
+   "limits_deg": {
+    "bend": [
+     -44,
+     76
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "study-based",
+   "source": "Prondvai & Hone 2009, pterosaur wing joint motion",
+   "limit_note": "elbow opens from 40 to 160 degrees (180 = straight); drawn pose is 116",
+   "tissue": [
+    [
+     0.035,
+     0.2,
+     -2.6,
+     3.7,
+     4.8,
+     2.0,
+     3.5
+    ],
+    [
+     0.162,
+     0.4,
+     -3.9,
+     4.0,
+     4.5,
+     2.05,
+     3.2
+    ],
+    [
+     0.294,
+     0.5,
+     -4.5,
+     4.9,
+     4.1,
+     2.0,
+     3.07
+    ],
+    [
+     0.427,
+     0.3,
+     -4.9,
+     5.8,
+     3.6,
+     2.01,
+     2.81
+    ],
+    [
+     0.558,
+     0.2,
+     -4.9,
+     6.2,
+     3.7,
+     2.98,
+     2.64
+    ],
+    [
+     0.689,
+     -1.1,
+     -4.7,
+     5.0,
+     4.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.821,
+     -1.6,
+     -4.6,
+     4.3,
+     4.5,
+     2.0,
+     2.0
+    ],
+    [
+     0.954,
+     -2.0,
+     -4.2,
+     3.5,
+     5.0,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "hand_r",
+   "parent": "lowerarm_r",
+   "position_cm": [
+    65.0,
+    30.0,
+    273.0
+   ],
+   "section": "Shoulder",
+   "role": "wrist",
+   "limits_deg": {
+    "bend": [
+     -20,
+     20
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "study-based",
+   "source": "Prondvai & Hone 2009, pterosaur wing joint motion",
+   "limit_note": "wrist is restricted",
+   "tissue": [
+    [
+     0.051,
+     -1.7,
+     -3.7,
+     3.9,
+     5.2,
+     4.0,
+     2.0
+    ],
+    [
+     0.129,
+     -1.5,
+     -3.7,
+     4.0,
+     5.4,
+     4.0,
+     2.0
+    ],
+    [
+     0.209,
+     -1.7,
+     -3.6,
+     3.9,
+     5.4,
+     4.0,
+     2.0
+    ],
+    [
+     0.288,
+     -1.8,
+     -3.4,
+     3.9,
+     5.5,
+     4.0,
+     2.0
+    ],
+    [
+     0.368,
+     -2.4,
+     -3.2,
+     3.2,
+     5.5,
+     4.0,
+     2.0
+    ],
+    [
+     0.448,
+     -2.4,
+     -3.0,
+     3.2,
+     5.5,
+     4.0,
+     2.0
+    ],
+    [
+     0.527,
+     -2.3,
+     -2.8,
+     3.2,
+     5.6,
+     4.0,
+     2.0
+    ],
+    [
+     0.607,
+     -2.3,
+     -2.6,
+     3.2,
+     5.6,
+     4.0,
+     2.0
+    ],
+    [
+     0.686,
+     -2.2,
+     -2.4,
+     3.2,
+     5.6,
+     4.0,
+     2.0
+    ],
+    [
+     0.766,
+     -2.1,
+     -2.2,
+     3.2,
+     5.5,
+     4.0,
+     2.0
+    ],
+    [
+     0.845,
+     -2.2,
+     -2.0,
+     2.9,
+     5.4,
+     4.0,
+     2.0
+    ],
+    [
+     0.925,
+     -2.5,
+     -1.6,
+     2.4,
+     4.9,
+     2.0,
+     2.0
+    ],
+    [
+     1.004,
+     -0.1,
+     -1.6,
+     4.4,
+     4.7,
+     2.0,
+     2.39
+    ],
+    [
+     1.084,
+     -0.0,
+     -1.6,
+     4.1,
+     4.2,
+     2.04,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "wingfinger_01_r",
+   "parent": "hand_r",
+   "position_cm": [
+    83.0,
+    32.0,
+    231.0
+   ],
+   "section": "Shoulder",
+   "role": "wing knuckle at the end of the long hand bone; 3 small clawed fingers sit here",
+   "limits_deg": {
+    "bend": [
+     -170,
+     0
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Prondvai & Hone 2009, pterosaur wing joint motion",
+   "limit_note": "wing knuckle: standing pose is fully folded; -170 opens the wing (one-plane hinge)"
+  },
+  {
+   "name": "pteroid_r",
+   "parent": "hand_r",
+   "position_cm": [
+    59.0,
+    27.0,
+    286.0
+   ],
+   "section": "Shoulder",
+   "role": "pteroid bone, sets the front membrane",
+   "limits_deg": {
+    "bend": [
+     0,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "+ = turns forward to stretch the front membrane in flight"
+  },
+  {
+   "name": "wingfinger_02_r",
+   "parent": "wingfinger_01_r",
+   "position_cm": [
+    60.0,
+    36.0,
+    281.0
+   ],
+   "section": "Shoulder",
+   "role": "wing finger joint",
+   "limits_deg": {
+    "bend": [
+     -5,
+     5
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "the long wing finger bones are nearly rigid"
+  },
+  {
+   "name": "wingfinger_03_r",
+   "parent": "wingfinger_02_r",
+   "position_cm": [
+    37.0,
+    38.0,
+    321.0
+   ],
+   "section": "Shoulder",
+   "role": "wing finger joint",
+   "limits_deg": {
+    "bend": [
+     -5,
+     5
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "the long wing finger bones are nearly rigid"
+  },
+  {
+   "name": "wingfinger_04_r",
+   "parent": "wingfinger_03_r",
+   "position_cm": [
+    10.0,
+    40.0,
+    348.0
+   ],
+   "section": "Shoulder",
+   "role": "wing finger joint",
+   "limits_deg": {
+    "bend": [
+     -5,
+     5
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "the long wing finger bones are nearly rigid"
+  },
+  {
+   "name": "wing_end_r",
+   "parent": "wingfinger_04_r",
+   "position_cm": [
+    -15.0,
+    42.0,
+    364.0
+   ],
+   "section": "Shoulder",
+   "role": "wing tip (end marker)",
+   "limits_deg": null
+  }
+ ],
+ "mass_kg": {
+  "total": 1106.57,
+  "by_section": {
+   "Hip (leg)": 1077.17,
+   "Shoulder (arm)": 8.59,
+   "Head": 2.94,
+   "Neck": 0.29,
+   "Core": 17.52,
+   "Tail": 0.06
+  }
+ },
+ "balance_point_cm": [
+  30.2,
+  0.0,
+  175.1
+ ],
+ "collision_capsules": [
+  {
+   "bone": "tail_01",
+   "from_joint": "tail_02",
+   "to_joint": "tail_01",
+   "radius_cm": 4.2,
+   "length_cm": 13.9,
+   "mass_kg": 0.06
+  },
+  {
+   "bone": "pelvis",
+   "from_joint": "tail_01",
+   "to_joint": "pelvis",
+   "radius_cm": 8.6,
+   "length_cm": 13.9,
+   "mass_kg": 1.29
+  },
+  {
+   "bone": "pelvis",
+   "from_joint": "pelvis",
+   "to_joint": "spine_01",
+   "radius_cm": 11.3,
+   "length_cm": 14.8,
+   "mass_kg": 2.6
+  },
+  {
+   "bone": "spine_01",
+   "from_joint": "spine_01",
+   "to_joint": "spine_02",
+   "radius_cm": 13.1,
+   "length_cm": 14.8,
+   "mass_kg": 3.79
+  },
+  {
+   "bone": "spine_02",
+   "from_joint": "spine_02",
+   "to_joint": "spine_03",
+   "radius_cm": 13.7,
+   "length_cm": 14.7,
+   "mass_kg": 4.25
+  },
+  {
+   "bone": "spine_03",
+   "from_joint": "spine_03",
+   "to_joint": "chest",
+   "radius_cm": 13.1,
+   "length_cm": 14.7,
+   "mass_kg": 3.81
+  },
+  {
+   "bone": "chest",
+   "from_joint": "chest",
+   "to_joint": "neck_01",
+   "radius_cm": 10.0,
+   "length_cm": 12.2,
+   "mass_kg": 1.76
+  },
+  {
+   "bone": "neck_01",
+   "from_joint": "neck_01",
+   "to_joint": "neck_02",
+   "radius_cm": 6.3,
+   "length_cm": 12.4,
+   "mass_kg": 0.11
+  },
+  {
+   "bone": "neck_02",
+   "from_joint": "neck_02",
+   "to_joint": "neck_03",
+   "radius_cm": 5.7,
+   "length_cm": 12.4,
+   "mass_kg": 0.09
+  },
+  {
+   "bone": "neck_03",
+   "from_joint": "neck_03",
+   "to_joint": "head",
+   "radius_cm": 5.8,
+   "length_cm": 12.2,
+   "mass_kg": 0.09
+  },
+  {
+   "bone": "head",
+   "from_joint": "head",
+   "to_joint": "head_end",
+   "radius_cm": 4.0,
+   "length_cm": 121.7,
+   "mass_kg": 2.94
+  },
+  {
+   "bone": "thigh (l, r)",
+   "from_joint": "thigh_l",
+   "to_joint": "calf_l",
+   "radius_cm": 29.9,
+   "length_cm": 121.1,
+   "mass_kg": 348.54
+  },
+  {
+   "bone": "calf (l, r)",
+   "from_joint": "calf_l",
+   "to_joint": "foot_l",
+   "radius_cm": 11.4,
+   "length_cm": 114.8,
+   "mass_kg": 40.67
+  },
+  {
+   "bone": "foot (l, r)",
+   "from_joint": "foot_l",
+   "to_joint": "ball_l",
+   "radius_cm": 12.4,
+   "length_cm": 73.4,
+   "mass_kg": 33.72
+  },
+  {
+   "bone": "ball (l, r)",
+   "from_joint": "ball_l",
+   "to_joint": "toe_end_l",
+   "radius_cm": 22.9,
+   "length_cm": 60.4,
+   "mass_kg": 115.66
+  },
+  {
+   "bone": "upperarm (l, r)",
+   "from_joint": "upperarm_l",
+   "to_joint": "lowerarm_l",
+   "radius_cm": 3.8,
+   "length_cm": 36.4,
+   "mass_kg": 0.85
+  },
+  {
+   "bone": "lowerarm (l, r)",
+   "from_joint": "lowerarm_l",
+   "to_joint": "hand_l",
+   "radius_cm": 4.8,
+   "length_cm": 26.9,
+   "mass_kg": 1.07
+  },
+  {
+   "bone": "hand (l, r)",
+   "from_joint": "hand_l",
+   "to_joint": "wingfinger_01_l",
+   "radius_cm": 5.6,
+   "length_cm": 45.7,
+   "mass_kg": 2.38
+  }
+ ],
+ "gaits": {
+  "walk": {
+   "speed_m_s": 2.24,
+   "stride_m": 3.66,
+   "stride_time_s": 1.63,
+   "name": "walk"
+  },
+  "fast": {
+   "speed_m_s": 9.25,
+   "stride_m": 7.32,
+   "stride_time_s": 0.79,
+   "name": "bound (launch run-up)"
+  }
+ },
+ "footfall_order": "left hind, left front, right hind, right front (quarter-stride apart)",
+ "tissue_note": "tissue: the flesh around a bone, the body's muscle anchors: stations [t along the bone (0 its joint, 1 the next), centre across (cm, + right), centre up, half-width, half-height], in the bone's frame; the flesh flows from station to station along each chain of bones (body_tools/grow_body.py measures them from the hand-built body and grows bodies from them). Feet, hands, heads and other bone parts keep their own meshes.",
+ "leg_check": {
+  "weight_n": 10855.5,
+  "muscle_stress_n_cm2": 30.0,
+  "walk_margin": 2.0,
+  "pairs": {
+   "hind": {
+    "muscle_n": 554388.1,
+    "load_n": 10855.5,
+    "ratio": 51.07
+   }
+  },
+  "verdict": "walks",
+  "summary": "Legs hold it: the legs have 51.1 times the muscle their share of the weight needs."
+ },
+ "swim_check": {
+  "density_kg_m3": 1010.3,
+  "water_kg_m3": 1000.0,
+  "verdict": "sinks",
+  "summary": "Sinks: 1,010 kg per cubic metre, denser than water. It walks along the bottom, and in water deeper than its head it would drown.",
+  "speed_ms": 0.0
+ },
+ "climb_check": {
+  "grip_by_species": {
+   "trex": 0.9,
+   "raptor": 1.0,
+   "ptera": 1.0,
+   "brachio": 0.8,
+   "trike": 0.75,
+   "ankylo": 0.75
+  },
+  "climb_push": 1.5,
+  "crawl_share": 0.25,
+  "lean_in": 0.5,
+  "max_deg": 42.0,
+  "grip": 0.9,
+  "grip_deg": 42.0,
+  "strength_deg": 89.0,
+  "speed_share": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "speed_step_deg": 5,
+  "verdict": "grip",
+  "why": "its clawed toes slip",
+  "summary": "Climbs slopes up to 42 degrees: steeper than that its clawed toes slip. It keeps full speed all the way up."
+ },
+ "splice": {
+  "base": "ptera",
+  "donor": "trex",
+  "section": "Hip",
+  "swapped": "Hip section, both sides",
+  "lineage_kg": {
+   "Pteranodon": 29.39,
+   "Tyrannosaurus rex": 1077.18
+  },
+  "lineage_share": {
+   "Pteranodon": 0.027,
+   "Tyrannosaurus rex": 0.973
+  },
+  "wings": false,
+  "notes": [
+   "its hips would move +226 cm, past what tilting allows: it stands up on the new legs and carries its front limbs (now two-legged)",
+   "thigh_l: mounted 31 cm out from the Pteranodon's socket, clear of the other side's (its flesh is wider than the hips)",
+   "thigh_r: mounted 31 cm out from the Pteranodon's socket, clear of the other side's (its flesh is wider than the hips)"
+  ],
+  "made_by": "splice/splice.py (body grown by body_tools/grow_body.py)"
+ },
+ "flight_pose_cm": {
+  "pelvis": [
+   0.0,
+   0.0,
+   82.0
+  ],
+  "spine_01": [
+   14.7,
+   0.0,
+   83.7
+  ],
+  "spine_02": [
+   29.3,
+   0.0,
+   85.4
+  ],
+  "spine_03": [
+   44.0,
+   0.0,
+   84.7
+  ],
+  "chest": [
+   58.6,
+   0.0,
+   82.2
+  ],
+  "neck_01": [
+   70.1,
+   0.0,
+   86.2
+  ],
+  "neck_02": [
+   80.7,
+   0.0,
+   92.8
+  ],
+  "neck_03": [
+   91.5,
+   0.0,
+   98.9
+  ],
+  "head": [
+   102.5,
+   0.0,
+   104.0
+  ],
+  "jaw": [
+   105.0,
+   0.0,
+   92.6
+  ],
+  "jaw_end": [
+   167.7,
+   0.0,
+   3.4
+  ],
+  "head_end": [
+   169.8,
+   0.0,
+   2.6
+  ],
+  "crest_end": [
+   93.3,
+   0.0,
+   184.3
+  ],
+  "upperarm_l": [
+   57.5,
+   -12.0,
+   75.1
+  ],
+  "lowerarm_l": [
+   63.5,
+   -41.0,
+   76.8
+  ],
+  "hand_l": [
+   69.5,
+   -99.0,
+   80.3
+  ],
+  "wingfinger_01_l": [
+   69.5,
+   -161.0,
+   84.0
+  ],
+  "wingfinger_02_l": [
+   61.5,
+   -214.0,
+   87.2
+  ],
+  "wingfinger_03_l": [
+   49.5,
+   -254.0,
+   89.6
+  ],
+  "wingfinger_04_l": [
+   37.5,
+   -285.0,
+   91.4
+  ],
+  "wing_end_l": [
+   27.5,
+   -309.0,
+   92.9
+  ],
+  "pteroid_l": [
+   87.5,
+   -71.0,
+   78.6
+  ],
+  "upperarm_r": [
+   57.5,
+   12.0,
+   75.1
+  ],
+  "lowerarm_r": [
+   63.5,
+   41.0,
+   76.8
+  ],
+  "hand_r": [
+   69.5,
+   99.0,
+   80.3
+  ],
+  "wingfinger_01_r": [
+   69.5,
+   161.0,
+   84.0
+  ],
+  "wingfinger_02_r": [
+   61.5,
+   214.0,
+   87.2
+  ],
+  "wingfinger_03_r": [
+   49.5,
+   254.0,
+   89.6
+  ],
+  "wingfinger_04_r": [
+   37.5,
+   285.0,
+   91.4
+  ],
+  "wing_end_r": [
+   27.5,
+   309.0,
+   92.9
+  ],
+  "pteroid_r": [
+   87.5,
+   71.0,
+   78.6
+  ],
+  "tail_01": [
+   -13.9,
+   0.0,
+   81.6
+  ],
+  "tail_02": [
+   -27.7,
+   0.0,
+   81.7
+  ],
+  "thigh_l": [
+   0.0,
+   -39.2,
+   300.0
+  ],
+  "calf_l": [
+   -17.5,
+   -52.6,
+   180.0
+  ],
+  "foot_l": [
+   -97.1,
+   -34.7,
+   98.1
+  ],
+  "ball_l": [
+   -93.2,
+   -37.6,
+   24.8
+  ],
+  "toe_end_l": [
+   -42.5,
+   -40.3,
+   -8.0
+  ],
+  "thigh_r": [
+   0.0,
+   39.2,
+   300.0
+  ],
+  "calf_r": [
+   -17.5,
+   52.6,
+   180.0
+  ],
+  "foot_r": [
+   -97.1,
+   34.7,
+   98.1
+  ],
+  "ball_r": [
+   -93.2,
+   37.6,
+   24.8
+  ],
+  "toe_end_r": [
+   -42.5,
+   40.3,
+   -8.0
+  ]
+ },
+ "flight_rule": "flies if weight / wing area <= 245 N/m^2 and flight muscle >= 15% of body weight; passes the first but not the second = glide only",
+ "wing_area_m2": 1.99,
+ "flight_muscle_kg": 7.4,
+ "flight_check": {
+  "weight_n": 10855.5,
+  "wing_area_m2": 1.99,
+  "wing_loading_n_m2": 5455.0,
+  "wing_loading_limit": 245.0,
+  "flight_muscle_kg": 7.4,
+  "flight_muscle_share": 0.007,
+  "flight_muscle_min": 0.15,
+  "wingspan_m": 5.96,
+  "wingspan_needed_m": 28.1,
+  "verdict": "grounded",
+  "summary": "Can't fly: wing loading 5,455 N/m² is 22 times the 245 limit. The body is too heavy for these wings; it would need wings 28 m across."
+ },
+ "gait_check": {
+  "base": "ptera",
+  "leg_height_cm": 300.0,
+  "base_leg_height_cm": 86.0,
+  "ratio": 51.07,
+  "base_ratio": 8.33,
+  "summary": "Gaits from its legs: 3.0 m high against the Pteranodon's 0.9 m, 51.1 times as strong as their load against 8.3: it walks at 2.2 m/s (3.7 m strides) and its bound (launch run-up) reaches 9.2 m/s."
+ }
+}

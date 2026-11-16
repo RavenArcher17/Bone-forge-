@@ -1,0 +1,15 @@
+Velociraptor with Brachiosaurus arms  (ed_raptor_shbrachio)
+
+Base raptor, Shoulder section from brachio.
+Lineage by mass: Velociraptor 0.60%, Brachiosaurus 99%
+Mass 3,521.61 kg; balance point [15.3, 0.0, 250.9] cm
+
+the body tilts 45° head-up about its hips so the front limbs, too long to carry, stand on the ground (+433 cm), as far as it goes, and is lifted the other 406 cm: its hind feet hang 406 cm off the ground, so it stands on its front legs alone
+upperarm_l: mounted 34 cm out from the Velociraptor's socket, clear of the other side's (its flesh is wider than the body)
+upperarm_l: walking, shoulder turned to put the foot on the ground; as it stands on its donor
+upperarm_r: mounted 34 cm out from the Velociraptor's socket, clear of the other side's (its flesh is wider than the body)
+upperarm_r: walking, shoulder turned to put the foot on the ground; as it stands on its donor
+
+Leg check: walks
+Legs hold it: the front legs have 15.2 times the muscle their share of the weight needs.
+  front: muscle 524.8 kN for 34.5 kN of weight (x15.19)

@@ -1,0 +1,12 @@
+Young Brachiosaurus with head 140%  (ed_brachio_he140_z15)
+
+Base brachio, Head section from brachio.
+Lineage by mass: Brachiosaurus 100%
+Mass 171.13 kg; balance point [35.025, 0.0, 77.73] cm
+
+Grown at 15% of its size: 171.1 kg.
+
+Leg check: walks
+Legs hold it: the front legs have 13.3 times the muscle their share of the weight needs.
+  hind: muscle 14.9 kN for 0.8 kN of weight (x18.93)
+  front: muscle 11.8 kN for 0.9 kN of weight (x13.25)

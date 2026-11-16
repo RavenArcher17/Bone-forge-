@@ -1,0 +1,13 @@
+Triceratops with extra Triceratops legs  (ed_trike_xhitrike50)
+
+Base trike, moved section from trike.
+Lineage by mass: Triceratops 100%
+Mass 16,270.60 kg; balance point [133.8, 0.0, 171.5] cm
+
+a third pair of legs, 106% size, hung from the spine 02: they walk
+
+Leg check: walks
+Legs hold it: the front legs have 2.8 times the muscle their share of the weight needs.
+  hind: muscle 296.1 kN for 50.6 kN of weight (x5.85)
+  front: muscle 157.5 kN for 56.1 kN of weight (x2.81)
+  extra: muscle 332.7 kN for 52.9 kN of weight (x6.28)

@@ -1,0 +1,17 @@
+Pteranodon on T. rex legs  (pterarexlegs)
+
+Base ptera, Hip section from trex.
+Lineage by mass: Pteranodon 3%, Tyrannosaurus rex 97%
+Mass 1,106.57 kg; balance point [30.2, 0.0, 175.1] cm
+
+its hips would move +226 cm, past what tilting allows: it stands up on the new legs and carries its front limbs (now two-legged)
+thigh_l: mounted 31 cm out from the Pteranodon's socket, clear of the other side's (its flesh is wider than the hips)
+thigh_r: mounted 31 cm out from the Pteranodon's socket, clear of the other side's (its flesh is wider than the hips)
+
+Leg check: walks
+Legs hold it: the legs have 51.1 times the muscle their share of the weight needs.
+  hind: muscle 554.4 kN for 10.9 kN of weight (x51.07)
+
+Flight check: grounded
+Can't fly: wing loading 5,455 N/m² is 22 times the 245 limit. The body is too heavy for these wings; it would need wings 28 m across.
+  weight 10,856 N / wing area 1.99 m² = 5,455 N/m² (limit 245); flight muscle 7.40 kg = 0.7% (needs 15%)

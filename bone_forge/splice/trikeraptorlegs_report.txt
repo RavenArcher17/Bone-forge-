@@ -1,0 +1,13 @@
+Triceratops on Velociraptor legs  (trikeraptorlegs)
+
+Base trike, Hip section from raptor.
+Lineage by mass: Triceratops 100%, Velociraptor 0.00%
+Mass 12,097.35 kg; balance point [125.8, 0.0, 139.1] cm
+
+the body tilts 26° tail-down about its shoulders so its hips sit on the new legs (-128 cm), the front legs staying upright
+its tail lifts 30° from the root to keep off the ground and the rest of it lies along the ground (46° of bend where its joints have 8°: held so)
+
+Leg check: buckles
+Legs buckle: the hind legs have 0.08 times the muscle to hold up the 65.0 kN resting on them.
+  hind: muscle 5.0 kN for 65.0 kN of weight (x0.08)
+  front: muscle 157.5 kN for 53.7 kN of weight (x2.94)

@@ -1,0 +1,16 @@
+Bone Forge import: trex  (Unreal 5.8.4-58902052+++UE5+Release-5.8)
+--- 1. Body OBJ as a Static Mesh: C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\body_shapes\trex_grown.obj
+Imported trex_grown.obj -> /Game/BoneForge/Trex/ObjCheck: body_grown_0 (StaticMesh), leg_foot_l_1 (StaticMesh), leg_foot_r_2 (StaticMesh), arm_hand_l_3 (StaticMesh), arm_hand_r_4 (StaticMesh), head_5 (StaticMesh), jaw_6 (StaticMesh), tongue_7 (StaticMesh), teeth_upper_8 (StaticMesh), teeth_lower_9 (StaticMesh), eye_l_10 (StaticMesh), eyelid_l_11 (StaticMesh), eyelid_half_l_12 (StaticMesh), eyelid_closed_l_13 (StaticMesh), nostril_l_14 (StaticMesh), eye_r_15 (StaticMesh), eyelid_r_16 (StaticMesh), eyelid_half_r_17 (StaticMesh), eyelid_closed_r_18 (StaticMesh), nostril_r_19 (StaticMesh), leg_toes_l_20 (StaticMesh), leg_claws_l_21 (StaticMesh), leg_toes_r_22 (StaticMesh), leg_claws_r_23 (StaticMesh), arm_fingers_l_24 (StaticMesh), arm_claws_l_25 (StaticMesh), arm_fingers_r_26 (StaticMesh), arm_claws_r_27 (StaticMesh)
+    Imported size: 1212 x 439 x 201 cm (X x Y x Z); tallest axis 12.12 m, height on Z 2.01 m
+    Imported faces +X, up is -Y, right side toward +Z, scale 1 (1 OBJ unit = 1 cm). (A box can't show a left/right mirror, so it may also be mirrored.)
+    fix_rotation: set the importer's rotation to Roll 90, Pitch 0, Yaw 0 and its uniform scale to 1.
+--- 2. Skeleton from the rig JSON
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\trex_skeletal.glb: 39 bones, 77385 vertices, 153844 triangles, max 4 bones per vertex
+Imported trex_skeletal.glb -> /Game/BoneForge/_AxisProbe: M_Trex_Skin (MaterialInstanceConstant), M_Trex_Mouth (MaterialInstanceConstant), M_Trex_Teeth (MaterialInstanceConstant), M_Trex_Eye (MaterialInstanceConstant), M_Trex_LidHalf (MaterialInstanceConstant), M_Trex_LidClosed (MaterialInstanceConstant), M_Trex_Scute (MaterialInstanceConstant), M_Trex_Keratin (MaterialInstanceConstant), trex_skeletal_Skeleton (Skeleton), trex_skeletal (SkeletalMesh), trex_skeletal_PhysicsAsset (PhysicsAsset)
+Importer axis map is as expected: glTF (x, y, z) m -> Unreal (x, z, y) * 100 cm.
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\trex_skeletal.glb: 39 bones, 77385 vertices, 153844 triangles, max 4 bones per vertex
+Imported trex_skeletal.glb -> /Game/BoneForge/Trex: trex_skeletal_Skeleton (Skeleton), trex_skeletal (SkeletalMesh), trex_skeletal_PhysicsAsset (PhysicsAsset)
+Skeletal Mesh /Game/BoneForge/Trex/trex_skeletal/SkeletalMeshes/trex_skeletal.trex_skeletal, Skeleton /Game/BoneForge/Trex/trex_skeletal/SkeletalMeshes/trex_skeletal_Skeleton.trex_skeletal_Skeleton, 39 bones
+    All 39 bone positions match the rig JSON (worst 0.000 cm, head_end).
+    Every bone's X axis points at its child joint (bend = Pitch, side = Yaw, twist = Roll).
+--- Result: OBJ needs a fix (see above), skeleton matches the rig JSON.

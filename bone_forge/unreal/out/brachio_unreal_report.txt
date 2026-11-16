@@ -1,0 +1,16 @@
+Bone Forge import: brachio  (Unreal 5.8.4-58902052+++UE5+Release-5.8)
+--- 1. Body OBJ as a Static Mesh: C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\body_shapes\brachio_grown.obj
+Imported brachio_grown.obj -> /Game/BoneForge/Brachio/ObjCheck: body_grown_0 (StaticMesh), leg_foot_l_1 (StaticMesh), leg_foot_r_2 (StaticMesh), arm_hand_l_3 (StaticMesh), arm_hand_r_4 (StaticMesh), head_5 (StaticMesh), jaw_6 (StaticMesh), tongue_7 (StaticMesh), teeth_upper_8 (StaticMesh), teeth_lower_9 (StaticMesh), eye_l_10 (StaticMesh), eyelid_l_11 (StaticMesh), eyelid_half_l_12 (StaticMesh), eyelid_closed_l_13 (StaticMesh), nostril_l_14 (StaticMesh), eye_r_15 (StaticMesh), eyelid_r_16 (StaticMesh), eyelid_half_r_17 (StaticMesh), eyelid_closed_r_18 (StaticMesh), nostril_r_19 (StaticMesh), leg_toes_l_21 (StaticMesh), leg_claws_l_22 (StaticMesh), arm_fingers_l_23 (StaticMesh), arm_claws_l_24 (StaticMesh), leg_toes_r_25 (StaticMesh), leg_claws_r_26 (StaticMesh), arm_fingers_r_27 (StaticMesh), arm_claws_r_28 (StaticMesh)
+    Imported size: 1772 x 1324 x 324 cm (X x Y x Z); tallest axis 17.72 m, height on Z 3.24 m
+    Imported faces +X, up is -Y, right side toward +Z, scale 1 (1 OBJ unit = 1 cm). (A box can't show a left/right mirror, so it may also be mirrored.)
+    fix_rotation: set the importer's rotation to Roll 90, Pitch 0, Yaw 0 and its uniform scale to 1.
+--- 2. Skeleton from the rig JSON
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\brachio_skeletal.glb: 42 bones, 100605 vertices, 200132 triangles, max 4 bones per vertex
+Imported brachio_skeletal.glb -> /Game/BoneForge/_AxisProbe: M_Brachio_Skin (MaterialInstanceConstant), M_Brachio_Mouth (MaterialInstanceConstant), M_Brachio_Teeth (MaterialInstanceConstant), M_Brachio_Eye (MaterialInstanceConstant), M_Brachio_LidHalf (MaterialInstanceConstant), M_Brachio_LidClosed (MaterialInstanceConstant), M_Brachio_Scute (MaterialInstanceConstant), M_Brachio_Keratin (MaterialInstanceConstant), brachio_skeletal_Skeleton (Skeleton), brachio_skeletal (SkeletalMesh), brachio_skeletal_PhysicsAsset (PhysicsAsset)
+Importer axis map is as expected: glTF (x, y, z) m -> Unreal (x, z, y) * 100 cm.
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\brachio_skeletal.glb: 42 bones, 100605 vertices, 200132 triangles, max 4 bones per vertex
+Imported brachio_skeletal.glb -> /Game/BoneForge/Brachio: brachio_skeletal_Skeleton (Skeleton), brachio_skeletal (SkeletalMesh), brachio_skeletal_PhysicsAsset (PhysicsAsset)
+Skeletal Mesh /Game/BoneForge/Brachio/brachio_skeletal/SkeletalMeshes/brachio_skeletal.brachio_skeletal, Skeleton /Game/BoneForge/Brachio/brachio_skeletal/SkeletalMeshes/brachio_skeletal_Skeleton.brachio_skeletal_Skeleton, 42 bones
+    All 42 bone positions match the rig JSON (worst 0.000 cm, neck_03).
+    Every bone's X axis points at its child joint (bend = Pitch, side = Yaw, twist = Roll).
+--- Result: OBJ needs a fix (see above), skeleton matches the rig JSON.

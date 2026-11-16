@@ -1,0 +1,19 @@
+Ankylosaurus with Pteranodon wings  (ankylowings)
+
+Base ankylo, Shoulder section from ptera.
+Lineage by mass: Ankylosaurus 100%, Pteranodon 0.10%
+Mass 6,573.49 kg; balance point [99.9, 0.0, 128.3] cm
+
+upperarm_l: mounted 24 cm out from the Ankylosaurus's socket, at the widest of its body
+upperarm_l: walking, shoulder turned to put the foot on the ground; turned upperarm_l bend +9°
+upperarm_r: mounted 24 cm out from the Ankylosaurus's socket, at the widest of its body
+upperarm_r: walking, shoulder turned to put the foot on the ground; turned upperarm_r bend +9°
+
+Leg check: buckles
+Legs buckle: the front legs have 0.07 times the muscle to hold up the 31.3 kN resting on them.
+  hind: muscle 179.7 kN for 33.2 kN of weight (x5.41)
+  front: muscle 2.1 kN for 31.3 kN of weight (x0.07)
+
+Flight check: grounded
+Can't fly: wing loading 32,405 N/m² is 132 times the 245 limit. Armour and solid bone add too much mass for these wings; it would need wings 68 m across.
+  weight 64,486 N / wing area 1.99 m² = 32,405 N/m² (limit 245); flight muscle 134.00 kg = 2.0% (needs 15%)

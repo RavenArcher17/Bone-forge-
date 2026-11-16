@@ -1,0 +1,11 @@
+Velociraptor with a Brachiosaurus neck  (raptorbrachioneck)
+
+Base raptor, Neck section from brachio.
+Lineage by mass: Velociraptor 0.50%, Brachiosaurus 100%
+Mass 4,641.43 kg; balance point [198.2, 0.0, 279.7] cm
+
+its head rides on the Brachiosaurus's neck, 667 cm from where it was
+
+Leg check: buckles
+Legs buckle: the legs have 0.11 times the muscle to hold up the 45.5 kN resting on them.
+  hind: muscle 5.0 kN for 45.5 kN of weight (x0.11)

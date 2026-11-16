@@ -1,0 +1,10 @@
+T. rex with an Ankylosaurus tail  (rexankylotail)
+
+Base trex, Tail section from ankylo.
+Lineage by mass: Tyrannosaurus rex 90%, Ankylosaurus 10%
+Mass 9,779.45 kg; balance point [167.4, 0.0, 304.6] cm
+
+
+Leg check: walks
+Legs hold it: the legs have 5.8 times the muscle their share of the weight needs.
+  hind: muscle 554.4 kN for 95.9 kN of weight (x5.78)

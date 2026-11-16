@@ -1,0 +1,10 @@
+Velociraptor with a T. rex head  (raptorrexhead)
+
+Base raptor, Head section from trex.
+Lineage by mass: Velociraptor 2%, Tyrannosaurus rex 98%
+Mass 1,139.31 kg; balance point [157.6, 0.0, 69.7] cm
+
+
+Leg check: buckles
+Legs buckle: the legs have 0.45 times the muscle to hold up the 11.2 kN resting on them.
+  hind: muscle 5.0 kN for 11.2 kN of weight (x0.45)

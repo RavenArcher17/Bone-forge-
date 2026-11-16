@@ -1,0 +1,16 @@
+Bone Forge import: pterarexlegs  (Unreal 5.8.4-58902052+++UE5+Release-5.8)
+--- 1. Body OBJ as a Static Mesh: C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\body_shapes\pterarexlegs_body.obj
+Imported pterarexlegs_body.obj -> /Game/BoneForge/Pterarexlegs/ObjCheck: body_grown_0 (StaticMesh), arm_hand_l_3 (StaticMesh), arm_hand_r_4 (StaticMesh), crest_5 (StaticMesh), membrane_l_6 (StaticMesh), membrane_r_7 (StaticMesh), head_8 (StaticMesh), jaw_9 (StaticMesh), eye_l_10 (StaticMesh), eyelid_l_11 (StaticMesh), eyelid_half_l_12 (StaticMesh), eyelid_closed_l_13 (StaticMesh), eye_r_14 (StaticMesh), eyelid_r_15 (StaticMesh), eyelid_half_r_16 (StaticMesh), eyelid_closed_r_17 (StaticMesh), arm_fingers_l_18 (StaticMesh), arm_fingers_r_20 (StaticMesh), arm_claws_l_22 (StaticMesh), arm_claws_r_24 (StaticMesh), leg_foot_l_1 (StaticMesh), leg_foot_r_2 (StaticMesh), leg_toes_l_20 (StaticMesh), leg_claws_l_21 (StaticMesh), leg_toes_r_22 (StaticMesh), leg_claws_r_23 (StaticMesh)
+    Imported size: 275 x 430 x 214 cm (X x Y x Z); tallest axis 4.30 m, height on Z 2.14 m
+    Imported faces +X, up is -Y, right side toward +Z, scale 1 (1 OBJ unit = 1 cm). (A box can't show a left/right mirror, so it may also be mirrored.)
+    fix_rotation: set the importer's rotation to Roll 90, Pitch 0, Yaw 0 and its uniform scale to 1.
+--- 2. Skeleton from the rig JSON
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\pterarexlegs_skeletal.glb: 44 bones, 188585 vertices, 375497 triangles, max 4 bones per vertex
+Imported pterarexlegs_skeletal.glb -> /Game/BoneForge/_AxisProbe: M_Pterarexlegs_Skin (MaterialInstanceConstant), M_Pterarexlegs_Membrane (MaterialInstanceConstant), M_Pterarexlegs_Keratin (MaterialInstanceConstant), M_Pterarexlegs_Eye (MaterialInstanceConstant), M_Pterarexlegs_LidHalf (MaterialInstanceConstant), M_Pterarexlegs_LidClosed (MaterialInstanceConstant), M_Pterarexlegs_Scute (MaterialInstanceConstant), pterarexlegs_skeletal_Skeleton (Skeleton), pterarexlegs_skeletal (SkeletalMesh), pterarexlegs_skeletal_PhysicsAsset (PhysicsAsset)
+Importer axis map is as expected: glTF (x, y, z) m -> Unreal (x, z, y) * 100 cm.
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\pterarexlegs_skeletal.glb: 44 bones, 188585 vertices, 375497 triangles, max 4 bones per vertex
+Imported pterarexlegs_skeletal.glb -> /Game/BoneForge/Pterarexlegs: pterarexlegs_skeletal_Skeleton (Skeleton), pterarexlegs_skeletal (SkeletalMesh), pterarexlegs_skeletal_PhysicsAsset (PhysicsAsset)
+Skeletal Mesh /Game/BoneForge/Pterarexlegs/pterarexlegs_skeletal/SkeletalMeshes/pterarexlegs_skeletal.pterarexlegs_skeletal, Skeleton /Game/BoneForge/Pterarexlegs/pterarexlegs_skeletal/SkeletalMeshes/pterarexlegs_skeletal_Skeleton.pterarexlegs_skeletal_Skeleton, 44 bones
+    All 44 bone positions match the rig JSON (worst 0.000 cm, wing_end_l).
+    Every bone's X axis points at its child joint (bend = Pitch, side = Yaw, twist = Roll).
+--- Result: OBJ needs a fix (see above), skeleton matches the rig JSON.

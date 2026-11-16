@@ -1,0 +1,16 @@
+60% Pteranodon with head 110%  (ed_ptera_he110_z60)
+
+Base ptera, Head section from ptera.
+Lineage by mass: Pteranodon 100%
+Mass 8.20 kg; balance point [27.0, 0.0, 46.26] cm
+
+Grown at 60% of its size: 8.2 kg.
+
+Leg check: walks
+Legs hold it: the front legs have 11.4 times the muscle their share of the weight needs.
+  hind: muscle 2.1 kN for 0.0 kN of weight (x143.43)
+  front: muscle 0.8 kN for 0.1 kN of weight (x11.43)
+
+Flight check: flies
+Flies: wing loading 187 N/m² (limit 245), flight muscle 19% of its weight (needs 15%).
+  weight 372 N / wing area 0.7164 m² = 67 N/m² (limit 245); flight muscle 1.60 kg = 19.5% (needs 15%)

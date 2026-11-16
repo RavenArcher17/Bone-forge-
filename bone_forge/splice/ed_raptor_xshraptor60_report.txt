@@ -1,0 +1,11 @@
+Velociraptor with extra Velociraptor arms  (ed_raptor_xshraptor60)
+
+Base raptor, moved section from raptor.
+Lineage by mass: Velociraptor 100%
+Mass 24.62 kg; balance point [12.5, 0.0, 52.4] cm
+
+a third pair of arms, 100% size, hung from the spine 02: carried
+
+Leg check: walks
+Legs hold it: the legs have 20.7 times the muscle their share of the weight needs.
+  hind: muscle 5.0 kN for 0.2 kN of weight (x20.72)

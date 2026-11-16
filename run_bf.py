@@ -1,0 +1,9 @@
+"""Runs bone_forge_unreal.py from a path without spaces (the pythonscript commandlet splits on them)."""
+import os
+import sys
+
+script = r"C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\bone_forge_unreal.py"
+sys.argv = [script, "--species", os.environ.get("BF_SPECIES", "trex")]
+with open(script, encoding="utf-8") as f:
+    code = compile(f.read(), script, "exec")
+exec(code, {"__name__": "__main__", "__file__": script})

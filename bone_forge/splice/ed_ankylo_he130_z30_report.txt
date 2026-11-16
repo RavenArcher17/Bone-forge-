@@ -1,0 +1,12 @@
+Young Ankylosaurus with head 130%  (ed_ankylo_he130_z30)
+
+Base ankylo, Head section from ankylo.
+Lineage by mass: Ankylosaurus 100%
+Mass 188.84 kg; balance point [33.42, 0.0, 37.83] cm
+
+Grown at 30% of its size: 188.8 kg.
+
+Leg check: walks
+Legs hold it: the front legs have 10.2 times the muscle their share of the weight needs.
+  hind: muscle 16.2 kN for 0.9 kN of weight (x19.02)
+  front: muscle 10.2 kN for 1.0 kN of weight (x10.17)

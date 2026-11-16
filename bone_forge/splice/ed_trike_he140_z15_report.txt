@@ -1,0 +1,12 @@
+Young Triceratops with head 140%  (ed_trike_he140_z15)
+
+Base trike, Head section from trike.
+Lineage by mass: Triceratops 100%
+Mass 56.68 kg; balance point [27.105, 0.0, 25.56] cm
+
+Grown at 15% of its size: 56.7 kg.
+
+Leg check: walks
+Legs hold it: the front legs have 9.6 times the muscle their share of the weight needs.
+  hind: muscle 6.7 kN for 0.2 kN of weight (x35.57)
+  front: muscle 3.5 kN for 0.4 kN of weight (x9.61)

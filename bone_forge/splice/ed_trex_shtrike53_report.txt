@@ -1,0 +1,14 @@
+T. rex with Triceratops arms 53%  (ed_trex_shtrike53)
+
+Base trex, Shoulder section from trike.
+Lineage by mass: Tyrannosaurus rex 99%, Triceratops 0.70%
+Mass 12,247.75 kg; balance point [92.4, 0.0, 301.0] cm
+
+upperarm_l: mounted 17 cm out from the T. rex's socket, at the widest of its body
+upperarm_l: carried folded along the body; turned upperarm_l bend -30°, lowerarm_l bend +31°, hand_l bend -20°
+upperarm_r: mounted 17 cm out from the T. rex's socket, at the widest of its body
+upperarm_r: carried folded along the body; turned upperarm_r bend -30°, lowerarm_r bend +31°, hand_r bend -20°
+
+Leg check: walks
+Legs hold it: the legs have 4.6 times the muscle their share of the weight needs.
+  hind: muscle 554.4 kN for 120.2 kN of weight (x4.61)

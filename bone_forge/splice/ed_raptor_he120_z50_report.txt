@@ -1,0 +1,11 @@
+Young Velociraptor with head 120%  (ed_raptor_he120_z50)
+
+Base raptor, Head section from raptor.
+Lineage by mass: Velociraptor 100%
+Mass 2.96 kg; balance point [6.85, 0.0, 27.05] cm
+
+Grown at 50% of its size: 3.0 kg.
+
+Leg check: walks
+Legs hold it: the legs have 43.1 times the muscle their share of the weight needs.
+  hind: muscle 1.3 kN for 0.0 kN of weight (x43.13)

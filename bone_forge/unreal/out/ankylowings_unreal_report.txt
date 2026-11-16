@@ -1,0 +1,16 @@
+Bone Forge import: ankylowings  (Unreal 5.8.4-58902052+++UE5+Release-5.8)
+--- 1. Body OBJ as a Static Mesh: C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\body_shapes\ankylowings_body.obj
+Imported ankylowings_body.obj -> /Game/BoneForge/Ankylowings/ObjCheck: body_grown_0 (StaticMesh), leg_foot_l_1 (StaticMesh), leg_foot_r_2 (StaticMesh), tail_club_5 (StaticMesh), head_6 (StaticMesh), jaw_7 (StaticMesh), tongue_8 (StaticMesh), teeth_upper_9 (StaticMesh), teeth_lower_10 (StaticMesh), horn_squamosal_11 (StaticMesh), horn_cheek_12 (StaticMesh), horn_squamosal_13 (StaticMesh), horn_cheek_14 (StaticMesh), armor_plates_15 (StaticMesh), armor_spikes_16 (StaticMesh), eye_l_17 (StaticMesh), eyelid_l_18 (StaticMesh), eyelid_half_l_19 (StaticMesh), eyelid_closed_l_20 (StaticMesh), nostril_l_21 (StaticMesh), eye_r_22 (StaticMesh), eyelid_r_23 (StaticMesh), eyelid_half_r_24 (StaticMesh), eyelid_closed_r_25 (StaticMesh), nostril_r_26 (StaticMesh), leg_toes_l_27 (StaticMesh), leg_claws_l_28 (StaticMesh), leg_toes_r_31 (StaticMesh), leg_claws_r_32 (StaticMesh), arm_hand_l_3 (StaticMesh), arm_hand_r_4 (StaticMesh), arm_fingers_l_18 (StaticMesh), arm_fingers_r_20 (StaticMesh), arm_claws_l_22 (StaticMesh), arm_claws_r_24 (StaticMesh)
+    Imported size: 657 x 195 x 241 cm (X x Y x Z); tallest axis 6.57 m, height on Z 2.41 m
+    Imported faces +X, up is -Y, right side toward +Z, scale 1 (1 OBJ unit = 1 cm). (A box can't show a left/right mirror, so it may also be mirrored.)
+    fix_rotation: set the importer's rotation to Roll 90, Pitch 0, Yaw 0 and its uniform scale to 1.
+--- 2. Skeleton from the rig JSON
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\ankylowings_skeletal.glb: 47 bones, 148876 vertices, 296403 triangles, max 4 bones per vertex
+Imported ankylowings_skeletal.glb -> /Game/BoneForge/_AxisProbe: M_Ankylowings_Skin (MaterialInstanceConstant), M_Ankylowings_Mouth (MaterialInstanceConstant), M_Ankylowings_Teeth (MaterialInstanceConstant), M_Ankylowings_Keratin (MaterialInstanceConstant), M_Ankylowings_Eye (MaterialInstanceConstant), M_Ankylowings_LidHalf (MaterialInstanceConstant), M_Ankylowings_LidClosed (MaterialInstanceConstant), M_Ankylowings_Scute (MaterialInstanceConstant), ankylowings_skeletal_Skeleton (Skeleton), ankylowings_skeletal (SkeletalMesh), ankylowings_skeletal_PhysicsAsset (PhysicsAsset)
+Importer axis map is as expected: glTF (x, y, z) m -> Unreal (x, z, y) * 100 cm.
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\ankylowings_skeletal.glb: 47 bones, 148876 vertices, 296403 triangles, max 4 bones per vertex
+Imported ankylowings_skeletal.glb -> /Game/BoneForge/Ankylowings: ankylowings_skeletal_Skeleton (Skeleton), ankylowings_skeletal (SkeletalMesh), ankylowings_skeletal_PhysicsAsset (PhysicsAsset)
+Skeletal Mesh /Game/BoneForge/Ankylowings/ankylowings_skeletal/SkeletalMeshes/ankylowings_skeletal.ankylowings_skeletal, Skeleton /Game/BoneForge/Ankylowings/ankylowings_skeletal/SkeletalMeshes/ankylowings_skeletal_Skeleton.ankylowings_skeletal_Skeleton, 47 bones
+    All 47 bone positions match the rig JSON (worst 0.000 cm, pteroid_l).
+    Every bone's X axis points at its child joint (bend = Pitch, side = Yaw, twist = Roll).
+--- Result: OBJ needs a fix (see above), skeleton matches the rig JSON.

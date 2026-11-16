@@ -1,0 +1,16 @@
+T. rex with extra Pteranodon wings, a tail club  (ed_trex_xshptera80_club)
+
+Base trex, moved section from trex.
+Lineage by mass: Tyrannosaurus rex 94%, Pteranodon 4%, Ankylosaurus 1%
+Mass 12,911.37 kg; balance point [89.5, 0.0, 294.8] cm
+
+a third pair of wings, 400% size, hung from the spine 03: folded at rest
+a tail club, 118% of an Ankylosaurus', 161.0 kg of solid bone on the tail 08
+
+Leg check: walks
+Legs hold it: the legs have 4.4 times the muscle their share of the weight needs.
+  hind: muscle 554.4 kN for 126.7 kN of weight (x4.38)
+
+Flight check: grounded
+Can't fly: wing loading 3,978 N/m² is 16 times the 245 limit. The body is too heavy for these wings.
+  weight 126,660 N / wing area 31.84 m² = 3,978 N/m² (limit 245); flight muscle 122.00 kg = 0.9% (needs 15%)

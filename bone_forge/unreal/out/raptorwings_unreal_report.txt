@@ -1,0 +1,16 @@
+Bone Forge import: raptorwings  (Unreal 5.8.4-58902052+++UE5+Release-5.8)
+--- 1. Body OBJ as a Static Mesh: C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\body_shapes\raptorwings_body.obj
+Imported raptorwings_body.obj -> /Game/BoneForge/Raptorwings/ObjCheck: body_grown_0 (StaticMesh), leg_foot_l_1 (StaticMesh), leg_foot_r_2 (StaticMesh), tail_fan_5 (StaticMesh), head_6 (StaticMesh), jaw_7 (StaticMesh), tongue_8 (StaticMesh), teeth_upper_9 (StaticMesh), teeth_lower_10 (StaticMesh), eye_l_11 (StaticMesh), eyelid_l_12 (StaticMesh), eyelid_half_l_13 (StaticMesh), eyelid_closed_l_14 (StaticMesh), nostril_l_15 (StaticMesh), eye_r_16 (StaticMesh), eyelid_r_17 (StaticMesh), eyelid_half_r_18 (StaticMesh), eyelid_closed_r_19 (StaticMesh), nostril_r_20 (StaticMesh), leg_toes_l_23 (StaticMesh), leg_claws_l_24 (StaticMesh), leg_toes_r_25 (StaticMesh), leg_claws_r_26 (StaticMesh), arm_hand_l_3 (StaticMesh), arm_hand_r_4 (StaticMesh), arm_fingers_l_18 (StaticMesh), arm_fingers_r_20 (StaticMesh), arm_claws_l_22 (StaticMesh), arm_claws_r_24 (StaticMesh)
+    Imported size: 199 x 91 x 92 cm (X x Y x Z); tallest axis 1.99 m, height on Z 0.92 m
+    Imported faces +X, up is -Y, right side toward +Z, scale 1 (1 OBJ unit = 1 cm). (A box can't show a left/right mirror, so it may also be mirrored.)
+    fix_rotation: set the importer's rotation to Roll 90, Pitch 0, Yaw 0 and its uniform scale to 1.
+--- 2. Skeleton from the rig JSON
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\raptorwings_skeletal.glb: 49 bones, 111213 vertices, 221762 triangles, max 4 bones per vertex
+Imported raptorwings_skeletal.glb -> /Game/BoneForge/_AxisProbe: M_Raptorwings_Skin (MaterialInstanceConstant), M_Raptorwings_Mouth (MaterialInstanceConstant), M_Raptorwings_Teeth (MaterialInstanceConstant), M_Raptorwings_Eye (MaterialInstanceConstant), M_Raptorwings_LidHalf (MaterialInstanceConstant), M_Raptorwings_LidClosed (MaterialInstanceConstant), M_Raptorwings_Scute (MaterialInstanceConstant), M_Raptorwings_Keratin (MaterialInstanceConstant), raptorwings_skeletal_Skeleton (Skeleton), raptorwings_skeletal (SkeletalMesh), raptorwings_skeletal_PhysicsAsset (PhysicsAsset)
+Importer axis map is as expected: glTF (x, y, z) m -> Unreal (x, z, y) * 100 cm.
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\raptorwings_skeletal.glb: 49 bones, 111213 vertices, 221762 triangles, max 4 bones per vertex
+Imported raptorwings_skeletal.glb -> /Game/BoneForge/Raptorwings: raptorwings_skeletal_Skeleton (Skeleton), raptorwings_skeletal (SkeletalMesh), raptorwings_skeletal_PhysicsAsset (PhysicsAsset)
+Skeletal Mesh /Game/BoneForge/Raptorwings/raptorwings_skeletal/SkeletalMeshes/raptorwings_skeletal.raptorwings_skeletal, Skeleton /Game/BoneForge/Raptorwings/raptorwings_skeletal/SkeletalMeshes/raptorwings_skeletal_Skeleton.raptorwings_skeletal_Skeleton, 49 bones
+    All 49 bone positions match the rig JSON (worst 0.000 cm, head_end).
+    Every bone's X axis points at its child joint (bend = Pitch, side = Yaw, twist = Roll).
+--- Result: OBJ needs a fix (see above), skeleton matches the rig JSON.

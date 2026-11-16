@@ -1,0 +1,27 @@
+{
+	"about": "An island in the Bone Forge testing ground: its clock, the plants eaten, its animals and you. Written by the game.",
+	"version": 1,
+	"seed": 19486,
+	"saved": "2026-11-15 09:07:29",
+	"world":
+	{
+		"seed": 19486,
+		"day": 1,
+		"hours": 8.0336017608642578,
+		"eaten": []
+	},
+	"you":
+	{
+		"body": "ptera",
+		"at": [
+			1012400,
+			-22400,
+			11552
+		],
+		"yaw": 0,
+		"full": 0.69732779264450073,
+		"thirst": 0.20801584422588348,
+		"tired": 0.10320629924535751,
+		"health": 1
+	}
+}

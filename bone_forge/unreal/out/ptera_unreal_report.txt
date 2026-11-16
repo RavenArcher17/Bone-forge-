@@ -1,0 +1,16 @@
+Bone Forge import: ptera  (Unreal 5.8.4-58902052+++UE5+Release-5.8)
+--- 1. Body OBJ as a Static Mesh: C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\body_shapes\ptera_grown.obj
+Imported ptera_grown.obj -> /Game/BoneForge/Ptera/ObjCheck: body_grown_0 (StaticMesh), leg_foot_l_1 (StaticMesh), leg_foot_r_2 (StaticMesh), arm_hand_l_3 (StaticMesh), arm_hand_r_4 (StaticMesh), crest_5 (StaticMesh), membrane_l_6 (StaticMesh), membrane_r_7 (StaticMesh), head_8 (StaticMesh), jaw_9 (StaticMesh), eye_l_10 (StaticMesh), eyelid_l_11 (StaticMesh), eyelid_half_l_12 (StaticMesh), eyelid_closed_l_13 (StaticMesh), eye_r_14 (StaticMesh), eyelid_r_15 (StaticMesh), eyelid_half_r_16 (StaticMesh), eyelid_closed_r_17 (StaticMesh), arm_fingers_l_18 (StaticMesh), leg_toes_l_19 (StaticMesh), arm_fingers_r_20 (StaticMesh), leg_toes_r_21 (StaticMesh), arm_claws_l_22 (StaticMesh), leg_claws_l_23 (StaticMesh), arm_claws_r_24 (StaticMesh), leg_claws_r_25 (StaticMesh)
+    Imported size: 232 x 202 x 84 cm (X x Y x Z); tallest axis 2.32 m, height on Z 0.84 m
+    Imported faces +X, up is -Y, right side toward +Z, scale 1 (1 OBJ unit = 1 cm). (A box can't show a left/right mirror, so it may also be mirrored.)
+    fix_rotation: set the importer's rotation to Roll 90, Pitch 0, Yaw 0 and its uniform scale to 1.
+--- 2. Skeleton from the rig JSON
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\ptera_skeletal.glb: 44 bones, 117520 vertices, 233901 triangles, max 4 bones per vertex
+Imported ptera_skeletal.glb -> /Game/BoneForge/_AxisProbe: M_Ptera_Skin (MaterialInstanceConstant), M_Ptera_Membrane (MaterialInstanceConstant), M_Ptera_Keratin (MaterialInstanceConstant), M_Ptera_Eye (MaterialInstanceConstant), M_Ptera_LidHalf (MaterialInstanceConstant), M_Ptera_LidClosed (MaterialInstanceConstant), M_Ptera_Scute (MaterialInstanceConstant), ptera_skeletal_Skeleton (Skeleton), ptera_skeletal (SkeletalMesh), ptera_skeletal_PhysicsAsset (PhysicsAsset)
+Importer axis map is as expected: glTF (x, y, z) m -> Unreal (x, z, y) * 100 cm.
+Built C:\Users\raven\OneDrive\Desktop\Claude Root\bone_forge\unreal\out\ptera_skeletal.glb: 44 bones, 117520 vertices, 233901 triangles, max 4 bones per vertex
+Imported ptera_skeletal.glb -> /Game/BoneForge/Ptera: ptera_skeletal_Skeleton (Skeleton), ptera_skeletal (SkeletalMesh), ptera_skeletal_PhysicsAsset (PhysicsAsset)
+Skeletal Mesh /Game/BoneForge/Ptera/ptera_skeletal/SkeletalMeshes/ptera_skeletal.ptera_skeletal, Skeleton /Game/BoneForge/Ptera/ptera_skeletal/SkeletalMeshes/ptera_skeletal_Skeleton.ptera_skeletal_Skeleton, 44 bones
+    All 44 bone positions match the rig JSON (worst 0.000 cm, wing_end_l).
+    Every bone's X axis points at its child joint (bend = Pitch, side = Yaw, twist = Roll).
+--- Result: OBJ needs a fix (see above), skeleton matches the rig JSON.

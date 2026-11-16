@@ -1,0 +1,13 @@
+{
+	"about": "An island in the Bone Forge testing ground: its clock, the plants eaten, its animals and you. Written by the game.",
+	"version": 1,
+	"seed": 2,
+	"saved": "2026-11-15 10:00:11",
+	"world":
+	{
+		"seed": 2,
+		"day": 2,
+		"hours": 14.432962417602539,
+		"eaten": []
+	}
+}

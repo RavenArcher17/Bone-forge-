@@ -1,0 +1,2241 @@
+{
+ "creature": "Velociraptor with a T. rex head",
+ "units": "centimetres and degrees",
+ "body_tilt": {
+  "tail_clear": 33,
+  "down": 45,
+  "up": 50,
+  "down_everyday": 30,
+  "up_everyday": 33,
+  "kind": "biped"
+ },
+ "axes": "Unreal: X forward, Y right, Z up; origin on the ground under the hip sockets; _l = left side (-Y), _r = right side (+Y)",
+ "angles": "from the neutral standing pose. bend: side-plane rotation (+ raises neck/head/tail, swings hip/shoulder forward, bends knee/elbow/ankle/toes more, opens jaw). side: left/right, or + = away from the body for hip/shoulder. twist: roll around the bone.",
+ "use": "limits are the most the bones and ligaments allow; keep everyday moves to about two thirds of them",
+ "joints": [
+  {
+   "name": "root",
+   "parent": null,
+   "position_cm": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "section": "-",
+   "role": "on the ground under the hips; moves the whole creature",
+   "limits_deg": null
+  },
+  {
+   "name": "pelvis",
+   "parent": "root",
+   "position_cm": [
+    0.0,
+    0.0,
+    59.0
+   ],
+   "section": "Core",
+   "role": "hips; parent of legs and tail",
+   "limits_deg": {
+    "bend": [
+     -45,
+     50
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -8,
+     8
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole-body tilt with the feet planted: the body seesaws over the hips, limited by the hip joint; the tail touches the ground at +33 unless it is lifted",
+   "tissue": [
+    [
+     -1.806,
+     0.0,
+     0.2,
+     6.0,
+     8.7,
+     2.41,
+     2.43
+    ],
+    [
+     -1.459,
+     0.0,
+     -0.0,
+     6.4,
+     9.1,
+     2.47,
+     2.41
+    ],
+    [
+     -1.111,
+     0.0,
+     -0.9,
+     6.8,
+     10.0,
+     2.61,
+     2.6
+    ],
+    [
+     -0.763,
+     0.0,
+     -1.4,
+     7.6,
+     10.7,
+     2.61,
+     2.0
+    ],
+    [
+     -0.415,
+     0.0,
+     -2.2,
+     8.0,
+     11.6,
+     2.0,
+     2.0
+    ],
+    [
+     -0.067,
+     0.0,
+     -3.2,
+     8.5,
+     12.9,
+     2.0,
+     2.0
+    ],
+    [
+     0.281,
+     0.0,
+     -5.0,
+     9.3,
+     14.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.629,
+     0.0,
+     -6.2,
+     10.1,
+     16.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.977,
+     0.0,
+     -7.0,
+     10.9,
+     16.9,
+     3.42,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "spine_01",
+   "parent": "pelvis",
+   "position_cm": [
+    9.0,
+    0.0,
+    60.0
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -4,
+     4
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.327,
+     0.0,
+     -7.5,
+     11.4,
+     17.3,
+     3.51,
+     2.0
+    ],
+    [
+     0.678,
+     0.0,
+     -8.0,
+     11.9,
+     17.5,
+     3.64,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "spine_02",
+   "parent": "spine_01",
+   "position_cm": [
+    18.0,
+    0.0,
+    60.0
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -4,
+     4
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.028,
+     0.0,
+     -8.5,
+     12.4,
+     17.6,
+     3.81,
+     2.0
+    ],
+    [
+     0.376,
+     0.0,
+     -8.7,
+     12.3,
+     17.6,
+     3.87,
+     2.0
+    ],
+    [
+     0.724,
+     0.0,
+     -8.8,
+     12.1,
+     17.5,
+     3.9,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "spine_03",
+   "parent": "spine_02",
+   "position_cm": [
+    27.0,
+    0.0,
+    59.0
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -4,
+     4
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.072,
+     0.0,
+     -6.7,
+     11.9,
+     15.5,
+     3.49,
+     2.0
+    ],
+    [
+     0.42,
+     0.0,
+     -8.3,
+     11.3,
+     17.4,
+     3.81,
+     2.0
+    ],
+    [
+     0.768,
+     0.0,
+     -7.4,
+     10.6,
+     16.5,
+     3.09,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "chest",
+   "parent": "spine_03",
+   "position_cm": [
+    36.0,
+    0.0,
+    58.0
+   ],
+   "section": "Core",
+   "role": "shoulders and ribcage; parent of arms and neck",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -4,
+     4
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.118,
+     0.0,
+     -4.2,
+     10.0,
+     13.1,
+     2.44,
+     2.0
+    ],
+    [
+     0.485,
+     0.0,
+     -2.6,
+     8.6,
+     11.1,
+     2.26,
+     2.0
+    ],
+    [
+     0.852,
+     -0.0,
+     -1.6,
+     7.3,
+     9.3,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "neck_01",
+   "parent": "chest",
+   "position_cm": [
+    44.0,
+    0.0,
+    61.0
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -13,
+     20
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -40 to +60 up and down, ±45 sideways, split over 3 joints",
+   "tissue": [
+    [
+     0.182,
+     0.0,
+     -1.0,
+     6.0,
+     7.6,
+     2.0,
+     2.31
+    ],
+    [
+     0.497,
+     0.0,
+     -0.5,
+     5.5,
+     6.9,
+     2.6,
+     2.0
+    ],
+    [
+     0.811,
+     0.0,
+     0.4,
+     5.0,
+     4.9,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "neck_02",
+   "parent": "neck_01",
+   "position_cm": [
+    50.0,
+    0.0,
+    69.0
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -13,
+     20
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -40 to +60 up and down, ±45 sideways, split over 3 joints",
+   "tissue": [
+    [
+     0.133,
+     0.0,
+     -1.3,
+     4.5,
+     6.3,
+     2.0,
+     2.0
+    ],
+    [
+     0.468,
+     0.0,
+     -1.4,
+     4.3,
+     6.3,
+     2.0,
+     2.0
+    ],
+    [
+     0.802,
+     0.0,
+     -1.6,
+     4.1,
+     6.4,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "neck_03",
+   "parent": "neck_02",
+   "position_cm": [
+    55.0,
+    0.0,
+    77.0
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -13,
+     20
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -40 to +60 up and down, ±45 sideways, split over 3 joints",
+   "tissue": [
+    [
+     0.149,
+     0.0,
+     -1.8,
+     4.0,
+     6.4,
+     2.0,
+     2.0
+    ],
+    [
+     0.516,
+     0.0,
+     -1.6,
+     4.2,
+     6.5,
+     3.23,
+     2.0
+    ],
+    [
+     0.882,
+     -0.0,
+     -1.3,
+     4.5,
+     6.3,
+     2.0,
+     2.13
+    ]
+   ]
+  },
+  {
+   "name": "head",
+   "parent": "neck_03",
+   "position_cm": [
+    60.0,
+    0.0,
+    84.0
+   ],
+   "section": "Head",
+   "role": "skull joint at the top of the neck",
+   "limits_deg": {
+    "bend": [
+     -20,
+     30
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "estimate",
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "jaw",
+   "parent": "head",
+   "position_cm": [
+    65.0,
+    0.0,
+    50.0
+   ],
+   "section": "Head",
+   "role": "jaw hinge",
+   "limits_deg": {
+    "bend": [
+     0,
+     80
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study",
+   "source": "Lautenschlager 2015, jaw gape in theropods",
+   "limit_note": "widest gape 63 to 80; best biting gape about 32",
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "head_end",
+   "parent": "head",
+   "position_cm": [
+    261.0,
+    0.0,
+    56.0
+   ],
+   "section": "Head",
+   "role": "snout tip (end marker, no motion)",
+   "limits_deg": null,
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "jaw_end",
+   "parent": "jaw",
+   "position_cm": [
+    248.0,
+    0.0,
+    12.0
+   ],
+   "section": "Head",
+   "role": "lower jaw tip (end marker)",
+   "limits_deg": null,
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "tail_01",
+   "parent": "pelvis",
+   "position_cm": [
+    -17.0,
+    0.0,
+    58.0
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -20,
+     30
+    ],
+    "side": [
+     -30,
+     30
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.156,
+     0.0,
+     -0.4,
+     5.6,
+     8.4,
+     2.48,
+     2.41
+    ],
+    [
+     0.353,
+     0.0,
+     -0.5,
+     5.3,
+     8.2,
+     2.51,
+     2.0
+    ],
+    [
+     0.55,
+     0.0,
+     -0.5,
+     5.0,
+     8.0,
+     2.53,
+     2.0
+    ],
+    [
+     0.747,
+     0.0,
+     -0.5,
+     4.6,
+     7.8,
+     2.55,
+     2.0
+    ],
+    [
+     0.944,
+     -0.0,
+     -0.5,
+     4.3,
+     7.6,
+     2.0,
+     2.32
+    ]
+   ]
+  },
+  {
+   "name": "tail_02",
+   "parent": "tail_01",
+   "position_cm": [
+    -33.0,
+    0.0,
+    58.0
+   ],
+   "section": "Tail",
+   "role": "stiffened by bony rods",
+   "limits_deg": {
+    "bend": [
+     -2,
+     2
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Ostrom 1969, bony rods stiffen the dromaeosaur tail",
+   "limit_note": "stiffened by bony rods; the tail moves as one beam from the base",
+   "tissue": [
+    [
+     0.133,
+     0.0,
+     -0.4,
+     3.8,
+     7.4,
+     2.56,
+     2.0
+    ],
+    [
+     0.319,
+     0.0,
+     -0.3,
+     3.7,
+     7.2,
+     2.57,
+     2.0
+    ],
+    [
+     0.504,
+     0.0,
+     -0.3,
+     3.5,
+     7.1,
+     2.58,
+     2.0
+    ],
+    [
+     0.69,
+     0.0,
+     -0.2,
+     3.3,
+     7.0,
+     2.59,
+     2.0
+    ],
+    [
+     0.875,
+     0.0,
+     -0.2,
+     3.2,
+     6.8,
+     2.59,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "tail_03",
+   "parent": "tail_02",
+   "position_cm": [
+    -50.0,
+    0.0,
+    58.0
+   ],
+   "section": "Tail",
+   "role": "stiffened by bony rods",
+   "limits_deg": {
+    "bend": [
+     -2,
+     2
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Ostrom 1969, bony rods stiffen the dromaeosaur tail",
+   "limit_note": "stiffened by bony rods; the tail moves as one beam from the base",
+   "tissue": [
+    [
+     0.061,
+     0.0,
+     -0.2,
+     3.0,
+     6.7,
+     2.6,
+     2.0
+    ],
+    [
+     0.246,
+     0.0,
+     -0.2,
+     2.9,
+     6.5,
+     2.57,
+     2.29
+    ],
+    [
+     0.431,
+     0.0,
+     -0.4,
+     2.7,
+     6.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.616,
+     0.0,
+     -0.6,
+     2.6,
+     5.9,
+     2.0,
+     2.0
+    ],
+    [
+     0.801,
+     0.0,
+     -0.7,
+     2.5,
+     5.6,
+     2.0,
+     2.0
+    ],
+    [
+     0.986,
+     0.0,
+     -0.8,
+     2.4,
+     5.3,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "tail_04",
+   "parent": "tail_03",
+   "position_cm": [
+    -67.0,
+    0.0,
+    57.0
+   ],
+   "section": "Tail",
+   "role": "stiffened by bony rods",
+   "limits_deg": {
+    "bend": [
+     -2,
+     2
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Ostrom 1969, bony rods stiffen the dromaeosaur tail",
+   "limit_note": "stiffened by bony rods; the tail moves as one beam from the base",
+   "tissue": [
+    [
+     0.182,
+     0.0,
+     -0.9,
+     2.3,
+     5.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.379,
+     0.0,
+     -1.0,
+     2.2,
+     4.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.576,
+     0.0,
+     -1.1,
+     2.1,
+     4.4,
+     2.0,
+     2.23
+    ],
+    [
+     0.772,
+     0.0,
+     -1.1,
+     1.9,
+     4.0,
+     3.16,
+     2.0
+    ],
+    [
+     0.969,
+     0.0,
+     -1.3,
+     1.8,
+     3.5,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "tail_05",
+   "parent": "tail_04",
+   "position_cm": [
+    -83.0,
+    0.0,
+    56.0
+   ],
+   "section": "Tail",
+   "role": "stiffened by bony rods",
+   "limits_deg": {
+    "bend": [
+     -2,
+     2
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Ostrom 1969, bony rods stiffen the dromaeosaur tail",
+   "limit_note": "stiffened by bony rods; the tail moves as one beam from the base",
+   "tissue": [
+    [
+     0.156,
+     0.0,
+     -1.3,
+     1.7,
+     3.2,
+     2.0,
+     2.0
+    ],
+    [
+     0.342,
+     0.0,
+     -1.2,
+     1.6,
+     2.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.527,
+     0.0,
+     -1.1,
+     1.5,
+     2.5,
+     2.0,
+     2.0
+    ],
+    [
+     0.713,
+     0.0,
+     -1.0,
+     1.4,
+     2.2,
+     2.0,
+     2.0
+    ],
+    [
+     0.898,
+     0.0,
+     -0.9,
+     1.3,
+     1.8,
+     3.53,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "tail_06",
+   "parent": "tail_05",
+   "position_cm": [
+    -100.0,
+    0.0,
+    56.0
+   ],
+   "section": "Tail",
+   "role": "stiffened by bony rods",
+   "limits_deg": {
+    "bend": [
+     -2,
+     2
+    ],
+    "side": [
+     -3,
+     3
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Ostrom 1969, bony rods stiffen the dromaeosaur tail",
+   "limit_note": "stiffened by bony rods; the tail moves as one beam from the base",
+   "tissue": [
+    [
+     1.423,
+     0.0,
+     -0.7,
+     1.2,
+     1.5,
+     3.83,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "thigh_l",
+   "parent": "pelvis",
+   "position_cm": [
+    0.0,
+    -5.0,
+    50.0
+   ],
+   "section": "Hip",
+   "role": "hip socket",
+   "limits_deg": {
+    "bend": [
+     -50,
+     45
+    ],
+    "side": [
+     -5,
+     30
+    ],
+    "twist": [
+     -12,
+     12
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "from measured bird hips (Manafzadeh & Padian 2018)",
+   "tissue": [
+    [
+     -0.14,
+     0.2,
+     -0.0,
+     4.4,
+     7.1,
+     2.1,
+     2.04
+    ],
+    [
+     0.042,
+     -0.0,
+     -0.1,
+     4.6,
+     7.6,
+     2.0,
+     2.11
+    ],
+    [
+     0.224,
+     0.0,
+     -0.3,
+     4.8,
+     7.9,
+     2.0,
+     2.0
+    ],
+    [
+     0.405,
+     0.2,
+     -0.5,
+     4.8,
+     7.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.587,
+     0.3,
+     -0.6,
+     4.5,
+     7.2,
+     2.0,
+     2.22
+    ],
+    [
+     0.769,
+     0.3,
+     -0.5,
+     4.1,
+     6.2,
+     2.0,
+     2.26
+    ],
+    [
+     0.947,
+     0.3,
+     -1.1,
+     3.8,
+     5.8,
+     2.12,
+     2.38
+    ]
+   ]
+  },
+  {
+   "name": "calf_l",
+   "parent": "thigh_l",
+   "position_cm": [
+    8.0,
+    -8.0,
+    35.0
+   ],
+   "section": "Hip",
+   "role": "knee",
+   "limits_deg": {
+    "bend": [
+     -10,
+     90
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.095,
+     0.4,
+     -1.7,
+     3.5,
+     5.1,
+     2.54,
+     2.45
+    ],
+    [
+     0.238,
+     0.4,
+     -2.3,
+     3.3,
+     4.4,
+     2.12,
+     2.17
+    ],
+    [
+     0.381,
+     0.3,
+     -2.0,
+     3.1,
+     4.5,
+     2.09,
+     2.0
+    ],
+    [
+     0.522,
+     0.2,
+     -0.9,
+     2.7,
+     4.2,
+     2.27,
+     2.48
+    ],
+    [
+     0.664,
+     0.0,
+     0.6,
+     2.4,
+     2.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.807,
+     -0.1,
+     0.8,
+     2.1,
+     2.5,
+     2.0,
+     2.0
+    ],
+    [
+     0.948,
+     -0.0,
+     0.1,
+     2.0,
+     2.3,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "foot_l",
+   "parent": "calf_l",
+   "position_cm": [
+    2.0,
+    -6.0,
+    14.0
+   ],
+   "section": "Hip",
+   "role": "ankle",
+   "limits_deg": {
+    "bend": [
+     -50,
+     50
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "ball_l",
+   "parent": "foot_l",
+   "position_cm": [
+    9.0,
+    -7.0,
+    3.0
+   ],
+   "section": "Hip",
+   "role": "toe joints (ball of the foot)",
+   "limits_deg": {
+    "bend": [
+     -40,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "toe_end_l",
+   "parent": "ball_l",
+   "position_cm": [
+    17.0,
+    -7.0,
+    1.0
+   ],
+   "section": "Hip",
+   "role": "toe tip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "sickle_l",
+   "parent": "ball_l",
+   "position_cm": [
+    9.0,
+    -6.0,
+    3.0
+   ],
+   "section": "Hip",
+   "role": "toe II with the sickle claw",
+   "limits_deg": {
+    "bend": [
+     0,
+     90
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "+ = sickle claw raised clear of the ground (its resting pose is raised)"
+  },
+  {
+   "name": "upperarm_l",
+   "parent": "chest",
+   "position_cm": [
+    38.0,
+    -7.0,
+    49.0
+   ],
+   "section": "Shoulder",
+   "role": "shoulder socket",
+   "limits_deg": {
+    "bend": [
+     -30,
+     60
+    ],
+    "side": [
+     0,
+     45
+    ],
+    "twist": [
+     -15,
+     15
+    ]
+   },
+   "basis": "study-based",
+   "source": "Senter 2006, dromaeosaur forelimb motion (wrist folds sideways, no palm-down turn)",
+   "limit_note": "arm raises to about horizontal",
+   "tissue": [
+    [
+     -0.186,
+     1.1,
+     0.2,
+     2.3,
+     2.5,
+     2.0,
+     2.0
+    ],
+    [
+     0.048,
+     0.8,
+     0.0,
+     2.7,
+     2.4,
+     2.39,
+     2.0
+    ],
+    [
+     0.279,
+     -0.1,
+     0.4,
+     1.7,
+     2.2,
+     2.0,
+     2.0
+    ],
+    [
+     0.508,
+     0.2,
+     1.0,
+     1.5,
+     2.0,
+     2.0,
+     2.19
+    ],
+    [
+     0.74,
+     0.2,
+     1.0,
+     1.3,
+     1.7,
+     2.0,
+     2.0
+    ],
+    [
+     0.955,
+     0.1,
+     0.3,
+     1.2,
+     1.6,
+     2.46,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "lowerarm_l",
+   "parent": "upperarm_l",
+   "position_cm": [
+    32.0,
+    -10.0,
+    38.0
+   ],
+   "section": "Shoulder",
+   "role": "elbow",
+   "limits_deg": {
+    "bend": [
+     -80,
+     25
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "study-based",
+   "source": "Senter 2006, dromaeosaur forelimb motion (wrist folds sideways, no palm-down turn)",
+   "limit_note": "elbow opens from 50 to 155 degrees (180 = straight); drawn pose is 75",
+   "tissue": [
+    [
+     0.119,
+     0.1,
+     0.7,
+     1.0,
+     1.4,
+     2.0,
+     2.0
+    ],
+    [
+     0.315,
+     0.1,
+     1.3,
+     0.9,
+     1.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.512,
+     -0.0,
+     1.1,
+     0.9,
+     1.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.707,
+     -0.1,
+     0.5,
+     0.8,
+     1.0,
+     2.0,
+     2.0
+    ],
+    [
+     0.904,
+     -0.1,
+     0.0,
+     0.8,
+     0.9,
+     2.14,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "hand_l",
+   "parent": "lowerarm_l",
+   "position_cm": [
+    46.0,
+    -6.0,
+    34.0
+   ],
+   "section": "Shoulder",
+   "role": "wrist",
+   "limits_deg": {
+    "bend": [
+     -15,
+     15
+    ],
+    "side": [
+     0,
+     90
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Senter 2006, dromaeosaur forelimb motion (wrist folds sideways, no palm-down turn)",
+   "limit_note": "side = wrist folds toward the little-finger side, like a bird folding its wing; no palm-down turn"
+  },
+  {
+   "name": "finger_end_l",
+   "parent": "hand_l",
+   "position_cm": [
+    55.0,
+    -6.0,
+    29.0
+   ],
+   "section": "Shoulder",
+   "role": "fingertip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "thigh_r",
+   "parent": "pelvis",
+   "position_cm": [
+    0.0,
+    5.0,
+    50.0
+   ],
+   "section": "Hip",
+   "role": "hip socket",
+   "limits_deg": {
+    "bend": [
+     -50,
+     45
+    ],
+    "side": [
+     -5,
+     30
+    ],
+    "twist": [
+     -12,
+     12
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "from measured bird hips (Manafzadeh & Padian 2018)",
+   "tissue": [
+    [
+     -0.14,
+     -0.2,
+     -0.0,
+     4.4,
+     7.1,
+     2.1,
+     2.04
+    ],
+    [
+     0.042,
+     0.0,
+     -0.1,
+     4.6,
+     7.6,
+     2.0,
+     2.11
+    ],
+    [
+     0.224,
+     -0.0,
+     -0.3,
+     4.8,
+     7.9,
+     2.0,
+     2.0
+    ],
+    [
+     0.405,
+     -0.2,
+     -0.5,
+     4.8,
+     7.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.587,
+     -0.3,
+     -0.6,
+     4.5,
+     7.2,
+     2.0,
+     2.22
+    ],
+    [
+     0.769,
+     -0.3,
+     -0.5,
+     4.1,
+     6.2,
+     2.0,
+     2.26
+    ],
+    [
+     0.947,
+     -0.3,
+     -1.1,
+     3.8,
+     5.8,
+     2.12,
+     2.38
+    ]
+   ]
+  },
+  {
+   "name": "calf_r",
+   "parent": "thigh_r",
+   "position_cm": [
+    8.0,
+    8.0,
+    35.0
+   ],
+   "section": "Hip",
+   "role": "knee",
+   "limits_deg": {
+    "bend": [
+     -10,
+     90
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.095,
+     -0.4,
+     -1.7,
+     3.5,
+     5.1,
+     2.54,
+     2.45
+    ],
+    [
+     0.238,
+     -0.4,
+     -2.3,
+     3.3,
+     4.4,
+     2.12,
+     2.17
+    ],
+    [
+     0.381,
+     -0.3,
+     -2.0,
+     3.1,
+     4.5,
+     2.09,
+     2.0
+    ],
+    [
+     0.522,
+     -0.2,
+     -0.9,
+     2.7,
+     4.2,
+     2.27,
+     2.48
+    ],
+    [
+     0.664,
+     -0.0,
+     0.6,
+     2.4,
+     2.8,
+     2.0,
+     2.0
+    ],
+    [
+     0.807,
+     0.1,
+     0.8,
+     2.1,
+     2.5,
+     2.0,
+     2.0
+    ],
+    [
+     0.948,
+     0.0,
+     0.1,
+     2.0,
+     2.3,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "foot_r",
+   "parent": "calf_r",
+   "position_cm": [
+    2.0,
+    6.0,
+    14.0
+   ],
+   "section": "Hip",
+   "role": "ankle",
+   "limits_deg": {
+    "bend": [
+     -50,
+     50
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "ball_r",
+   "parent": "foot_r",
+   "position_cm": [
+    9.0,
+    7.0,
+    3.0
+   ],
+   "section": "Hip",
+   "role": "toe joints (ball of the foot)",
+   "limits_deg": {
+    "bend": [
+     -40,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "toe_end_r",
+   "parent": "ball_r",
+   "position_cm": [
+    17.0,
+    7.0,
+    1.0
+   ],
+   "section": "Hip",
+   "role": "toe tip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "sickle_r",
+   "parent": "ball_r",
+   "position_cm": [
+    9.0,
+    6.0,
+    3.0
+   ],
+   "section": "Hip",
+   "role": "toe II with the sickle claw",
+   "limits_deg": {
+    "bend": [
+     0,
+     90
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "+ = sickle claw raised clear of the ground (its resting pose is raised)"
+  },
+  {
+   "name": "upperarm_r",
+   "parent": "chest",
+   "position_cm": [
+    38.0,
+    7.0,
+    49.0
+   ],
+   "section": "Shoulder",
+   "role": "shoulder socket",
+   "limits_deg": {
+    "bend": [
+     -30,
+     60
+    ],
+    "side": [
+     0,
+     45
+    ],
+    "twist": [
+     -15,
+     15
+    ]
+   },
+   "basis": "study-based",
+   "source": "Senter 2006, dromaeosaur forelimb motion (wrist folds sideways, no palm-down turn)",
+   "limit_note": "arm raises to about horizontal",
+   "tissue": [
+    [
+     -0.186,
+     -1.1,
+     0.2,
+     2.3,
+     2.5,
+     2.0,
+     2.0
+    ],
+    [
+     0.048,
+     -0.8,
+     0.0,
+     2.7,
+     2.4,
+     2.39,
+     2.0
+    ],
+    [
+     0.279,
+     0.1,
+     0.4,
+     1.7,
+     2.2,
+     2.0,
+     2.0
+    ],
+    [
+     0.508,
+     -0.2,
+     1.0,
+     1.5,
+     2.0,
+     2.0,
+     2.19
+    ],
+    [
+     0.74,
+     -0.2,
+     1.0,
+     1.3,
+     1.7,
+     2.0,
+     2.0
+    ],
+    [
+     0.955,
+     -0.1,
+     0.3,
+     1.2,
+     1.6,
+     2.46,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "lowerarm_r",
+   "parent": "upperarm_r",
+   "position_cm": [
+    32.0,
+    10.0,
+    38.0
+   ],
+   "section": "Shoulder",
+   "role": "elbow",
+   "limits_deg": {
+    "bend": [
+     -80,
+     25
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "study-based",
+   "source": "Senter 2006, dromaeosaur forelimb motion (wrist folds sideways, no palm-down turn)",
+   "limit_note": "elbow opens from 50 to 155 degrees (180 = straight); drawn pose is 75",
+   "tissue": [
+    [
+     0.119,
+     -0.1,
+     0.7,
+     1.0,
+     1.4,
+     2.0,
+     2.0
+    ],
+    [
+     0.315,
+     -0.1,
+     1.3,
+     0.9,
+     1.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.512,
+     0.0,
+     1.1,
+     0.9,
+     1.1,
+     2.0,
+     2.0
+    ],
+    [
+     0.707,
+     0.1,
+     0.5,
+     0.8,
+     1.0,
+     2.0,
+     2.0
+    ],
+    [
+     0.904,
+     0.1,
+     0.0,
+     0.8,
+     0.9,
+     2.14,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "hand_r",
+   "parent": "lowerarm_r",
+   "position_cm": [
+    46.0,
+    6.0,
+    34.0
+   ],
+   "section": "Shoulder",
+   "role": "wrist",
+   "limits_deg": {
+    "bend": [
+     -15,
+     15
+    ],
+    "side": [
+     0,
+     90
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study-based",
+   "source": "Senter 2006, dromaeosaur forelimb motion (wrist folds sideways, no palm-down turn)",
+   "limit_note": "side = wrist folds toward the little-finger side, like a bird folding its wing; no palm-down turn"
+  },
+  {
+   "name": "finger_end_r",
+   "parent": "hand_r",
+   "position_cm": [
+    55.0,
+    6.0,
+    29.0
+   ],
+   "section": "Shoulder",
+   "role": "fingertip (end marker)",
+   "limits_deg": null
+  }
+ ],
+ "mass_kg": {
+  "total": 1139.31,
+  "by_section": {
+   "Hip (leg)": 3.79,
+   "Shoulder (arm)": 1.62,
+   "Head": 1117.18,
+   "Neck": 0.27,
+   "Core": 13.2,
+   "Tail": 3.25
+  }
+ },
+ "balance_point_cm": [
+  157.6,
+  0.0,
+  69.7
+ ],
+ "collision_capsules": [
+  {
+   "bone": "tail_05",
+   "from_joint": "tail_06",
+   "to_joint": "tail_05",
+   "radius_cm": 2.0,
+   "length_cm": 16.7,
+   "mass_kg": 0.11
+  },
+  {
+   "bone": "tail_04",
+   "from_joint": "tail_05",
+   "to_joint": "tail_04",
+   "radius_cm": 3.2,
+   "length_cm": 16.7,
+   "mass_kg": 0.29
+  },
+  {
+   "bone": "tail_03",
+   "from_joint": "tail_04",
+   "to_joint": "tail_03",
+   "radius_cm": 4.1,
+   "length_cm": 16.7,
+   "mass_kg": 0.53
+  },
+  {
+   "bone": "tail_02",
+   "from_joint": "tail_03",
+   "to_joint": "tail_02",
+   "radius_cm": 5.1,
+   "length_cm": 16.7,
+   "mass_kg": 0.84
+  },
+  {
+   "bone": "tail_01",
+   "from_joint": "tail_02",
+   "to_joint": "tail_01",
+   "radius_cm": 6.5,
+   "length_cm": 16.7,
+   "mass_kg": 1.48
+  },
+  {
+   "bone": "pelvis",
+   "from_joint": "tail_01",
+   "to_joint": "pelvis",
+   "radius_cm": 8.8,
+   "length_cm": 16.7,
+   "mass_kg": 1.13
+  },
+  {
+   "bone": "pelvis",
+   "from_joint": "pelvis",
+   "to_joint": "spine_01",
+   "radius_cm": 12.8,
+   "length_cm": 9.0,
+   "mass_kg": 2.19
+  },
+  {
+   "bone": "spine_01",
+   "from_joint": "spine_01",
+   "to_joint": "spine_02",
+   "radius_cm": 14.3,
+   "length_cm": 9.0,
+   "mass_kg": 2.94
+  },
+  {
+   "bone": "spine_02",
+   "from_joint": "spine_02",
+   "to_joint": "spine_03",
+   "radius_cm": 14.8,
+   "length_cm": 9.0,
+   "mass_kg": 3.19
+  },
+  {
+   "bone": "spine_03",
+   "from_joint": "spine_03",
+   "to_joint": "chest",
+   "radius_cm": 13.7,
+   "length_cm": 9.0,
+   "mass_kg": 2.62
+  },
+  {
+   "bone": "chest",
+   "from_joint": "chest",
+   "to_joint": "neck_01",
+   "radius_cm": 10.0,
+   "length_cm": 9.1,
+   "mass_kg": 1.13
+  },
+  {
+   "bone": "neck_01",
+   "from_joint": "neck_01",
+   "to_joint": "neck_02",
+   "radius_cm": 5.9,
+   "length_cm": 9.5,
+   "mass_kg": 0.11
+  },
+  {
+   "bone": "neck_02",
+   "from_joint": "neck_02",
+   "to_joint": "neck_03",
+   "radius_cm": 5.2,
+   "length_cm": 9.5,
+   "mass_kg": 0.08
+  },
+  {
+   "bone": "neck_03",
+   "from_joint": "neck_03",
+   "to_joint": "head",
+   "radius_cm": 5.1,
+   "length_cm": 8.9,
+   "mass_kg": 0.08
+  },
+  {
+   "bone": "head",
+   "from_joint": "head",
+   "to_joint": "head_end",
+   "radius_cm": 55.1,
+   "length_cm": 202.9,
+   "mass_kg": 1117.18
+  },
+  {
+   "bone": "thigh (l, r)",
+   "from_joint": "thigh_l",
+   "to_joint": "calf_l",
+   "radius_cm": 4.7,
+   "length_cm": 17.7,
+   "mass_kg": 0.96
+  },
+  {
+   "bone": "calf (l, r)",
+   "from_joint": "calf_l",
+   "to_joint": "foot_l",
+   "radius_cm": 2.5,
+   "length_cm": 22.5,
+   "mass_kg": 0.28
+  },
+  {
+   "bone": "foot (l, r)",
+   "from_joint": "foot_l",
+   "to_joint": "ball_l",
+   "radius_cm": 2.6,
+   "length_cm": 12.8,
+   "mass_kg": 0.21
+  },
+  {
+   "bone": "ball (l, r)",
+   "from_joint": "ball_l",
+   "to_joint": "toe_end_l",
+   "radius_cm": 4.2,
+   "length_cm": 8.4,
+   "mass_kg": 0.44
+  },
+  {
+   "bone": "upperarm (l, r)",
+   "from_joint": "upperarm_l",
+   "to_joint": "lowerarm_l",
+   "radius_cm": 2.8,
+   "length_cm": 12.8,
+   "mass_kg": 0.34
+  },
+  {
+   "bone": "lowerarm (l, r)",
+   "from_joint": "lowerarm_l",
+   "to_joint": "hand_l",
+   "radius_cm": 2.7,
+   "length_cm": 14.6,
+   "mass_kg": 0.33
+  },
+  {
+   "bone": "hand (l, r)",
+   "from_joint": "hand_l",
+   "to_joint": "finger_end_l",
+   "radius_cm": 2.0,
+   "length_cm": 10.3,
+   "mass_kg": 0.14
+  }
+ ],
+ "gaits": {
+  "walk": {
+   "speed_m_s": 1.11,
+   "stride_m": 0.77,
+   "stride_time_s": 0.69,
+   "name": "walk"
+  },
+  "fast": {
+   "speed_m_s": 8.62,
+   "stride_m": 2.62,
+   "stride_time_s": 0.3,
+   "name": "run"
+  }
+ },
+ "footfall_order": "L, R alternating",
+ "tissue_note": "tissue: the flesh around a bone, the body's muscle anchors: stations [t along the bone (0 its joint, 1 the next), centre across (cm, + right), centre up, half-width, half-height], in the bone's frame; the flesh flows from station to station along each chain of bones (body_tools/grow_body.py measures them from the hand-built body and grows bodies from them). Feet, hands, heads and other bone parts keep their own meshes.",
+ "leg_check": {
+  "weight_n": 11176.6,
+  "muscle_stress_n_cm2": 30.0,
+  "walk_margin": 2.0,
+  "pairs": {
+   "hind": {
+    "muscle_n": 5003.4,
+    "load_n": 11176.6,
+    "ratio": 0.45
+   }
+  },
+  "verdict": "buckles",
+  "summary": "Legs buckle: the legs have 0.45 times the muscle to hold up the 11.2 kN resting on them."
+ },
+ "swim_check": {
+  "density_kg_m3": 1026.5,
+  "water_kg_m3": 1000.0,
+  "verdict": "sinks",
+  "summary": "Sinks: 1,026 kg per cubic metre, denser than water. It walks along the bottom, and in water deeper than its head it would drown.",
+  "speed_ms": 0.0
+ },
+ "climb_check": {
+  "grip_by_species": {
+   "trex": 0.9,
+   "raptor": 1.0,
+   "ptera": 1.0,
+   "brachio": 0.8,
+   "trike": 0.75,
+   "ankylo": 0.75
+  },
+  "climb_push": 1.5,
+  "crawl_share": 0.25,
+  "lean_in": 0.5,
+  "verdict": "cant",
+  "max_deg": 0.0,
+  "grip_deg": 0.0,
+  "strength_deg": 0.0,
+  "speed_share": [
+   1.0
+  ],
+  "summary": "Can't climb: it can't walk."
+ },
+ "splice": {
+  "base": "raptor",
+  "donor": "trex",
+  "section": "Head",
+  "swapped": "Head section",
+  "lineage_kg": {
+   "Velociraptor": 22.13,
+   "Tyrannosaurus rex": 1117.18
+  },
+  "lineage_share": {
+   "Velociraptor": 0.019,
+   "Tyrannosaurus rex": 0.981
+  },
+  "wings": false,
+  "notes": [],
+  "made_by": "splice/splice.py (body grown by body_tools/grow_body.py)"
+ },
+ "flight_muscle_kg": 0.92,
+ "gait_check": {
+  "base": "raptor",
+  "summary": "Gaits: the Velociraptor's, unused (its legs can't walk)."
+ }
+}

@@ -1,0 +1,2138 @@
+{
+ "creature": "Young T. rex with head 130%",
+ "units": "centimetres and degrees",
+ "body_tilt": {
+  "tail_clear": 17,
+  "down": 35,
+  "up": 40,
+  "down_everyday": 23,
+  "up_everyday": 27,
+  "kind": "biped"
+ },
+ "axes": "Unreal: X forward, Y right, Z up; origin on the ground under the hip sockets; _l = left side (-Y), _r = right side (+Y)",
+ "angles": "from the neutral standing pose. bend: side-plane rotation (+ raises neck/head/tail, swings hip/shoulder forward, bends knee/elbow/ankle/toes more, opens jaw). side: left/right, or + = away from the body for hip/shoulder. twist: roll around the bone.",
+ "use": "limits are the most the bones and ligaments allow; keep everyday moves to about two thirds of them",
+ "joints": [
+  {
+   "name": "root",
+   "parent": null,
+   "position_cm": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "section": "-",
+   "role": "on the ground under the hips; moves the whole creature",
+   "limits_deg": null
+  },
+  {
+   "name": "pelvis",
+   "parent": "root",
+   "position_cm": [
+    0.0,
+    0.0,
+    97.5
+   ],
+   "section": "Core",
+   "role": "hips; parent of legs and tail",
+   "limits_deg": {
+    "bend": [
+     -35,
+     40
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -8,
+     8
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole-body tilt with the feet planted: the body seesaws over the hips, limited by the hip joint; the tail touches the ground at +17 unless it is lifted",
+   "tissue": [
+    [
+     -1.314,
+     0.0,
+     0.9,
+     15.99,
+     25.29,
+     2.35,
+     2.5
+    ],
+    [
+     -0.972,
+     0.0,
+     -0.15,
+     16.71,
+     26.97,
+     2.4,
+     2.45
+    ],
+    [
+     -0.63,
+     0.0,
+     -1.14,
+     17.46,
+     28.47,
+     2.44,
+     2.38
+    ],
+    [
+     -0.287,
+     0.0,
+     -2.25,
+     18.06,
+     29.91,
+     2.54,
+     2.39
+    ],
+    [
+     0.057,
+     0.0,
+     -3.36,
+     18.93,
+     31.17,
+     2.57,
+     2.34
+    ],
+    [
+     0.4,
+     0.0,
+     -4.59,
+     19.86,
+     32.46,
+     2.66,
+     2.3
+    ],
+    [
+     0.744,
+     -0.0,
+     -5.85,
+     20.97,
+     33.69,
+     2.7,
+     2.24
+    ]
+   ]
+  },
+  {
+   "name": "spine_01",
+   "parent": "pelvis",
+   "position_cm": [
+    17.4,
+    0.0,
+    98.1
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -4,
+     4
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.087,
+     0.0,
+     -7.23,
+     21.78,
+     34.83,
+     2.76,
+     2.17
+    ],
+    [
+     0.43,
+     0.0,
+     -9.66,
+     22.44,
+     36.99,
+     2.88,
+     2.18
+    ],
+    [
+     0.774,
+     0.0,
+     -10.95,
+     23.1,
+     37.92,
+     3.11,
+     2.17
+    ]
+   ]
+  },
+  {
+   "name": "spine_02",
+   "parent": "spine_01",
+   "position_cm": [
+    34.8,
+    0.0,
+    97.5
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -4,
+     4
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.118,
+     0.0,
+     -11.4,
+     23.34,
+     37.77,
+     3.18,
+     2.14
+    ],
+    [
+     0.463,
+     0.0,
+     -11.64,
+     23.16,
+     37.68,
+     3.18,
+     2.15
+    ],
+    [
+     0.809,
+     0.0,
+     -11.73,
+     22.92,
+     37.2,
+     3.2,
+     2.15
+    ]
+   ]
+  },
+  {
+   "name": "spine_03",
+   "parent": "spine_02",
+   "position_cm": [
+    51.9,
+    0.0,
+    94.8
+   ],
+   "section": "Core",
+   "role": "back",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -4,
+     4
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.153,
+     0.0,
+     -11.64,
+     22.56,
+     36.51,
+     3.21,
+     2.15
+    ],
+    [
+     0.496,
+     0.0,
+     -11.22,
+     21.69,
+     35.61,
+     3.17,
+     2.16
+    ],
+    [
+     0.84,
+     0.0,
+     -9.96,
+     20.88,
+     33.69,
+     3.15,
+     2.17
+    ]
+   ]
+  },
+  {
+   "name": "chest",
+   "parent": "spine_03",
+   "position_cm": [
+    69.0,
+    0.0,
+    91.5
+   ],
+   "section": "Core",
+   "role": "shoulders and ribcage; parent of arms and neck",
+   "limits_deg": {
+    "bend": [
+     -4,
+     4
+    ],
+    "side": [
+     -4,
+     4
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.234,
+     0.0,
+     -7.32,
+     19.65,
+     30.15,
+     2.77,
+     2.25
+    ],
+    [
+     0.677,
+     0.0,
+     -2.7,
+     18.18,
+     25.14,
+     2.59,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "neck_01",
+   "parent": "chest",
+   "position_cm": [
+    82.5,
+    0.0,
+    91.8
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -10,
+     13
+    ],
+    "side": [
+     -8,
+     8
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -30 to +40 up and down, ±25 sideways, split over 3 joints",
+   "tissue": [
+    [
+     0.114,
+     0.03,
+     1.05,
+     18.66,
+     21.33,
+     2.25,
+     2.3
+    ],
+    [
+     0.55,
+     -0.03,
+     0.81,
+     18.99,
+     21.03,
+     2.23,
+     2.46
+    ],
+    [
+     0.986,
+     -0.03,
+     -1.89,
+     19.2,
+     21.57,
+     2.29,
+     2.18
+    ]
+   ]
+  },
+  {
+   "name": "neck_02",
+   "parent": "neck_01",
+   "position_cm": [
+    94.8,
+    0.0,
+    97.8
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -10,
+     13
+    ],
+    "side": [
+     -8,
+     8
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -30 to +40 up and down, ±25 sideways, split over 3 joints",
+   "tissue": [
+    [
+     0.434,
+     0.0,
+     -2.94,
+     19.38,
+     20.64,
+     2.43,
+     2.37
+    ],
+    [
+     0.88,
+     0.0,
+     3.09,
+     19.56,
+     14.16,
+     2.21,
+     4.0
+    ]
+   ]
+  },
+  {
+   "name": "neck_03",
+   "parent": "neck_02",
+   "position_cm": [
+    106.2,
+    0.0,
+    104.7
+   ],
+   "section": "Neck",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -10,
+     13
+    ],
+    "side": [
+     -8,
+     8
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "whole neck -30 to +40 up and down, ±25 sideways, split over 3 joints",
+   "tissue": [
+    [
+     0.348,
+     -0.03,
+     6.06,
+     20.07,
+     18.57,
+     2.29,
+     4.0
+    ],
+    [
+     0.83,
+     -0.03,
+     0.12,
+     20.25,
+     24.0,
+     2.96,
+     2.35
+    ]
+   ]
+  },
+  {
+   "name": "head",
+   "parent": "neck_03",
+   "position_cm": [
+    118.5,
+    0.0,
+    103.5
+   ],
+   "section": "Head",
+   "role": "skull joint at the top of the neck",
+   "limits_deg": {
+    "bend": [
+     -20,
+     30
+    ],
+    "side": [
+     -15,
+     15
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "estimate",
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "jaw",
+   "parent": "head",
+   "position_cm": [
+    120.45,
+    0.0,
+    90.24
+   ],
+   "section": "Head",
+   "role": "jaw hinge",
+   "limits_deg": {
+    "bend": [
+     0,
+     80
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "study",
+   "source": "Lautenschlager 2015, jaw gape in theropods",
+   "limit_note": "widest gape 63 to 80; best biting gape about 32",
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "head_end",
+   "parent": "head",
+   "position_cm": [
+    196.89,
+    0.0,
+    92.58
+   ],
+   "section": "Head",
+   "role": "snout tip (end marker, no motion)",
+   "limits_deg": null,
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "jaw_end",
+   "parent": "jaw",
+   "position_cm": [
+    191.82,
+    0.0,
+    75.42
+   ],
+   "section": "Head",
+   "role": "lower jaw tip (end marker)",
+   "limits_deg": null,
+   "lineage": "Tyrannosaurus rex"
+  },
+  {
+   "name": "tail_01",
+   "parent": "pelvis",
+   "position_cm": [
+    -23.1,
+    0.0,
+    95.1
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -6,
+     8
+    ],
+    "side": [
+     -10,
+     10
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.243,
+     0.0,
+     -2.04,
+     15.39,
+     23.43,
+     2.54,
+     2.31
+    ],
+    [
+     0.498,
+     0.0,
+     -2.79,
+     14.64,
+     22.05,
+     2.68,
+     2.26
+    ],
+    [
+     0.753,
+     0.0,
+     -3.27,
+     13.92,
+     20.94,
+     2.72,
+     2.23
+    ]
+   ]
+  },
+  {
+   "name": "tail_02",
+   "parent": "tail_01",
+   "position_cm": [
+    -46.2,
+    0.0,
+    91.2
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -6,
+     8
+    ],
+    "side": [
+     -10,
+     10
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.009,
+     0.0,
+     -3.33,
+     13.29,
+     20.19,
+     2.72,
+     2.22
+    ],
+    [
+     0.265,
+     0.0,
+     -3.3,
+     12.63,
+     19.53,
+     2.73,
+     2.23
+    ],
+    [
+     0.522,
+     0.0,
+     -3.24,
+     12.0,
+     18.87,
+     2.74,
+     2.22
+    ],
+    [
+     0.779,
+     0.0,
+     -3.09,
+     11.46,
+     18.27,
+     2.74,
+     2.21
+    ]
+   ]
+  },
+  {
+   "name": "tail_03",
+   "parent": "tail_02",
+   "position_cm": [
+    -69.0,
+    0.0,
+    86.4
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -6,
+     8
+    ],
+    "side": [
+     -10,
+     10
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.035,
+     0.0,
+     -2.94,
+     10.8,
+     17.61,
+     2.73,
+     2.26
+    ],
+    [
+     0.292,
+     0.0,
+     -2.88,
+     10.23,
+     17.07,
+     2.73,
+     2.21
+    ],
+    [
+     0.549,
+     0.0,
+     -2.73,
+     9.75,
+     16.44,
+     2.74,
+     2.23
+    ],
+    [
+     0.806,
+     0.0,
+     -2.61,
+     9.18,
+     15.75,
+     2.74,
+     2.24
+    ]
+   ]
+  },
+  {
+   "name": "tail_04",
+   "parent": "tail_03",
+   "position_cm": [
+    -91.5,
+    0.0,
+    80.4
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -8,
+     8
+    ],
+    "side": [
+     -12,
+     12
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.062,
+     0.0,
+     -2.37,
+     8.64,
+     15.12,
+     2.68,
+     2.26
+    ],
+    [
+     0.319,
+     0.0,
+     -2.25,
+     8.16,
+     14.49,
+     2.65,
+     2.26
+    ],
+    [
+     0.575,
+     0.0,
+     -2.07,
+     7.62,
+     13.95,
+     2.7,
+     2.26
+    ],
+    [
+     0.831,
+     0.0,
+     -1.83,
+     7.05,
+     13.38,
+     2.65,
+     2.27
+    ]
+   ]
+  },
+  {
+   "name": "tail_05",
+   "parent": "tail_04",
+   "position_cm": [
+    -113.7,
+    0.0,
+    73.2
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -8,
+     8
+    ],
+    "side": [
+     -12,
+     12
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.087,
+     0.0,
+     -1.56,
+     6.57,
+     12.81,
+     2.63,
+     2.27
+    ],
+    [
+     0.342,
+     0.0,
+     -1.38,
+     6.09,
+     12.24,
+     2.61,
+     2.31
+    ],
+    [
+     0.598,
+     0.0,
+     -1.17,
+     5.61,
+     11.58,
+     2.58,
+     2.33
+    ],
+    [
+     0.853,
+     0.0,
+     -0.93,
+     5.19,
+     10.89,
+     2.58,
+     2.38
+    ]
+   ]
+  },
+  {
+   "name": "tail_06",
+   "parent": "tail_05",
+   "position_cm": [
+    -135.9,
+    0.0,
+    65.7
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -8,
+     8
+    ],
+    "side": [
+     -12,
+     12
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.11,
+     0.0,
+     -0.87,
+     4.71,
+     10.08,
+     2.59,
+     2.37
+    ],
+    [
+     0.369,
+     0.0,
+     -0.75,
+     4.26,
+     9.06,
+     2.59,
+     2.37
+    ],
+    [
+     0.629,
+     0.0,
+     -0.75,
+     3.84,
+     7.98,
+     2.54,
+     2.37
+    ],
+    [
+     0.888,
+     0.0,
+     -0.66,
+     3.36,
+     6.81,
+     2.62,
+     2.35
+    ]
+   ]
+  },
+  {
+   "name": "tail_07",
+   "parent": "tail_06",
+   "position_cm": [
+    -157.8,
+    0.0,
+    58.5
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -8,
+     8
+    ],
+    "side": [
+     -12,
+     12
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.145,
+     0.0,
+     -0.66,
+     2.88,
+     5.49,
+     2.64,
+     2.3
+    ],
+    [
+     0.4,
+     0.0,
+     -0.63,
+     2.55,
+     4.2,
+     2.71,
+     2.22
+    ],
+    [
+     0.656,
+     0.0,
+     -0.81,
+     2.16,
+     2.88,
+     3.05,
+     2.19
+    ],
+    [
+     0.911,
+     0.0,
+     -0.45,
+     1.77,
+     1.95,
+     2.4,
+     2.24
+    ]
+   ]
+  },
+  {
+   "name": "tail_08",
+   "parent": "tail_07",
+   "position_cm": [
+    -180.0,
+    0.0,
+    51.0
+   ],
+   "section": "Tail",
+   "role": "",
+   "limits_deg": {
+    "bend": [
+     -8,
+     8
+    ],
+    "side": [
+     -12,
+     12
+    ],
+    "twist": [
+     -3,
+     3
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "thigh_l",
+   "parent": "pelvis",
+   "position_cm": [
+    0.0,
+    -12.0,
+    90.0
+   ],
+   "section": "Hip",
+   "role": "hip socket",
+   "limits_deg": {
+    "bend": [
+     -40,
+     35
+    ],
+    "side": [
+     -5,
+     20
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "scaled down from measured bird hips (Manafzadeh & Padian 2018), where ligaments cut the bare-bone range by about half",
+   "tissue": [
+    [
+     -0.143,
+     0.54,
+     -0.27,
+     13.59,
+     20.91,
+     2.15,
+     2.1
+    ],
+    [
+     0.016,
+     -0.09,
+     0.0,
+     14.52,
+     22.95,
+     2.0,
+     2.05
+    ],
+    [
+     0.176,
+     -0.03,
+     -0.48,
+     15.33,
+     23.73,
+     2.0,
+     2.0
+    ],
+    [
+     0.335,
+     0.3,
+     -0.72,
+     15.6,
+     24.24,
+     2.0,
+     2.0
+    ],
+    [
+     0.493,
+     0.48,
+     -0.96,
+     15.06,
+     23.37,
+     2.0,
+     2.0
+    ],
+    [
+     0.653,
+     0.57,
+     -0.69,
+     13.98,
+     21.24,
+     2.0,
+     2.0
+    ],
+    [
+     0.812,
+     0.51,
+     -1.41,
+     12.9,
+     19.53,
+     2.2,
+     2.18
+    ],
+    [
+     0.968,
+     0.63,
+     -1.95,
+     11.97,
+     17.67,
+     2.15,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "calf_l",
+   "parent": "thigh_l",
+   "position_cm": [
+    11.4,
+    -16.5,
+    55.5
+   ],
+   "section": "Hip",
+   "role": "knee",
+   "limits_deg": {
+    "bend": [
+     -20,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.13,
+     0.78,
+     -3.6,
+     11.07,
+     15.6,
+     2.15,
+     2.0
+    ],
+    [
+     0.299,
+     0.66,
+     -3.81,
+     10.47,
+     15.12,
+     2.09,
+     2.04
+    ],
+    [
+     0.465,
+     0.45,
+     -2.4,
+     9.57,
+     14.22,
+     2.14,
+     2.0
+    ],
+    [
+     0.632,
+     0.21,
+     -1.05,
+     8.79,
+     12.3,
+     2.27,
+     2.0
+    ],
+    [
+     0.8,
+     -0.03,
+     0.54,
+     8.07,
+     9.33,
+     2.0,
+     2.0
+    ],
+    [
+     0.965,
+     -0.03,
+     -0.18,
+     7.59,
+     8.49,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "foot_l",
+   "parent": "calf_l",
+   "position_cm": [
+    0.6,
+    -12.6,
+    22.8
+   ],
+   "section": "Hip",
+   "role": "ankle",
+   "limits_deg": {
+    "bend": [
+     -40,
+     40
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "ball_l",
+   "parent": "foot_l",
+   "position_cm": [
+    11.4,
+    -13.5,
+    3.6
+   ],
+   "section": "Hip",
+   "role": "toe joints (ball of the foot)",
+   "limits_deg": {
+    "bend": [
+     -40,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "toe_end_l",
+   "parent": "ball_l",
+   "position_cm": [
+    29.4,
+    -13.5,
+    1.5
+   ],
+   "section": "Hip",
+   "role": "toe tip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "upperarm_l",
+   "parent": "chest",
+   "position_cm": [
+    78.6,
+    -12.6,
+    75.6
+   ],
+   "section": "Shoulder",
+   "role": "shoulder socket",
+   "limits_deg": {
+    "bend": [
+     -30,
+     10
+    ],
+    "side": [
+     0,
+     20
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "study-based",
+   "source": "Carpenter & Smith 2001 / Carpenter 2002, T. rex arm motion",
+   "limit_note": "very little forward reach",
+   "tissue": [
+    [
+     -0.321,
+     1.26,
+     0.54,
+     4.41,
+     4.65,
+     2.0,
+     3.26
+    ],
+    [
+     0.118,
+     1.41,
+     0.27,
+     5.07,
+     4.62,
+     4.0,
+     2.73
+    ],
+    [
+     0.555,
+     0.0,
+     0.42,
+     3.06,
+     3.87,
+     2.19,
+     2.23
+    ],
+    [
+     0.985,
+     0.06,
+     0.24,
+     2.67,
+     2.94,
+     2.34,
+     2.04
+    ]
+   ]
+  },
+  {
+   "name": "lowerarm_l",
+   "parent": "upperarm_l",
+   "position_cm": [
+    81.6,
+    -15.6,
+    63.6
+   ],
+   "section": "Shoulder",
+   "role": "elbow",
+   "limits_deg": {
+    "bend": [
+     -6,
+     39
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "study-based",
+   "source": "Carpenter & Smith 2001 / Carpenter 2002, T. rex arm motion",
+   "limit_note": "elbow opens from 80 to 125 degrees (180 = straight); drawn pose is 119",
+   "tissue": [
+    [
+     0.658,
+     0.06,
+     0.27,
+     2.07,
+     2.16,
+     2.0,
+     2.15
+    ]
+   ]
+  },
+  {
+   "name": "hand_l",
+   "parent": "lowerarm_l",
+   "position_cm": [
+    89.4,
+    -15.6,
+    61.5
+   ],
+   "section": "Shoulder",
+   "role": "wrist",
+   "limits_deg": {
+    "bend": [
+     -15,
+     15
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "palm cannot turn down"
+  },
+  {
+   "name": "finger_end_l",
+   "parent": "hand_l",
+   "position_cm": [
+    93.6,
+    -15.6,
+    59.7
+   ],
+   "section": "Shoulder",
+   "role": "fingertip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "thigh_r",
+   "parent": "pelvis",
+   "position_cm": [
+    0.0,
+    12.0,
+    90.0
+   ],
+   "section": "Hip",
+   "role": "hip socket",
+   "limits_deg": {
+    "bend": [
+     -40,
+     35
+    ],
+    "side": [
+     -5,
+     20
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "scaled down from measured bird hips (Manafzadeh & Padian 2018), where ligaments cut the bare-bone range by about half",
+   "tissue": [
+    [
+     -0.143,
+     -0.54,
+     -0.27,
+     13.59,
+     20.91,
+     2.15,
+     2.1
+    ],
+    [
+     0.016,
+     0.09,
+     0.0,
+     14.52,
+     22.95,
+     2.0,
+     2.05
+    ],
+    [
+     0.176,
+     0.03,
+     -0.48,
+     15.33,
+     23.73,
+     2.0,
+     2.0
+    ],
+    [
+     0.335,
+     -0.3,
+     -0.72,
+     15.6,
+     24.24,
+     2.0,
+     2.0
+    ],
+    [
+     0.493,
+     -0.48,
+     -0.96,
+     15.06,
+     23.37,
+     2.0,
+     2.0
+    ],
+    [
+     0.653,
+     -0.57,
+     -0.69,
+     13.98,
+     21.24,
+     2.0,
+     2.0
+    ],
+    [
+     0.812,
+     -0.51,
+     -1.41,
+     12.9,
+     19.53,
+     2.2,
+     2.18
+    ],
+    [
+     0.968,
+     -0.63,
+     -1.95,
+     11.97,
+     17.67,
+     2.15,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "calf_r",
+   "parent": "thigh_r",
+   "position_cm": [
+    11.4,
+    16.5,
+    55.5
+   ],
+   "section": "Hip",
+   "role": "knee",
+   "limits_deg": {
+    "bend": [
+     -20,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "tissue": [
+    [
+     0.13,
+     -0.78,
+     -3.6,
+     11.07,
+     15.6,
+     2.15,
+     2.0
+    ],
+    [
+     0.299,
+     -0.66,
+     -3.81,
+     10.47,
+     15.12,
+     2.09,
+     2.04
+    ],
+    [
+     0.465,
+     -0.45,
+     -2.4,
+     9.57,
+     14.22,
+     2.14,
+     2.0
+    ],
+    [
+     0.632,
+     -0.21,
+     -1.05,
+     8.79,
+     12.3,
+     2.27,
+     2.0
+    ],
+    [
+     0.8,
+     0.03,
+     0.54,
+     8.07,
+     9.33,
+     2.0,
+     2.0
+    ],
+    [
+     0.965,
+     0.03,
+     -0.18,
+     7.59,
+     8.49,
+     2.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "name": "foot_r",
+   "parent": "calf_r",
+   "position_cm": [
+    0.6,
+    12.6,
+    22.8
+   ],
+   "section": "Hip",
+   "role": "ankle",
+   "limits_deg": {
+    "bend": [
+     -40,
+     40
+    ],
+    "side": [
+     -5,
+     5
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "ball_r",
+   "parent": "foot_r",
+   "position_cm": [
+    11.4,
+    13.5,
+    3.6
+   ],
+   "section": "Hip",
+   "role": "toe joints (ball of the foot)",
+   "limits_deg": {
+    "bend": [
+     -40,
+     60
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate"
+  },
+  {
+   "name": "toe_end_r",
+   "parent": "ball_r",
+   "position_cm": [
+    29.4,
+    13.5,
+    1.5
+   ],
+   "section": "Hip",
+   "role": "toe tip (end marker)",
+   "limits_deg": null
+  },
+  {
+   "name": "upperarm_r",
+   "parent": "chest",
+   "position_cm": [
+    78.6,
+    12.6,
+    75.6
+   ],
+   "section": "Shoulder",
+   "role": "shoulder socket",
+   "limits_deg": {
+    "bend": [
+     -30,
+     10
+    ],
+    "side": [
+     0,
+     20
+    ],
+    "twist": [
+     -10,
+     10
+    ]
+   },
+   "basis": "study-based",
+   "source": "Carpenter & Smith 2001 / Carpenter 2002, T. rex arm motion",
+   "limit_note": "very little forward reach",
+   "tissue": [
+    [
+     -0.321,
+     -1.26,
+     0.54,
+     4.41,
+     4.65,
+     2.0,
+     3.26
+    ],
+    [
+     0.118,
+     -1.41,
+     0.27,
+     5.07,
+     4.62,
+     4.0,
+     2.73
+    ],
+    [
+     0.555,
+     -0.0,
+     0.42,
+     3.06,
+     3.87,
+     2.19,
+     2.23
+    ],
+    [
+     0.985,
+     -0.06,
+     0.24,
+     2.67,
+     2.94,
+     2.34,
+     2.04
+    ]
+   ]
+  },
+  {
+   "name": "lowerarm_r",
+   "parent": "upperarm_r",
+   "position_cm": [
+    81.6,
+    15.6,
+    63.6
+   ],
+   "section": "Shoulder",
+   "role": "elbow",
+   "limits_deg": {
+    "bend": [
+     -6,
+     39
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     -5,
+     5
+    ]
+   },
+   "basis": "study-based",
+   "source": "Carpenter & Smith 2001 / Carpenter 2002, T. rex arm motion",
+   "limit_note": "elbow opens from 80 to 125 degrees (180 = straight); drawn pose is 119",
+   "tissue": [
+    [
+     0.658,
+     -0.06,
+     0.27,
+     2.07,
+     2.16,
+     2.0,
+     2.15
+    ]
+   ]
+  },
+  {
+   "name": "hand_r",
+   "parent": "lowerarm_r",
+   "position_cm": [
+    89.4,
+    15.6,
+    61.5
+   ],
+   "section": "Shoulder",
+   "role": "wrist",
+   "limits_deg": {
+    "bend": [
+     -15,
+     15
+    ],
+    "side": [
+     0,
+     0
+    ],
+    "twist": [
+     0,
+     0
+    ]
+   },
+   "basis": "estimate",
+   "limit_note": "palm cannot turn down"
+  },
+  {
+   "name": "finger_end_r",
+   "parent": "hand_r",
+   "position_cm": [
+    93.6,
+    15.6,
+    59.7
+   ],
+   "section": "Shoulder",
+   "role": "fingertip (end marker)",
+   "limits_deg": null
+  }
+ ],
+ "mass_kg": {
+  "total": 365.506,
+  "by_section": {
+   "Hip (leg)": 29.0836,
+   "Shoulder (arm)": 1.0573,
+   "Core": 164.4775,
+   "Tail": 72.4099,
+   "Neck": 32.2078,
+   "Head": 66.2699
+  }
+ },
+ "balance_point_cm": [
+  41.19,
+  0.0,
+  91.02
+ ],
+ "collision_capsules": [
+  {
+   "bone": "tail_07",
+   "from_joint": "tail_08",
+   "to_joint": "tail_07",
+   "radius_cm": 2.73,
+   "length_cm": 23.31,
+   "mass_kg": 0.3721
+  },
+  {
+   "bone": "tail_06",
+   "from_joint": "tail_07",
+   "to_joint": "tail_06",
+   "radius_cm": 5.7,
+   "length_cm": 23.31,
+   "mass_kg": 1.8749
+  },
+  {
+   "bone": "tail_05",
+   "from_joint": "tail_06",
+   "to_joint": "tail_05",
+   "radius_cm": 8.22,
+   "length_cm": 23.31,
+   "mass_kg": 4.3105
+  },
+  {
+   "bone": "tail_04",
+   "from_joint": "tail_05",
+   "to_joint": "tail_04",
+   "radius_cm": 10.41,
+   "length_cm": 23.31,
+   "mass_kg": 7.4766
+  },
+  {
+   "bone": "tail_03",
+   "from_joint": "tail_04",
+   "to_joint": "tail_03",
+   "radius_cm": 12.72,
+   "length_cm": 23.31,
+   "mass_kg": 12.0766
+  },
+  {
+   "bone": "tail_02",
+   "from_joint": "tail_03",
+   "to_joint": "tail_02",
+   "radius_cm": 15.09,
+   "length_cm": 23.31,
+   "mass_kg": 18.3951
+  },
+  {
+   "bone": "tail_01",
+   "from_joint": "tail_02",
+   "to_joint": "tail_01",
+   "radius_cm": 17.85,
+   "length_cm": 23.31,
+   "mass_kg": 27.9042
+  },
+  {
+   "bone": "pelvis",
+   "from_joint": "tail_01",
+   "to_joint": "pelvis",
+   "radius_cm": 22.05,
+   "length_cm": 23.31,
+   "mass_kg": 19.3018
+  },
+  {
+   "bone": "pelvis",
+   "from_joint": "pelvis",
+   "to_joint": "spine_01",
+   "radius_cm": 25.62,
+   "length_cm": 17.4,
+   "mass_kg": 25.4596
+  },
+  {
+   "bone": "spine_01",
+   "from_joint": "spine_01",
+   "to_joint": "spine_02",
+   "radius_cm": 28.62,
+   "length_cm": 17.4,
+   "mass_kg": 34.2544
+  },
+  {
+   "bone": "spine_02",
+   "from_joint": "spine_02",
+   "to_joint": "spine_03",
+   "radius_cm": 29.49,
+   "length_cm": 17.37,
+   "mass_kg": 37.1058
+  },
+  {
+   "bone": "spine_03",
+   "from_joint": "spine_03",
+   "to_joint": "chest",
+   "radius_cm": 27.69,
+   "length_cm": 17.4,
+   "mass_kg": 31.3049
+  },
+  {
+   "bone": "chest",
+   "from_joint": "chest",
+   "to_joint": "neck_01",
+   "radius_cm": 22.71,
+   "length_cm": 13.62,
+   "mass_kg": 17.051
+  },
+  {
+   "bone": "neck_01",
+   "from_joint": "neck_01",
+   "to_joint": "neck_02",
+   "radius_cm": 16.92,
+   "length_cm": 13.47,
+   "mass_kg": 12.6832
+  },
+  {
+   "bone": "neck_02",
+   "from_joint": "neck_02",
+   "to_joint": "neck_03",
+   "radius_cm": 14.91,
+   "length_cm": 13.59,
+   "mass_kg": 9.1554
+  },
+  {
+   "bone": "neck_03",
+   "from_joint": "neck_03",
+   "to_joint": "head",
+   "radius_cm": 15.9,
+   "length_cm": 12.24,
+   "mass_kg": 10.3691
+  },
+  {
+   "bone": "head",
+   "from_joint": "head",
+   "to_joint": "head_end",
+   "radius_cm": 21.489,
+   "length_cm": 79.131,
+   "mass_kg": 66.27
+  },
+  {
+   "bone": "thigh (l, r)",
+   "from_joint": "thigh_l",
+   "to_joint": "calf_l",
+   "radius_cm": 8.97,
+   "length_cm": 36.33,
+   "mass_kg": 9.4106
+  },
+  {
+   "bone": "calf (l, r)",
+   "from_joint": "calf_l",
+   "to_joint": "foot_l",
+   "radius_cm": 3.42,
+   "length_cm": 34.44,
+   "mass_kg": 1.0981
+  },
+  {
+   "bone": "foot (l, r)",
+   "from_joint": "foot_l",
+   "to_joint": "ball_l",
+   "radius_cm": 3.72,
+   "length_cm": 22.02,
+   "mass_kg": 0.9104
+  },
+  {
+   "bone": "ball (l, r)",
+   "from_joint": "ball_l",
+   "to_joint": "toe_end_l",
+   "radius_cm": 6.87,
+   "length_cm": 18.12,
+   "mass_kg": 3.1228
+  },
+  {
+   "bone": "upperarm (l, r)",
+   "from_joint": "upperarm_l",
+   "to_joint": "lowerarm_l",
+   "radius_cm": 2.91,
+   "length_cm": 12.36,
+   "mass_kg": 0.3046
+  },
+  {
+   "bone": "lowerarm (l, r)",
+   "from_joint": "lowerarm_l",
+   "to_joint": "hand_l",
+   "radius_cm": 2.61,
+   "length_cm": 8.07,
+   "mass_kg": 0.1728
+  },
+  {
+   "bone": "hand (l, r)",
+   "from_joint": "hand_l",
+   "to_joint": "finger_end_l",
+   "radius_cm": 1.83,
+   "length_cm": 4.56,
+   "mass_kg": 0.0513
+  }
+ ],
+ "gaits": {
+  "walk": {
+   "speed_m_s": 0.7,
+   "stride_m": 0.87,
+   "stride_time_s": 1.24,
+   "name": "walk"
+  },
+  "fast": {
+   "speed_m_s": 5.34,
+   "stride_m": 2.51,
+   "stride_time_s": 0.47,
+   "name": "run"
+  }
+ },
+ "footfall_order": "L, R alternating",
+ "tissue_note": "tissue: the flesh around a bone, the body's muscle anchors: stations [t along the bone (0 its joint, 1 the next), centre across (cm, + right), centre up, half-width, half-height], in the bone's frame; the flesh flows from station to station along each chain of bones (body_tools/grow_body.py measures them from the hand-built body and grows bodies from them). Feet, hands, heads and other bone parts keep their own meshes.",
+ "leg_check": {
+  "weight_n": 3585.6,
+  "muscle_stress_n_cm2": 30.0,
+  "walk_margin": 2.0,
+  "pairs": {
+   "hind": {
+    "muscle_n": 49894.9,
+    "load_n": 3585.6,
+    "ratio": 13.92
+   }
+  },
+  "verdict": "walks",
+  "summary": "Legs hold it: the legs have 13.9 times the muscle their share of the weight needs."
+ },
+ "swim_check": {
+  "density_kg_m3": 892.8,
+  "water_kg_m3": 1000.0,
+  "neck_raise_deg": 31.1,
+  "thrust_n": 124.7,
+  "frontal_area_m2": 0.217,
+  "pitch_deg": -3.0,
+  "roll_deg": 0.0,
+  "com_depth_cm": 13.0,
+  "back_out_cm": 17.3,
+  "nostril_clear_cm": -19.6,
+  "nostril_clear_raised_cm": 50.9,
+  "speed_ms": 1.38,
+  "tippy": false,
+  "passive_roll_deg": 0.0,
+  "verdict": "swims",
+  "summary": "Swims: floats level with its back 17 cm out of the water, holds its nostrils 51 cm clear and paddles at about 1.4 m/s (its legs push 125 N against the drag of 0.22 m² of body under water)."
+ },
+ "climb_check": {
+  "grip_by_species": {
+   "trex": 0.9,
+   "raptor": 1.0,
+   "ptera": 1.0,
+   "brachio": 0.8,
+   "trike": 0.75,
+   "ankylo": 0.75
+  },
+  "climb_push": 1.5,
+  "crawl_share": 0.25,
+  "lean_in": 0.5,
+  "max_deg": 42.0,
+  "grip": 0.9,
+  "grip_deg": 42.0,
+  "strength_deg": 89.0,
+  "speed_share": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "speed_step_deg": 5,
+  "verdict": "grip",
+  "why": "its clawed toes slip",
+  "summary": "Climbs slopes up to 42 degrees: steeper than that its clawed toes slip. It keeps full speed all the way up."
+ },
+ "flight_muscle_kg": 3.294,
+ "gait_check": {
+  "base": "trex",
+  "leg_height_cm": 90.0,
+  "base_leg_height_cm": 300.0,
+  "ratio": 13.92,
+  "base_ratio": 4.63,
+  "summary": "Gaits from its legs: 0.9 m high against the Tyrannosaurus rex's 3.0 m, 13.9 times as strong as their load against 4.6: it walks at 0.7 m/s (0.9 m strides) and its run reaches 5.3 m/s."
+ },
+ "splice": {
+  "base": "trex",
+  "donor": "trex",
+  "section": "Head",
+  "swapped": "Young T. rex with head 130%",
+  "lineage_kg": {
+   "Tyrannosaurus rex": 365.51
+  },
+  "lineage_share": {
+   "Tyrannosaurus rex": 1.0
+  },
+  "wings": false,
+  "notes": [
+   "Grown at 30% of its size: 365.5 kg."
+  ],
+  "made_by": "splice/compose.py (body grown by body_tools/grow_body.py)",
+  "flags": [],
+  "recipe": {
+   "base": "trex",
+   "size": 0.3,
+   "sections": {
+    "Head": {
+     "scale": 1.3
+    }
+   }
+  }
+ }
+}
