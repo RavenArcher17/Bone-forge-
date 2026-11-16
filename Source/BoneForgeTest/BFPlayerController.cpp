@@ -8985,6 +8985,49 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 	case 742:
 		{
 			ABFWorld* I = M->GetIsland();
+			// (2026-11-16: -bfterrain: a tour of the ground instead: two of each kind of land, the peak, a sea cliff and an
+			// islet, each from near the ground and from high and far off on another side; 2.5 s a view)
+			static const bool bTour = FParse::Param(FCommandLine::Get(), TEXT("bfterrain"));
+			if (bTour)
+			{
+				static TArray<FVector> TourAt;
+				static TArray<FString> TourNames;
+				if (AutoFrame == 1)
+				{
+					I->SetHours(10.5f);
+					SetFreeCam(true);
+					TourAt.Reset();
+					TourNames.Reset();
+					I->TourPoints(TourAt, TourNames);
+					for (int32 t = 0; t < TourAt.Num(); ++t)
+					{
+						UE_LOG(LogTemp, Display, TEXT("[BoneForge] terrain tour: %s at %s"), *TourNames[t], *TourAt[t].ToString());
+					}
+				}
+				const int32 K = int32(AutoClock / 2.5f);
+				if (K >= 2 * TourAt.Num())
+				{
+					SetFreeCam(false);
+					UE_LOG(LogTemp, Display, TEXT("[BoneForge] terrain tour: %d views"), K);
+					Next(9);
+					break;
+				}
+				const FVector At = TourAt[K / 2];
+				const bool bHigh = (K % 2) == 1;
+				const float Az = float(K / 2) * 1.7f + (bHigh ? 2.4f : 0.f);
+				const FVector Dir(FMath::Cos(Az), FMath::Sin(Az), 0.f);
+				FVector P = At + Dir * (bHigh ? 9000.f : 2600.f);
+				float Gp = float(P.Z);
+				I->GroundAt(FVector2D(P), Gp);
+				P.Z = FMath::Max(float(At.Z), FMath::Max(Gp, 0.f)) + (bHigh ? 4500.f : 260.f);
+				const FVector Look = At + FVector(0.f, 0.f, bHigh ? 0.f : 150.f);
+				FreeCam->SetActorLocationAndRotation(P, (Look - P).Rotation());
+				if (AutoClock - K * 2.5f > 2.f && AutoClock - DeltaTime - K * 2.5f <= 2.f)
+				{
+					Shot(*FString::Printf(TEXT("tour_%s_%s"), *TourNames[K / 2], bHigh ? TEXT("high") : TEXT("low")));
+				}
+				break;
+			}
 			if (AutoFrame == 1)
 			{
 				I->SetHours(11.f);

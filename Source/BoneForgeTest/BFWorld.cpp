@@ -167,7 +167,15 @@ void ABFWorld::MakeLand()
 			float Ridge = 1.f - FMath::Abs(Fbm(3, MX / 800.f, MY / 800.f, 4));
 			Ridge = Ridge * Ridge * Ridge;
 			const float Mountains = FMath::SmoothStep(0.f, 0.3f, Fbm(4, MX / 1400.f, MY / 1400.f, 2));
-			const float Up = 20.f + 34.f * Rises + 18.f * Hills + 200.f * Ridge * Mountains;
+			// (2026-11-16, terrain polish: the mountains were smooth domes. Gullies and spurs down their flanks, 40-80 m
+			// apart and up to ~9 m deep, more the higher the mountain; the rain then works them deeper.)
+			float Gully = 0.f;
+			if (!bOldSea)
+			{
+				const float Gn = FMath::PerlinNoise2D(FVector2D(MX / 70.f, MY / 70.f) + SeaOff[2] * 1.3f) + 0.5f * FMath::PerlinNoise2D(FVector2D(MX / 33.f, MY / 33.f) + SeaOff[1] * 0.7f);
+				Gully = (FMath::Square(1.f - FMath::Min(FMath::Abs(Gn), 1.f)) - 0.45f) * -9.f * FMath::Clamp(Ridge * Mountains * 2.f, 0.f, 1.f);
+			}
+			const float Up = 20.f + 34.f * Rises + 18.f * Hills + 200.f * Ridge * Mountains + Gully;
 			float Floor = -28.f + 4.f * Hills;
 			if (!bOldSea)
 			{
@@ -865,6 +873,51 @@ void ABFWorld::MakeLand()
 						Gorge[Cc] = 1;
 					}
 				}
+				// The lip (2026-11-16, Raven: the start of a fall "looks horrible": a raised bar of bank stood across the river
+				// at the edge, so the water seemed dammed and the curtain began below it). The river's channel carried right to
+				// the edge at its own level, and the banks beside it rising from it gently (~24 deg, ragged), so the water
+				// runs over the lip in a notch. Over the last 3 points before the edge, fading in from upstream.
+				// (tried 2026-11-16: at a lake's outlet the lip stepped down from the lake in a box; only with -bflipnotch)
+				if (FParse::Param(FCommandLine::Get(), TEXT("bflipnotch")))
+				{
+					// (the water's own level there: at a lake's outlet the lake stands over the run's level, and cut to the run's
+					// level the lip stepped down from the lake in a box)
+					const float TopLvl = FMath::Max(Lvl[TopC], W[TopC] > H[TopC] ? W[TopC] : -1000.f);
+					Fa.Top.Z = TopLvl * 100.f;
+					const float HalfW = FMath::Max(0.5f * Fa.WidthCm / CellCm, 0.6f);
+					for (int32 Y = FMath::Max(int32(T.Y) - 9, 1); Y <= FMath::Min(int32(T.Y) + 9, N - 2); ++Y)
+					{
+						for (int32 X = FMath::Max(int32(T.X) - 9, 1); X <= FMath::Min(int32(T.X) + 9, N - 2); ++X)
+						{
+							const FVector2D Q(X, Y);
+							const float Along = float(FVector2D::DotProduct(Q - T, Dir)), Lat = FMath::Abs(float(FVector2D::CrossProduct(Dir, Q - T)));
+							const int32 Cc = Idx(X, Y);
+							if (Along < -3.f || Along >= 0.6f || Kind[Cc] == 1 || Kind[Cc] == 2)
+							{
+								continue;
+							}
+							const float Fade = FMath::SmoothStep(-3.f, -1.f, Along);
+							const float Edge = Lat - HalfW;
+							if (Edge <= 0.f)
+							{
+								H[Cc] = FMath::Min(H[Cc], TopLvl - 0.5f);
+								W[Cc] = FMath::Max(W[Cc], TopLvl);
+								if (Kind[Cc] == 0)
+								{
+									Kind[Cc] = 3;
+								}
+							}
+							else
+							{
+								const float Bank = TopLvl + 0.15f + Edge * CellM * 0.45f + 0.5f * FMath::PerlinNoise2D(Q * 0.4f + FVector2D(3.f, 7.f));
+								if (Bank < H[Cc])
+								{
+									H[Cc] = FMath::Lerp(H[Cc], Bank, Fade);
+								}
+							}
+						}
+					}
+				}
 				Fa.Bottom = Origin + FVector(P.X * CellCm, P.Y * CellCm, PoolLvl * 100.f);
 				Fa.Dir = FVector(Dir.X, Dir.Y, 0.f);
 				Fa.DropM = Lvl[TopC] - PoolLvl;
@@ -1476,7 +1529,13 @@ void ABFWorld::MakeLand()
 			// rock down to the water)
 			if (Kind[C] == 0 && B != EBFBiome::Beach && ToWater[C] <= 2)
 			{
-				const FColor Wet = Gorge[C] ? FColor(96, 90, 80) : FColor(98, 88, 66);
+				// (and by a fall's lip, wet grey rock, not tan silt: 2026-11-16)
+				bool bByLip = false;
+				for (const FBFFall& Fa : Falls)
+				{
+					bByLip = bByLip || (Fa.PoolCm > 0.f && FVector::Dist2D(Origin + FVector(X * CellCm, Y * CellCm, 0.f), Fa.Top) < Fa.WidthCm + 1600.f);
+				}
+				const FColor Wet = (Gorge[C] || bByLip) ? FColor(96, 90, 80) : FColor(98, 88, 66);
 				const float Mix = ToWater[C] <= 1 ? 0.75f : 0.35f;
 				Base = FColor(uint8(FMath::Lerp(float(Base.R), float(Wet.R), Mix)), uint8(FMath::Lerp(float(Base.G), float(Wet.G), Mix)), uint8(FMath::Lerp(float(Base.B), float(Wet.B), Mix)));
 			}
@@ -1920,7 +1979,7 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 						const FVector2D D2 = FVector2D(Fa.Dir).GetSafeNormal(), Rel = FVector2D(Mid - Fa.Top);
 						const float AlongF = float(FVector2D::DotProduct(Rel, D2)), Lat = FMath::Abs(float(FVector2D::CrossProduct(D2, Rel)));
 						const float Reach = float(FVector2D::DotProduct(FVector2D(Fa.Bottom - Fa.Top), D2));
-						bOnFace = bOnFace || (AlongF > -1.5f * CellCm && AlongF < Reach + CellCm && Lat < 0.5f * Fa.WidthCm + 2.f * CellCm);
+						bOnFace = bOnFace || (AlongF > 0.3f * CellCm && AlongF < Reach + CellCm && Lat < 0.5f * Fa.WidthCm + 2.f * CellCm);
 					}
 					// (and not with a dry corner: a bank point takes the nearest water's level, which on a steep reach may be
 					// metres off, and those squares stood up as green shards across the gorge)
@@ -3108,13 +3167,20 @@ void ABFWorld::DressRavines()
 				const float Sl = float(Grad.Size());
 				// (2026-11-16: and any sheer face, over ~70 deg, wherever it is: the flanks of a fall's head, outside both
 				// the gorge and its pool, stood as smooth grey planes 50 m high)
-				if (!(bByGorge || bByFall || Sl >= 2.75f) || (bWet && !bByFall))
+				// (2026-11-16, terrain polish: the mountains were smooth grey domes. On their steeper bare slopes, in patches,
+				// outcrops: the same beds, so a mountain shows bands of rock stepping up it here and there)
+				// (tried: pale bars lying along the slopes, and 7,600 beds took island 13 from 25 s to 86 s to be ready. Off:
+				// -bfoutcrops to see them)
+				static const bool bOutcrops = FParse::Param(FCommandLine::Get(), TEXT("bfoutcrops"));
+				const bool bOutcrop = bOutcrops && Biome[C] == uint8(EBFBiome::Rock) && Sl >= 0.75f && H[C] > 20.f
+					&& FMath::PerlinNoise2D(FVector2D(X, Y) * 0.025f + FVector2D(Seed % 53, 11.f)) > 0.12f;
+				if (!(bByGorge || bByFall || bOutcrop || Sl >= 2.75f) || (bWet && !bByFall))
 				{
 					continue;
 				}
-				if (Sl < 0.85f)
+				if (Sl < (bOutcrop ? 0.75f : 0.85f))
 				{
-					continue;          // (under 40 deg: not a wall)
+					continue;          // (under 40 deg: not a wall; an outcrop from 37)
 				}
 				// (into the wall: the wall's way over 20 m, not this point's. A sheer face on the 4 m ground is a stair of
 				// columns, each its own way, and beds turned to each column stood as stacks, column by column)
@@ -3361,7 +3427,8 @@ void ABFWorld::BuildFalls()
 		TArray<FVector> V, Nm;
 		TArray<FVector2D> UV;
 		TArray<int32> T;
-		const float Width = FMath::Max(1.6f * Fa.WidthCm, 650.f);          // (over the river's own steep surface down the face, which showed beside it)
+		// (2026-11-16: the river's own width and a little, so it leaves the lip's notch: at 1.6 times, it went in under the banks)
+		const float Width = FMath::Max(Fa.WidthCm + 150.f, 450.f);
 		const float Speed = FMath::Clamp(150.f + 25.f * Fa.DropM, 200.f, 320.f);          // cm/s off the lip
 		const float Fall = FMath::Sqrt(2.f * Fa.DropM * 100.f / 980.f);                     // seconds
 		// (2026-11-16, Raven: "start of the waterfalls not connected": it began 2 m out past the lip, with a gap between it
@@ -5169,4 +5236,83 @@ float ABFWorld::RegrowKgPerS(float MaxLowCm) const
 		}
 	}
 	return float(Sum);
+}
+
+void ABFWorld::TourPoints(TArray<FVector>& At, TArray<FString>& Names) const
+{
+	// (2026-11-16, Raven: "do a terrain polish and check things from multiple angles")
+	FRandomStream R(Seed + 99);
+	auto Add = [&](int32 C, const TCHAR* Name)
+	{
+		At.Add(Origin + FVector((C % N) * CellCm, (C / N) * CellCm, FMath::Max(H[C], W[C] > H[C] ? W[C] : H[C]) * 100.f));
+		Names.Add(Name);
+	};
+	const struct { EBFBiome B; const TCHAR* Name; } Kinds[] = { { EBFBiome::Beach, TEXT("beach") }, { EBFBiome::Plains, TEXT("plains") },
+		{ EBFBiome::Forest, TEXT("forest") }, { EBFBiome::Swamp, TEXT("swamp") }, { EBFBiome::Rock, TEXT("rock") },
+		{ EBFBiome::Lake, TEXT("lake") }, { EBFBiome::River, TEXT("river") } };
+	for (const auto& Kd : Kinds)
+	{
+		TArray<int32> Got;
+		for (int32 Tries = 0; Tries < 200000 && Got.Num() < 2; ++Tries)
+		{
+			const int32 X = R.RandRange(20, N - 21), Y = R.RandRange(20, N - 21), C = Idx(X, Y);
+			if (Biome[C] != uint8(Kd.B))
+			{
+				continue;
+			}
+			// (well inside it: the same kind 3 points round)
+			bool bIn = true;
+			for (int32 dy = -3; dy <= 3 && bIn; dy += 3)
+			{
+				for (int32 dx = -3; dx <= 3 && bIn; dx += 3)
+				{
+					bIn = Biome[Idx(X + dx, Y + dy)] == uint8(Kd.B);
+				}
+			}
+			if (bIn && !Got.ContainsByPredicate([&](int32 O) { return FMath::Abs(O % N - X) + FMath::Abs(O / N - Y) < 80; }))
+			{
+				Got.Add(C);
+			}
+		}
+		for (int32 g = 0; g < Got.Num(); ++g)
+		{
+			Add(Got[g], *FString::Printf(TEXT("%s%d"), Kd.Name, g));
+		}
+	}
+	auto IsSea = [&](int32 C) { return Biome[C] == uint8(EBFBiome::Sea); };
+	auto IsLand = [&](int32 C) { return !IsSea(C) && Biome[C] != uint8(EBFBiome::Lake) && Biome[C] != uint8(EBFBiome::River); };
+	int32 Peak = 0, Cliff = INDEX_NONE, Islet = INDEX_NONE;
+	float CliffSl = 0.f, IsletH = 0.f;
+	for (int32 Y = 2; Y < N - 2; ++Y)
+	{
+		for (int32 X = 2; X < N - 2; ++X)
+		{
+			const int32 C = Idx(X, Y);
+			Peak = H[C] > H[Peak] ? C : Peak;
+			const float U = 2.f * X / (N - 1) - 1.f, V = 2.f * Y / (N - 1) - 1.f;
+			if (IsLand(C) && FMath::Sqrt(U * U + V * V) > 1.02f && H[C] > IsletH)
+			{
+				IsletH = H[C];
+				Islet = C;
+			}
+			if (IsLand(C) && (IsSea(C + 1) || IsSea(C - 1) || IsSea(C + N) || IsSea(C - N)))
+			{
+				const float Sl = FMath::Max(FMath::Abs(H[C + 2] - H[C - 2]), FMath::Abs(H[C + 2 * N] - H[C - 2 * N]));
+				if (Sl > CliffSl && FMath::Sqrt(U * U + V * V) < 1.f)
+				{
+					CliffSl = Sl;
+					Cliff = C;
+				}
+			}
+		}
+	}
+	Add(Peak, TEXT("peak"));
+	if (Cliff != INDEX_NONE)
+	{
+		Add(Cliff, TEXT("seacliff"));
+	}
+	if (Islet != INDEX_NONE)
+	{
+		Add(Islet, TEXT("islet"));
+	}
 }

@@ -66,6 +66,8 @@ public:
 
 	/** The ground's height (world Z, cm) under a point, and whether that point is over the island at all. */
 	bool GroundAt(const FVector2D& XY, float& Z) const;
+	/** Places to look at the ground from (-bfterrain): two of each kind of land, the peak, a sea cliff, an islet. */
+	void TourPoints(TArray<FVector>& At, TArray<FString>& Names) const;
 
 	/** Rock pieces (caves, 2026-11-14): a cave carved into the hill along Path (world points, its floor flat under each
 	 *  stretch), Radii one a point. The island's own ground stays everywhere else; over the piece's footprint its tiles

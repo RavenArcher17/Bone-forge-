@@ -953,7 +953,23 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
   the island's coast is further out (0.7-0.97 of the way to the edge, was 0.62-0.92; ~10 km2 of land, was ~8);
   5-9 islets (90-440 m across: knolls and low cays, with shallows round them) and 4-8 sea stacks out past the coast;
   the sea floor has banks and shoals (some 2-6 m down) and deepens toward the edge. `-bfoldsea`: as before.
-  `-bflandform` takes two views from high over the coast (`land_sea_ne`, `land_sea_w`). Every seed's island has
+  `-bflandform` takes two views from high over the coast (`land_sea_ne`, `land_sea_w`).
+- Terrain polish (2026-11-16, Raven: "do a terrain polish and check things from multiple angles"):
+  - `-bflandform -bfterrain`: a tour instead of the falls: two of each biome (beach, plains, forest, swamp, rock, lake,
+    river), the peak, a sea cliff and an islet, each from 2.6 m off the ground and from high and far on another side
+    (`tour_<place>_low/high`; `ABFWorld::TourPoints`).
+  - The ground's grain (`GROUND_HLSL`, rebuild with `BF_TERRAIN_ONLY=1` + `run_bf_materials.py`) was two dinosaur
+    scale tiles laid flat: everything read as a cracked tiled floor with pale ovals. Now procedural noise only (30 cm to
+    25 m, no cells): grass in clumps with yellower dry patches, sand with faint ripples, bare rock (steep or grey) banded
+    by height with darker streaks.
+  - Mountains: gullies and spurs 40-80 m apart, up to ~9 m deep, on the ridged mountains before the rain runs
+    (`-bfoldsea` turns them off with the sea).
+  - Tried and left off: rock outcrop beds on steep mountain slopes (`-bfoutcrops`: pale bars, and island 13 went from
+    25 s to 86 s); a notch cut into a fall's lip (`-bflipnotch`: at a lake's outlet it stepped down in a box).
+  - Falls: the curtain is the river's width + 1.5 m (was 1.6x, under the banks); ground by a fall's lip is wet grey
+    rock, not tan silt; the river's surface is drawn up to the lip.
+  - Still: a big fall's lip seen from below is blocky (the 4 m ground steps in columns beside it).
+ Every seed's island has
   changed shape, so an island saved before this will load with its animals where the old ground was. Island 13
   now takes ~25 s to be ready.
 - Lone spires by a gorge brought down to 1.5 m over the third highest point round them.

@@ -407,13 +407,55 @@ def build_skin_master(tiles):
 # bytes, so squared back to linear here), given grain by two of the tiles laid flat across the land: pebbles a couple of
 # metres across and broad patches tens of metres across, so open ground doesn't read as flat paint.
 GROUND_HLSL = r"""
-float2 xy = P.xy;
-float f1 = Texture2DSample(TFine, TFineSampler, xy / 260.0).r;
-float2 r = float2(xy.x * 0.8 - xy.y * 0.6, xy.x * 0.6 + xy.y * 0.8);
-float f2 = Texture2DSample(TFine, TFineSampler, r / 430.0 + 0.37).r;
-float broad = Texture2DSample(TBroad, TBroadSampler, xy / 2600.0).r;
+// (2026-11-16, Raven: "terrain polish ... more realistic". The grain was a dinosaur's scale tile laid flat (pebbles 2.6 m
+// and 4.3 m across): every slope, beach and lawn read as a cracked tiled floor with pale blotches. Now the grain is
+// noise with no cells or lines: mottling from 30 cm to 25 m, the broad tile only for patches 60 m across; grass in
+// clumps and dry patches, sand rippled faintly, and bare rock (steep, or grey) banded by height with darker streaks
+// running down it.)
 float3 c = pow(saturate(VC), 2.2);
-return c * (0.95 + 0.05 * (f1 + f2)) * (0.8 + 0.4 * broad);
+float2 m = P.xy / 100.0;                       // metres
+float n[5];
+float fr[5] = { 3.3, 0.9, 0.3, 0.09, 0.04 };   // 30 cm, 1.1 m, 3.3 m, 11 m, 25 m
+[unroll] for (int o = 0; o < 5; ++o)
+{
+    float2 q = m * fr[o] + float2(o * 17.3, o * 5.1);
+    float2 i = floor(q), f = frac(q);
+    f = f * f * (3.0 - 2.0 * f);
+    float4 h;
+    float2 k0 = frac((i + float2(0, 0)) * 0.3183099 + 0.1) * 17.0;
+    float2 k1 = frac((i + float2(1, 0)) * 0.3183099 + 0.1) * 17.0;
+    float2 k2 = frac((i + float2(0, 1)) * 0.3183099 + 0.1) * 17.0;
+    float2 k3 = frac((i + float2(1, 1)) * 0.3183099 + 0.1) * 17.0;
+    h.x = frac(k0.x * k0.y * (k0.x + k0.y));
+    h.y = frac(k1.x * k1.y * (k1.x + k1.y));
+    h.z = frac(k2.x * k2.y * (k2.x + k2.y));
+    h.w = frac(k3.x * k3.y * (k3.x + k3.y));
+    n[o] = lerp(lerp(h.x, h.y, f.x), lerp(h.z, h.w, f.x), f.y) * 2.0 - 1.0;
+}
+// (no tile at all: the broad one is a sauropod's polygon scales too, and even 60 m across its scales showed as 3 m cells)
+float broad = 0.5 + 0.35 * n[4] + 0.15 * n[3];
+float green = saturate((c.g - max(c.r, c.b)) * 12.0);           // grass
+float sand = saturate((c.r - c.b) * 6.0) * (1.0 - green);       // sand and silt
+float up = saturate(normalize(N).z);
+float rock = saturate(max((0.82 - up) / 0.22, saturate(1.0 - abs(c.r - c.b) * 8.0) * (1.0 - green) * 0.7));
+// everywhere: soft mottling
+float mott = 1.0 + 0.05 * n[1] + 0.06 * n[2] + 0.07 * n[3] + 0.04 * n[0];
+float3 o3 = c * mott * (0.88 + 0.24 * broad);
+// grass: clumps darker and lusher, dry patches yellower
+float clump = n[1] * 0.6 + n[0] * 0.4;
+float dry = smoothstep(0.25, 0.75, n[4] * 0.5 + n[3] * 0.35 + 0.5);
+float3 g = o3 * (1.0 + 0.12 * clump + 0.08 * n[3]);
+g = lerp(g, g * float3(1.25, 1.08, 0.66), 0.45 * dry);
+o3 = lerp(o3, g, green);
+// sand: faint wind ripples and wetter darker hollows
+float rip = sin((P.x * 0.8 + P.y * 0.6) / 100.0 * 9.0 + n[2] * 3.0);
+o3 = lerp(o3, o3 * (1.0 + 0.035 * rip + 0.04 * n[1]), sand);
+// rock: bands by height, darker streaks down it, lighter edges
+float band = sin(P.z / 100.0 * 1.6 + n[3] * 2.5 + n[4] * 3.0);
+float streak = smoothstep(0.55, 0.95, abs(n[1] * 0.7 + n[0] * 0.3));
+float3 r3 = o3 * (1.0 + 0.09 * band + 0.07 * n[2] + 0.06 * n[3]) * (1.0 - 0.28 * streak);
+o3 = lerp(o3, r3, rock);
+return o3;
 """
 
 
@@ -426,7 +468,9 @@ def build_terrain_master(tiles):
     wp = mel.create_material_expression(mat, unreal.MaterialExpressionWorldPosition, -900, -200)
     fine = param(mat, unreal.MaterialExpressionTextureObjectParameter, "FineTile", -900, 200, tiles.get("trex_pebble"))
     broad = param(mat, unreal.MaterialExpressionTextureObjectParameter, "BroadTile", -900, 400, tiles.get("sauropod_mixed"))
-    ground = custom(mat, GROUND_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["P", "VC", "TFine", "TBroad"], -500, 0, "Ground")
+    ground = custom(mat, GROUND_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["P", "VC", "TFine", "TBroad", "N"], -500, 0, "Ground")
+    nws = mel.create_material_expression(mat, unreal.MaterialExpressionVertexNormalWS, -900, 600)
+    connect(nws, "", ground, "N")
     connect(wp, "", ground, "P")
     connect(vc, "", ground, "VC")
     connect(fine, "", ground, "TFine")
