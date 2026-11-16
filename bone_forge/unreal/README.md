@@ -922,6 +922,21 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
   - Bed lumps capped at 55 cm (big blocks in narrow gorges were bulgy); beds are meshed finer (`Res` Mean/4.5, up to
     55 cm) so a flat top meets its face without a row of teeth. Island 13 now takes ~12 s to be ready (was ~7).
   Rock shapes split their quads the same diagonal-picking way as the rock pieces (no dark flecks).
+- Natural beds (2026-11-16, Raven: they "look like man made blocks and not natural"):
+  - Uneven beds: the island has its own bed levels, each gap 0.45-1.6 of `BandM`, shared by every wall. Thin (soft)
+    beds stand out 60% as far as thick (hard) ones, so hard beds jut as cliffs with soft ones weathered back.
+  - A bed's ends pinch back into the wall (no square ends); its front's in-and-out, thin layers and joints come from
+    the world position, not the block, so overlapping blocks carry on as one rock. Joints are wandering cracks top
+    to bottom through every bed, coming and going. The top is uneven, dips a little to the front, drops toward the
+    ends, and is rounded into the face (smooth min, 75 cm). All this grain is scaled to how far a bed stands out.
+  - Colour: banded by height the same everywhere (no shade per block), a little lighter on ledge tops; taken only
+    from dry, grey (not green) rock (`IsBare`); the log's gorge-walls entry gives the island's rock colour.
+  - Beds face the wall's way over 20 m (a 5x5 slope), not their own point's: a sheer face on the 4 m ground is a
+    stair of columns and beds turned to each column stood as stacks. On sheer faces (over ~76 deg) only hard beds,
+    half of them, 2.2x as long: a few long ledges across a mostly bare face. Shading normals of beds tipped up a
+    little, like the ground's smoothed normals.
+  - The ravine pass's own wall ledges are off unless `-bfoldwalls` (they were tinted by wherever they landed).
+  - Island 13 now takes ~20 s to be ready (was ~12): the beds' density costs more.
 - Lone spires by a gorge brought down to 1.5 m over the third highest point round them.
 - Rock pieces' quads split across whichever diagonal keeps both halves facing out (folded quads showed as dark flecks).
 - Checks: `-bflandform` takes 4 views a fall (front, side, the hollow from the pool, inside it looking along);

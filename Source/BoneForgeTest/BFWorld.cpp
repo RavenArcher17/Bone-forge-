@@ -2820,7 +2820,9 @@ void ABFWorld::DressRavines()
 						Set.Add(Bo);
 					}
 				}
-				if (Deep > 600.f)
+				// (2026-11-16: only with -bfoldwalls. The walls' own beds cover every gorge wall now; these older ledges, set
+				// on their own and tinted by the ground where they landed, stood out on a fall's face as olive stacks)
+				if (Deep > 600.f && FParse::Param(FCommandLine::Get(), TEXT("bfoldwalls")))
 				{
 					// a ledge in a wall, somewhere up it
 					const float S = R.FRand() < 0.5f ? -1.f : 1.f;
@@ -2884,13 +2886,31 @@ void ABFWorld::DressRavines()
 		int32 Walls = 0;
 		const float CellM = CellCm / 100.f;
 		const float BandM = Rw.FRandRange(3.5f, 6.f);          // (the island's rock: a bed every 3.5-6 m of height)
+		// (2026-11-16, Raven: the steps "look like man made blocks and not natural". One bed every BandM made courses of
+		// even bricks. Real rock is laid down unevenly: thick hard beds that stand out as cliffs, thin soft ones between
+		// that weather back. So the island has its own levels, each gap 0.45-1.6 of BandM, the same for every wall.)
+		TArray<float> Levels;
+		{
+			FRandomStream Rl(Seed + 8282);
+			for (float Lv = -60.f; Lv < 600.f; Lv += Rl.FRandRange(0.45f, 1.6f) * BandM)
+			{
+				Levels.Add(Lv);
+			}
+		}
 		FColor RockC(150, 142, 130);          // (the island's bare rock, on average: for a bed with no bare rock near it)
+		// (2026-11-16: bare rock is a point that's dry and grey, not green: the Rock biome takes in every slope over 30 deg,
+		// grassed ones too, and beds coloured from those came out olive on a fall's grey face)
+		auto IsBare = [&](int32 Ci)
+		{
+			const FColor Cc = Colour[Ci];
+			return Biome[Ci] == uint8(EBFBiome::Rock) && !(W[Ci] > H[Ci] + 0.05f) && int32(Cc.G) <= int32(Cc.R) + 3;
+		};
 		{
 			FLinearColor Sum(0.f, 0.f, 0.f, 0.f);
 			int32 Num = 0;
 			for (int32 C = 0; C < N * N; C += 7)
 			{
-				if (Biome[C] == uint8(EBFBiome::Rock) && !(W[C] > H[C] + 0.05f))
+				if (IsBare(C))
 				{
 					Sum += FLinearColor(Colour[C]);
 					++Num;
@@ -2935,7 +2955,15 @@ void ABFWorld::DressRavines()
 				{
 					continue;          // (under 40 deg: not a wall)
 				}
-				const FVector2D Up = Grad / Sl;           // into the wall
+				// (into the wall: the wall's way over 20 m, not this point's. A sheer face on the 4 m ground is a stair of
+				// columns, each its own way, and beds turned to each column stood as stacks, column by column)
+				FVector2D Wide((H[Idx(FMath::Min(X + 2, N - 1), Y)] - H[Idx(FMath::Max(X - 2, 0), Y)]), (H[Idx(X, FMath::Min(Y + 2, N - 1))] - H[Idx(X, FMath::Max(Y - 2, 0))]));
+				for (int32 o = -2; o <= 2; o += 4)
+				{
+					const int32 Yo = FMath::Clamp(Y + o, 2, N - 3), Xo = FMath::Clamp(X + o, 2, N - 3);
+					Wide += FVector2D(H[Idx(X + 2, Yo)] - H[Idx(X - 2, Yo)], H[Idx(Xo, Y + 2)] - H[Idx(Xo, Y - 2)]);
+				}
+				const FVector2D Up = Wide.Size() > 0.01f ? Wide.GetSafeNormal() : Grad / Sl;           // into the wall
 				const FVector2D Along(-Up.Y, Up.X);
 				const FVector P0 = Origin + FVector((X + Rw.FRandRange(-0.4f, 0.4f)) * CellCm, (Y + Rw.FRandRange(-0.4f, 0.4f)) * CellCm, 0.f);
 				bool bClear = true;
@@ -2991,7 +3019,7 @@ void ABFWorld::DressRavines()
 				// (its colour the nearest bare rock's: a wet point's own is the water's edge, a rim point's the grass above,
 				// and beds in those came out dark against the face)
 				FColor WallC = Colour[C];
-				if (Biome[C] != uint8(EBFBiome::Rock) || bWet)
+				if (!IsBare(C))
 				{
 					WallC = RockC;
 					int32 Best = MAX_int32;
@@ -3000,7 +3028,7 @@ void ABFWorld::DressRavines()
 						for (int32 dx = -5; dx <= 5; ++dx)
 						{
 							const int32 Cn = Idx(FMath::Clamp(X + dx, 0, N - 1), FMath::Clamp(Y + dy, 0, N - 1));
-							if (Biome[Cn] == uint8(EBFBiome::Rock) && !(W[Cn] > H[Cn] + 0.05f) && dx * dx + dy * dy < Best)
+							if (IsBare(Cn) && dx * dx + dy * dy < Best)
 							{
 								Best = dx * dx + dy * dy;
 								WallC = Colour[Cn];
@@ -3017,9 +3045,19 @@ void ABFWorld::DressRavines()
 				GroundAt(FVector2D(P0) - Up * CellCm, GDn);
 				const float SlUp = FMath::Max((GUp - G) / CellCm, 0.3f), SlDn = FMath::Max((G - GDn) / CellCm, 0.3f);
 				const float SpanUp = 0.5f * SlUp * CellM, SpanDn = 0.5f * SlDn * CellM;
-				for (float Lv = FMath::FloorToFloat((HereM - SpanDn - Dip) / BandM) * BandM + Dip; Lv <= HereM + SpanUp; Lv += BandM)
+				for (int32 Li = 1; Li < Levels.Num(); ++Li)
 				{
-					if (Lv < HereM - SpanDn || Rw.FRand() > 0.92f || float(Origin.Z) + Lv * 100.f < MinZ)
+					const float Lv = Levels[Li] + Dip;
+					const float GapM = Levels[Li] - Levels[Li - 1];          // (this bed's thickness)
+					if (Lv < HereM - SpanDn || Lv > HereM + SpanUp || Rw.FRand() > 0.92f || float(Origin.Z) + Lv * 100.f < MinZ)
+					{
+						continue;
+					}
+					const bool bSoft = GapM < 0.75f * BandM;          // (a thin bed: soft, weathered back between the hard ones)
+					// (a sheer face, over ~76 deg, as at a big fall: only its hard beds, longer and fewer. Every bed there stood
+					// out as stacks of small blocks; a real sheer face is mostly bare rock with a few long ledges across it)
+					const bool bSheer = (Lv > HereM ? SlUp : SlDn) >= 4.f;
+					if (bSheer && (bSoft || Rw.FRand() < 0.5f))
 					{
 						continue;
 					}
@@ -3030,13 +3068,13 @@ void ABFWorld::DressRavines()
 					// front is a sheer face from its top nearly down to the bed below, its top the ledge, its foot and back
 					// deep in the ground. Stacked, the slope is rock all the way: sheer faces and ledges, now and then a strip
 					// of ground where a face stops short.)
-					const float Face = Rw.FRandRange(0.75f, 1.f) * BandM * 100.f;          // (the face's height, cm)
-					const float Out = FMath::Clamp(Face / SlHere, 60.f, 380.f);              // (how far its front stands from the wall at its top)
+					const float Face = Rw.FRandRange(0.75f, 1.f) * GapM * 100.f;          // (the face's height, cm)
+					const float Out = FMath::Clamp(Face / SlHere, 90.f, 380.f) * (bSoft ? 0.6f : 1.f);   // (how far its front stands from the wall at its top)
 					const float Back = 180.f;                                                // (and its back, into the wall)
 					FBFRock Rk;
 					Rk.Kind = 1;
 					Rk.Seed = Rw.RandRange(0, 65535);
-					Rk.Half = FVector(Rw.FRandRange(330.f, 560.f), 0.5f * (Out + Back), 0.5f * (BandM * 100.f + 220.f));          // (long: a bed runs on unbroken more than it breaks)
+					Rk.Half = FVector(Rw.FRandRange(380.f, 620.f) * (bSheer ? 2.2f : 1.f), 0.5f * (Out + Back), 0.5f * (GapM * 100.f + 220.f));          // (long: a bed runs on unbroken more than it breaks)
 					Rk.Rot = FRotator(Rw.FRandRange(-1.5f, 1.5f), Yaw + Rw.FRandRange(-5.f, 5.f), Rw.FRandRange(-1.5f, 1.5f));
 					const FVector2D In = Up * (0.5f * (Back - Out));
 					Rk.TopZ = float(Origin.Z) + Lv * 100.f;
@@ -3073,7 +3111,7 @@ void ABFWorld::DressRavines()
 			}
 			AddRocks(It.Value);
 		}
-		LandformText += FString::Printf(TEXT("; %d rocks in gorge walls"), Walls);
+		LandformText += FString::Printf(TEXT("; %d rocks in gorge walls (rock colour %d,%d,%d)"), Walls, RockC.R, RockC.G, RockC.B);
 	}
 }
 
@@ -3790,13 +3828,37 @@ float ABFWorld::RockDensity(const FBFRock& R, const FVector& P) const
 	float Solid = -Sd + Amp * FMath::PerlinNoise3D(L / Scale + Jitter) + 0.4f * Amp * FMath::PerlinNoise3D(L / (0.38f * Scale) + Jitter * 2.f);
 	if (bBed)
 	{
-		// the face weathered in bands (thinner beds within the bed) and split now and then by joints, top to bottom
-		// (2026-11-16: big blocks in a narrow gorge came out bulgy, their lumps as big as a quarter of the block: the
-		// lumps capped at 55 cm, so a face stays a face, broken by its bands and joints)
-		const float Ab = FMath::Min(Amp, 55.f);
-		Solid = -Sd + 0.5f * Ab * FMath::PerlinNoise3D(L / Scale + Jitter)
-			+ 0.55f * Ab * FMath::PerlinNoise3D(FVector(L.X / (1.4f * Mean), L.Y / (1.4f * Mean), L.Z / 150.f) + Jitter * 2.f)
-			+ 0.45f * Ab * FMath::PerlinNoise3D(FVector(L.X / 120.f, L.Y / 400.f, L.Z / (2.f * Mean)) + Jitter * 3.f);
+		// (2026-11-16, Raven: still "man made blocks and not natural". Each block had square ends, its own lumps and its
+		// own flat top, so the wall read as courses of masonry. Now:
+		// - its ends pinch back into the wall (a bed thins out and fades, it doesn't stop square), so neighbours' fronts
+		//   run together as one wavy line;
+		// - its grain is the wall's, not its own: the front's in-and-out, thin layers and joints are all taken from the
+		//   world's position, the same for every block there, so where blocks overlap the rock carries straight on;
+		// - joints: wandering cracks from top to bottom, through every bed alike, as real rock splits;
+		// - its top rounded off into its face and dipping a little to the front, uneven, lower toward its ends.)
+		const float Ends = FMath::Square(FMath::Clamp(FMath::Abs(float(L.X)) / float(R.Half.X), 0.f, 1.f));
+		FVector Lp = L;
+		Lp.Y += Ends * 0.9f * FMath::Min(float(R.Half.Y), 2.f * float(R.Half.Y) - 180.f);          // (local +Y is out of the wall: its front drawn back)
+		const FVector Qb = Lp.GetAbs() - (R.Half - FVector(Round));
+		const float SdB = float(FVector(FMath::Max(Qb.X, 0.0), FMath::Max(Qb.Y, 0.0), FMath::Max(Qb.Z, 0.0)).Size()) + FMath::Min(float(FMath::Max3(Qb.X, Qb.Y, Qb.Z)), 0.f) - Round;
+		const FVector Wo(float(Seed % 97) * 3.7f, float(Seed % 89) * 2.9f, 11.f);
+		const FVector Pw = P;
+		const float Wave = 75.f * FMath::PerlinNoise3D(FVector(Pw.X / 800.f, Pw.Y / 800.f, Pw.Z / 1100.f) + Wo)
+			+ 28.f * FMath::PerlinNoise3D(Pw / 230.f + Wo * 1.7f);
+		const float Thin = 30.f * FMath::PerlinNoise3D(FVector(Pw.X / 2600.f, Pw.Y / 2600.f, Pw.Z / 95.f) + Wo * 2.3f);
+		const float Jn = FMath::PerlinNoise2D(FVector2D(Pw.X / 460.f, Pw.Y / 460.f) + FVector2D(Wo.X, Wo.Y) * 0.31f);
+		const float JOn = FMath::Clamp(0.5f + 1.5f * FMath::PerlinNoise2D(FVector2D(Pw.X / 1500.f, Pw.Y / 1500.f) + FVector2D(Wo.Y, Wo.X)), 0.f, 1.f);
+		// (on a sheer face a bed stands out under a metre: grain as deep as that broke it into stacks of lumps, so the
+		// grain is scaled to how far the bed stands out)
+		const float Fit = FMath::Clamp((2.f * float(R.Half.Y) - 180.f) / 260.f, 0.3f, 1.f);
+		const float Joint = 75.f * Fit * JOn * FMath::Square(FMath::Max(0.f, 1.f - FMath::Abs(Jn) / 0.12f));
+		Solid = -SdB + Fit * Wave + Thin - Joint + 10.f * FMath::PerlinNoise3D(L / 90.f + Jitter);
+		const float TopHere = float(R.TopZ) - Ends * 80.f - 0.14f * FMath::Max(float(L.Y), 0.f)
+			+ 28.f * FMath::PerlinNoise2D(FVector2D(Pw.X / 520.f, Pw.Y / 520.f) + FVector2D(Wo.Z, Wo.X));
+		const float Cut = TopHere - float(P.Z);
+		const float K = 75.f;          // (how round the top's edge: a smooth min of the rock and the cut)
+		const float Hk = FMath::Max(K - FMath::Abs(Solid - Cut), 0.f) / K;
+		return FMath::Min(Solid, Cut) - Hk * Hk * K * 0.25f;
 	}
 	if (R.Kind == 1)
 	{
@@ -3930,11 +3992,28 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 				return;
 			}
 			const float Up = FMath::Clamp((float(Nf.Z) - 0.6f) / 0.3f, 0.f, 1.f);
-			const FColor Cl = FMath::Lerp(Base, Moss, bInWall ? 0.f : (R.Kind == 0 ? 0.45f * Up : 0.12f * Up)).ToFColor(true);
+			FColor Cl = FMath::Lerp(Base, Moss, bInWall ? 0.f : (R.Kind == 0 ? 0.45f * Up : 0.12f * Up)).ToFColor(true);
+			if (bInWall)
+			{
+				// (2026-11-16: a shade per block picked each one out as a brick. The wall's colour in bands by height, the
+				// same for every block, a little lighter where a ledge's top catches dust)
+				const FVector Pc = (PA + PB + PC) / 3.f;
+				const FVector Wo(float(Seed % 97) * 3.7f, float(Seed % 89) * 2.9f, 11.f);
+				const float Band = 1.f + 0.07f * FMath::PerlinNoise3D(FVector(Pc.X / 3000.f, Pc.Y / 3000.f, Pc.Z / 160.f) + Wo)
+					+ 0.035f * FMath::PerlinNoise3D(Pc / 450.f + Wo * 0.7f) + 0.05f * Up;
+				Cl = (FLinearColor(R.Tint) * Band).ToFColor(true);
+			}
 			const int32 First = Verts.Num();
 			Verts.Append({ PA, PB, PC });
 			const float ToWall = R.Kind == 1 ? 0.25f : 0.45f;          // (a bed's sheer face keeps more of its own light and shade)
-			const FVector Ns = R.WallN.IsZero() ? Nf : ((1.f - ToWall) * Nf + ToWall * R.WallN).GetSafeNormal();
+			FVector Ns = R.WallN.IsZero() ? Nf : ((1.f - ToWall) * Nf + ToWall * R.WallN).GetSafeNormal();
+			if (R.Kind == 1 && bInWall)
+			{
+				// (2026-11-16: beds on a fall's shaded face came out darker than the bare face round them. The ground's
+				// normals are smoothed across a 4 m step, so a sheer face of ground is shaded as if half facing the sky;
+				// a bed's flat facets faced straight out. Tipped up part way, as the ground's are, they take its light.)
+				Ns = (Ns + FVector(0.f, 0.f, 0.45f)).GetSafeNormal();
+			}
 			Normals.Append({ Ns, Ns, Ns });
 			Colours.Append({ Cl, Cl, Cl });
 			Tris.Append({ First, First + 1, First + 2 });
