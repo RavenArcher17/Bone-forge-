@@ -42,6 +42,7 @@ struct FBFRock
 	float TopZ = 0.f;
 	FColor Tint = FColor(0, 0, 0, 0);          // (alpha 0: its own grey) set in a wall: the wall's own colour
 	FVector WallN = FVector::ZeroVector;       // set in a wall: its facets shaded part way to the wall's facing, so it reads as the wall's
+	bool bBed = false;                          // a bed of a gorge wall (DressRavines): local +Y out of the wall, shaped as rock beds
 };
 
 UCLASS()
@@ -210,6 +211,7 @@ public:
 
 	static constexpr int32 N = 1025;           // grid points a side
 	static constexpr float CellCm = 400.f;     // 4 m between them: 4,096 m across
+	FVector GridOrigin() const { return Origin; }          // the grid's (0, 0) corner, world cm (checks)
 	static constexpr int32 ChunkCells = 64;    // a tile: 64 x 64 cells, 256 m (16 x 16 tiles)
 
 private:

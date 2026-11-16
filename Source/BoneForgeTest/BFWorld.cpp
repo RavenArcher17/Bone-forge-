@@ -119,6 +119,40 @@ void ABFWorld::MakeLand()
 
 	// The land: a round island pushed in and out by noise; broad rises and basins, rolling hills, and a rocky spine where a
 	// slow noise says mountains (ridged noise: sharp crests, wide valleys). Metres above the sea.
+	// (2026-11-16, Raven: "the map is mostly ocean around the small island ... a bigger island or some smaller masses out
+	// in the sea ... other than just shallow flat ocean". The island reaches further out (its coast at 0.7-0.97 of the way
+	// to the edge, was 0.62-0.92); out in the sea round it, 3-6 islets (90-280 m across, a rocky knoll or a low cay) and
+	// a few sea stacks; the sea floor has banks and shoals (some 2-6 m under the water, showing pale) and deepens toward
+	// the edge.) -bfoldsea: as before.
+	const bool bOldSea = FParse::Param(FCommandLine::Get(), TEXT("bfoldsea"));
+	struct FIslet { FVector2D At; float R; float Peak; };
+	TArray<FIslet> Islets;
+	FVector2D SeaOff[3];
+	{
+		FRandomStream Ri(Seed + 4242);
+		for (FVector2D& O : SeaOff)
+		{
+			O = FVector2D(Ri.FRandRange(-20000.f, 20000.f), Ri.FRandRange(-20000.f, 20000.f));
+		}
+		const int32 Want = bOldSea ? 0 : Ri.RandRange(5, 9), Stacks = bOldSea ? 0 : Ri.RandRange(4, 8);
+		for (int32 Tries = 0; Tries < 400 && Islets.Num() < Want + Stacks; ++Tries)
+		{
+			const bool bStack = Islets.Num() >= Want;
+			const FVector2D Uv(Ri.FRandRange(-0.86f, 0.86f), Ri.FRandRange(-0.86f, 0.86f));
+			if (Uv.Size() < (bStack ? 0.98f : 1.04f))
+			{
+				continue;          // (out past the island's coast)
+			}
+			const FIslet It{ FVector2D((Uv.X + 1.f) * 0.5f * SizeM, (Uv.Y + 1.f) * 0.5f * SizeM),
+				bStack ? Ri.FRandRange(10.f, 22.f) : Ri.FRandRange(45.f, Islets.Num() < 2 ? 220.f : 140.f), bStack ? Ri.FRandRange(12.f, 30.f) : Ri.FRandRange(4.f, 42.f) };
+			if (Islets.ContainsByPredicate([&](const FIslet& O) { return FVector2D::Distance(O.At, It.At) < O.R + It.R + 150.f; }))
+			{
+				continue;
+			}
+			Islets.Add(It);
+		}
+	}
+	const float CoastIn = bOldSea ? 0.62f : 0.7f, CoastOut = bOldSea ? 0.92f : 0.97f;
 	H.SetNumUninitialized(N * N);
 	ParallelFor(N, [&](int32 Y)
 	{
@@ -127,15 +161,38 @@ void ABFWorld::MakeLand()
 			const float MX = X * CellM, MY = Y * CellM;
 			const float U = 2.f * MX / SizeM - 1.f, V = 2.f * MY / SizeM - 1.f;
 			const float D = FMath::Sqrt(U * U + V * V) + 0.22f * Fbm(0, MX / 900.f, MY / 900.f, 3);
-			const float Land = 1.f - FMath::SmoothStep(0.62f, 0.92f, D);
+			const float Land = 1.f - FMath::SmoothStep(CoastIn, CoastOut, D);
 			const float Rises = Fbm(1, MX / 1600.f, MY / 1600.f, 4);
 			const float Hills = Fbm(2, MX / 450.f, MY / 450.f, 5);
 			float Ridge = 1.f - FMath::Abs(Fbm(3, MX / 800.f, MY / 800.f, 4));
 			Ridge = Ridge * Ridge * Ridge;
 			const float Mountains = FMath::SmoothStep(0.f, 0.3f, Fbm(4, MX / 1400.f, MY / 1400.f, 2));
 			const float Up = 20.f + 34.f * Rises + 18.f * Hills + 200.f * Ridge * Mountains;
-			const float Floor = -28.f + 4.f * Hills;
-			H[Idx(X, Y)] = FMath::Lerp(Floor, FMath::Max(Up, 3.f), Land);
+			float Floor = -28.f + 4.f * Hills;
+			if (!bOldSea)
+			{
+				// banks and shoals, deeper toward the edge
+				const float Bank = FMath::PerlinNoise2D(FVector2D(MX / 650.f, MY / 650.f) + SeaOff[0]) + 0.5f * FMath::PerlinNoise2D(FVector2D(MX / 260.f, MY / 260.f) + SeaOff[1]);
+				Floor = -30.f + 4.f * Hills + 28.f * FMath::SmoothStep(0.0f, 0.6f, Bank) - 14.f * FMath::SmoothStep(1.05f, 1.4f, FMath::Sqrt(U * U + V * V));
+			}
+			float Hh = FMath::Lerp(Floor, FMath::Max(Up, 3.f), Land);
+			for (const FIslet& It : Islets)
+			{
+				// an islet: a knoll, ragged at its shore, rising to its peak (a stack: sheer, flat-topped)
+				const float Dm = float(FVector2D::Distance(FVector2D(MX, MY), It.At));
+				if (Dm > It.R * 2.2f)
+				{
+					continue;
+				}
+				const float Ragged = 1.f + 0.35f * FMath::PerlinNoise2D(FVector2D(MX / 60.f, MY / 60.f) + SeaOff[2]);
+				const float T = Dm / (It.R * Ragged);
+				const bool bStack = It.R < 30.f;
+				const float Top = bStack ? It.Peak * (1.f - FMath::SmoothStep(0.75f, 1.f, T))
+					: 2.f + It.Peak * FMath::Square(FMath::Max(1.f - T, 0.f)) + 3.f * Hills * FMath::Max(1.f - T, 0.f);
+				const float Shelf = FMath::Lerp(-3.f, Floor, FMath::SmoothStep(1.f, 2.2f, T));          // (shallows round it)
+				Hh = FMath::Max(Hh, T < 1.f ? FMath::Max(Top, 1.5f * (1.f - T)) : Shelf);
+			}
+			H[Idx(X, Y)] = Hh;
 		}
 	});
 	Progress = 0.1f;
@@ -789,8 +846,16 @@ void ABFWorld::MakeLand()
 								Kind[Cc] = 3;
 							}
 						}
-						else if (Kind[Cc] == 0)
+						else if (Kind[Cc] == 0 || Kind[Cc] == 3)
 						{
+							// (2026-11-16, Raven, island 906: spikes 15-30 m round a big fall's pool. They were river points of the
+							// old cascade, beside the run but outside the pool: only land was brought down to the walls, so they
+							// stood at their old heights. Now they come down too, and dry: the water goes down the face.)
+							if (Kind[Cc] == 3)
+							{
+								Kind[Cc] = 0;
+							}
+							W[Cc] = -1000.f;          // (dry: water left up a lowered wall stood as sheets up the gorge's sides)
 							const float Wall = PoolLvl + 0.5f + FMath::Max(D - Rw + 0.6f * FMath::PerlinNoise2D(Q * 0.33f + FVector2D(9.f, 4.f)), 0.f) * CellM * 1.8f + 2.5f * FMath::PerlinNoise2D(Q * 0.45f);          // (~60 deg, ragged: steeper stood as flat plates on the 4 m grid)
 							if (Wall < H[Cc])
 							{
@@ -1287,6 +1352,16 @@ void ABFWorld::MakeLand()
 				{
 					bNear = bNear || FVector::Dist2D(P, Fa.Bottom) < Fa.PoolCm + 6000.f || FVector::Dist2D(P, Fa.Top) < 4000.f;
 				}
+				// (2026-11-16, Raven, island 906: spikes 15 m and more on the wet silt beside a river, down from a fall but
+				// outside the reach above. Now beside any water too: within 2 points of a wet one)
+				for (int32 dy = -2; dy <= 2 && !bNear; ++dy)
+				{
+					for (int32 dx = -2; dx <= 2 && !bNear; ++dx)
+					{
+						const int32 Cw = Idx(X + dx, Y + dy);
+						bNear = W[Cw] > H[Cw] + 0.05f;
+					}
+				}
 				Near[Idx(X, Y)] = bNear ? 1 : 0;
 			}
 		}
@@ -1774,6 +1849,11 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 	// the surface meets the banks; the sea is the one wide plane.
 	TArray<int32> WIndex;
 	WIndex.Init(INDEX_NONE, V * V);
+	TArray<uint8> WetV;
+	WetV.Init(0, V * V);
+	TArray<FVector> RVerts, RNormals;          // (steep reaches: white water, the fall's material)
+	TArray<FVector2D> RUV;
+	TArray<int32> RTris;
 	for (int32 y = 0; y < V; ++y)
 	{
 		for (int32 x = 0; x < V; ++x)
@@ -1807,6 +1887,7 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 			}
 			// None over the sea (a river's mouth comes down to the sea's level in MakeLand and hands over to the sea there).
 			const uint8 ToSea = SeaSteps[C0];
+			WetV[y * V + x] = (W[C0] > 0.05f && W[C0] > H[C0]) ? 1 : 0;
 			if (Level > -999.f && ToSea > 0)
 			{
 				WIndex[y * V + x] = WVerts.Add(Origin + FVector(GX * CellCm, GY * CellCm, Level * 100.f));
@@ -1824,8 +1905,75 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 				// (None down a fall's face, 3 m or more across one cell: the curtain is its water there, and the surface
 				// sloping down the face hid the hollow behind it, 2026-11-15.)
 				const float Z0 = float(WVerts[A].Z), Z1 = float(WVerts[B].Z), Z2 = float(WVerts[C].Z), Z3 = float(WVerts[D].Z);
+				// (2026-11-16, Raven: "messed up square water" on island 906: every steep square anywhere was left out, so a
+				// cascade below a fall was a row of loose diamonds. Now only those on a fall's own face.)
 				if (FMath::Max(FMath::Max(Z0, Z1), FMath::Max(Z2, Z3)) - FMath::Min(FMath::Min(Z0, Z1), FMath::Min(Z2, Z3)) >= 300.f && Falls.Num() > 0)
 				{
+					const FVector Mid = (WVerts[A] + WVerts[D]) * 0.5f;
+					bool bOnFace = false;
+					for (const FBFFall& Fa : Falls)
+					{
+						if (Fa.PoolCm <= 0.f)
+						{
+							continue;          // (a small fall in steps: its water drawn down them)
+						}
+						const FVector2D D2 = FVector2D(Fa.Dir).GetSafeNormal(), Rel = FVector2D(Mid - Fa.Top);
+						const float AlongF = float(FVector2D::DotProduct(Rel, D2)), Lat = FMath::Abs(float(FVector2D::CrossProduct(D2, Rel)));
+						const float Reach = float(FVector2D::DotProduct(FVector2D(Fa.Bottom - Fa.Top), D2));
+						bOnFace = bOnFace || (AlongF > -1.5f * CellCm && AlongF < Reach + CellCm && Lat < 0.5f * Fa.WidthCm + 2.f * CellCm);
+					}
+					// (and not with a dry corner: a bank point takes the nearest water's level, which on a steep reach may be
+					// metres off, and those squares stood up as green shards across the gorge)
+					// (nor where a corner's water is deep, or the square stands near sheer: water left over lowered ground)
+					// (2026-11-16, Raven, island 906 "messed up square water": a steep reach a point wide went as a row of loose
+					// diamonds. A bank corner takes the nearest water's level, metres off on a steep reach (green shards when
+					// drawn). Now: with two wet corners or more, none deep, a bank corner takes the mean of the square's own wet
+					// corners, and the square is drawn as white water tumbling down.)
+					const int32 Vs[4] = { y * V + x, y * V + x + 1, (y + 1) * V + x, (y + 1) * V + x + 1 };
+					const int32 Ws[4] = { A, B, C, D };
+					bool bDeep = false;
+					int32 NWet = 0;
+					float WetZ = 0.f;
+					for (int32 k = 0; k < 4; ++k)
+					{
+						const int32 Cv = Idx(FMath::Clamp(CX * ChunkCells + Vs[k] % V, 0, N - 1), FMath::Clamp(CY * ChunkCells + Vs[k] / V, 0, N - 1));
+						if (WetV[Vs[k]])
+						{
+							bDeep = bDeep || W[Cv] - H[Cv] > 2.5f;          // (water left over lowered ground)
+							++NWet;
+							WetZ += float(WVerts[Ws[k]].Z);
+						}
+					}
+					if (bOnFace || bDeep || NWet < 2)
+					{
+						continue;
+					}
+					WetZ /= float(NWet);
+					FVector Q[4];
+					float Lo = 1e9f, Hi = -1e9f;
+					for (int32 k = 0; k < 4; ++k)
+					{
+						Q[k] = WVerts[Ws[k]];
+						if (!WetV[Vs[k]])
+						{
+							Q[k].Z = WetZ;
+						}
+						Lo = FMath::Min(Lo, float(Q[k].Z));
+						Hi = FMath::Max(Hi, float(Q[k].Z));
+					}
+					if (Hi - Lo > 500.f)
+					{
+						continue;          // (near sheer: a fall's, not a reach's)
+					}
+					const int32 R0 = RVerts.Num();
+					for (int32 k = 0; k < 4; ++k)
+					{
+						const FVector Pw = Q[k] + FVector(0.f, 0.f, 8.f);
+						RVerts.Add(Pw);
+						RNormals.Add(FVector::UpVector);
+						RUV.Add(FVector2D(float(Pw.X + Pw.Y) / 400.f, -float(Pw.Z) / 200.f));
+					}
+					RTris.Append({ R0, R0 + 2, R0 + 1, R0 + 1, R0 + 2, R0 + 3 });
 					continue;
 				}
 				WTris.Append({ A, C, B, B, C, D });
@@ -1856,6 +2004,18 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 		Water->CreateMeshSection(0, WVerts, WTris, WNormals, {}, {}, {}, false);
 		Water->SetMaterial(0, FreshMat);
 		Tiles.Add(Water);
+	}
+	if (RTris.Num() > 0)
+	{
+		static UMaterialInterface* WhiteMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/BoneForge/Materials/M_BoneForgeFall.M_BoneForgeFall"), nullptr, LOAD_NoWarn | LOAD_Quiet);
+		UProceduralMeshComponent* Rapids = NewObject<UProceduralMeshComponent>(this);
+		Rapids->SetupAttachment(GetRootComponent());
+		Rapids->SetCastShadow(false);
+		Rapids->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Rapids->RegisterComponent();
+		Rapids->CreateMeshSection(0, RVerts, RTris, RNormals, RUV, {}, {}, false);
+		Rapids->SetMaterial(0, WhiteMat ? WhiteMat : FreshMat.Get());
+		Tiles.Add(Rapids);
 	}
 }
 
@@ -2903,7 +3063,8 @@ void ABFWorld::DressRavines()
 		auto IsBare = [&](int32 Ci)
 		{
 			const FColor Cc = Colour[Ci];
-			return Biome[Ci] == uint8(EBFBiome::Rock) && !(W[Ci] > H[Ci] + 0.05f) && int32(Cc.G) <= int32(Cc.R) + 3;
+			// (and not tan or olive: the wet silt by a river passed "not green", and beds by a fall came out olive)
+			return Biome[Ci] == uint8(EBFBiome::Rock) && !(W[Ci] > H[Ci] + 0.05f) && int32(Cc.G) <= int32(Cc.R) + 3 && float(Cc.B) >= 0.8f * float(Cc.R);
 		};
 		{
 			FLinearColor Sum(0.f, 0.f, 0.f, 0.f);
@@ -3081,6 +3242,7 @@ void ABFWorld::DressRavines()
 					Rk.At = FVector(P0.X + Off.X + In.X, P0.Y + Off.Y + In.Y, Rk.TopZ - float(Rk.Half.Z) + 30.f);
 					Rk.Tint = WallC;
 					Rk.WallN = WallN;
+					Rk.bBed = true;
 					ByBlock.FindOrAdd((Y / 30) * 1000 + X / 30).Add(Rk);
 					++Walls;
 				}
@@ -3202,9 +3364,19 @@ void ABFWorld::BuildFalls()
 		const float Width = FMath::Max(1.6f * Fa.WidthCm, 650.f);          // (over the river's own steep surface down the face, which showed beside it)
 		const float Speed = FMath::Clamp(150.f + 25.f * Fa.DropM, 200.f, 320.f);          // cm/s off the lip
 		const float Fall = FMath::Sqrt(2.f * Fa.DropM * 100.f / 980.f);                     // seconds
-		const FVector Lip = Fa.Top + Fa.Dir * (0.5f * CellCm) + FVector(0.f, 0.f, 15.f);
+		// (2026-11-16, Raven: "start of the waterfalls not connected": it began 2 m out past the lip, with a gap between it
+		// and the river's surface, which ends at the lip's point. Now it begins a little back over the river's own surface
+		// and leaves the lip from there.)
+		// (and a fall under 5 m isn't reshaped: its water comes down in steps over several points, the surface drawn down
+		// them as rapids; a curtain in free fall from its first point lay across the bank beside them. None there.)
+		if (Fa.PoolCm <= 0.f)
+		{
+			continue;
+		}
+		const FVector Lip = Fa.Top - Fa.Dir * (0.35f * CellCm) + FVector(0.f, 0.f, 12.f);
 		float Len = 0.f;
 		FVector Last = Lip;
+		float Pushed = 0.f;
 		for (int32 r = 0; r <= Rows; ++r)
 		{
 			const float u0 = float(r) / Rows;
@@ -3213,19 +3385,27 @@ void ABFWorld::BuildFalls()
 			const FVector Mid = Lip + Fa.Dir * (Speed * t) - FVector(0.f, 0.f, FMath::Min(Down, Fa.DropM * 100.f));
 			Len += float(FVector::Dist(Mid, Last));
 			Last = Mid;
-			for (int32 c = 0; c <= Cols; ++c)
+			// (keep it off the face: a whole row out from the lip together, never less than the row above, so its edges stay
+			// straight; a point at a time, its edges went out in spikes over the bank. Not over the lip itself, where it
+			// lies on the river.)
+			if (Down > 120.f && r < Rows)
 			{
-				const float u = float(c) / Cols - 0.5f;
-				FVector P = Mid + Side * u * Width * (1.f + 0.35f * u0);
-				float G = float(P.Z);
-				if (GroundAt(FVector2D(P), G) && float(P.Z) < G + 60.f && r < Rows)
+				for (int32 c = 0; c <= Cols; c += 2)
 				{
-					// (keep it off the face: out from the lip until it's clear)
+					const float u = float(c) / Cols - 0.5f;
+					FVector P = Mid + Side * u * FMath::Min(Width, Fa.WidthCm + 200.f) * (1.f + 0.35f * u0) + Fa.Dir * Pushed;
+					float G = float(P.Z);
 					for (int32 k = 0; k < 20 && GroundAt(FVector2D(P), G) && float(P.Z) < G + 60.f; ++k)
 					{
 						P += Fa.Dir * 50.f;
+						Pushed += 50.f;
 					}
 				}
+			}
+			for (int32 c = 0; c <= Cols; ++c)
+			{
+				const float u = float(c) / Cols - 0.5f;
+				const FVector P = Mid + Side * u * Width * (1.f + 0.35f * u0) + (Down > 120.f ? Fa.Dir * Pushed : FVector::ZeroVector);
 				V.Add(P);
 				Nm.Add((-Fa.Dir + FVector(0.f, 0.f, 0.3f)).GetSafeNormal());
 				UV.Add(FVector2D(u + 0.5f, Len / 200.f));
@@ -3260,17 +3440,38 @@ void ABFWorld::BuildFalls()
 			FBFRock Cap;
 			Cap.Kind = 1;
 			Cap.Seed = Rr.RandRange(0, 65535);
-			Cap.Half = FVector(0.45f * CellCm, 0.5f * Width + Rr.FRandRange(150.f, 300.f), Rr.FRandRange(70.f, 110.f));
-			Cap.At = Lip + Fa.Dir * (Rr.FRandRange(60.f, 140.f) - Cap.Half.X) - FVector(0.f, 0.f, 15.f + 25.f + Cap.Half.Z);
+			// (2026-11-16: across the banks too it stood as a lumpy bar over the lip: now just the water's width and a little)
+			Cap.Half = FVector(0.45f * CellCm, 0.5f * FMath::Min(Width, Fa.WidthCm + 100.f) + Rr.FRandRange(40.f, 100.f), Rr.FRandRange(70.f, 110.f));
+			const FVector OldLip = Fa.Top + Fa.Dir * (0.5f * CellCm) + FVector(0.f, 0.f, 15.f);          // (where it was set)
+			Cap.At = OldLip + Fa.Dir * (Rr.FRandRange(60.f, 140.f) - Cap.Half.X) - FVector(0.f, 0.f, 15.f + 75.f + Cap.Half.Z);
 			Cap.Rot = FRotator(Rr.FRandRange(-3.f, 3.f), Fa.Dir.Rotation().Yaw, Rr.FRandRange(-3.f, 3.f));
 			Cap.TopZ = float(Cap.At.Z) + Cap.Half.Z;
 			{
 				// (the lip's own rock colour: a pale block on the bigger falls stood out)
 				const int32 TX = FMath::Clamp(FMath::RoundToInt((Fa.Top.X - Origin.X) / CellCm), 1, N - 2), TY = FMath::Clamp(FMath::RoundToInt((Fa.Top.Y - Origin.Y) / CellCm), 1, N - 2);
-				Cap.Tint = Colour[Idx(TX + FMath::RoundToInt(Side.X * 3.f), TY + FMath::RoundToInt(Side.Y * 3.f))];
+				// (2026-11-16: not the ground 3 points aside, which by a river is wet tan silt: the nearest dry grey rock)
+				Cap.Tint = FColor(124, 118, 108, 255);
+				int32 Best = MAX_int32;
+				for (int32 dy = -8; dy <= 8; ++dy)
+				{
+					for (int32 dx = -8; dx <= 8; ++dx)
+					{
+						const int32 Cn = Idx(FMath::Clamp(TX + dx, 0, N - 1), FMath::Clamp(TY + dy, 0, N - 1));
+						const FColor Cc = Colour[Cn];
+						if (Biome[Cn] == uint8(EBFBiome::Rock) && !(W[Cn] > H[Cn] + 0.05f) && int32(Cc.G) <= int32(Cc.R) + 3 && float(Cc.B) >= 0.8f * float(Cc.R) && dx * dx + dy * dy < Best)
+						{
+							Best = dx * dx + dy * dy;
+							Cap.Tint = Cc;
+						}
+					}
+				}
 				Cap.WallN = (Fa.Dir + FVector(0.f, 0.f, 0.6f)).GetSafeNormal();
 			}
-			Set.Add(Cap);
+			// (2026-11-16: over the lip it read as a lumpy bar lying across the top of the water; only with -bfcaprock)
+			if (FParse::Param(FCommandLine::Get(), TEXT("bfcaprock")))
+			{
+				Set.Add(Cap);
+			}
 			const int32 Blocks = Rr.RandRange(4, 8);
 			for (int32 b = 0; b < Blocks; ++b)
 			{
@@ -3817,7 +4018,9 @@ float ABFWorld::RockDensity(const FBFRock& R, const FVector& P) const
 	// size; a fin's lumps stretched up and down (grooves); a slab's top cut flat.
 	const FVector L = R.Rot.UnrotateVector(P - R.At);
 	const float Least = float(FMath::Min3(R.Half.X, R.Half.Y, R.Half.Z));
-	const bool bBed = R.Kind == 1 && R.Tint.A > 0;          // (a bed in a gorge wall: squarer, its face banded)
+	// (a bed in a gorge wall: squarer, its face banded. 2026-11-16: only the walls' own beds: a fall's caprock, tinted too,
+	// took their shape, its ends pinched across the river's width, and hung over the lip as a dark lump)
+	const bool bBed = R.bBed;
 	const float Round = (bBed ? 0.12f : 0.35f) * Least;
 	const FVector Q = L.GetAbs() - (R.Half - FVector(Round));
 	const float Sd = float(FVector(FMath::Max(Q.X, 0.0), FMath::Max(Q.Y, 0.0), FMath::Max(Q.Z, 0.0)).Size()) + FMath::Min(float(FMath::Max3(Q.X, Q.Y, Q.Z)), 0.f) - Round;
@@ -4007,7 +4210,7 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 			Verts.Append({ PA, PB, PC });
 			const float ToWall = R.Kind == 1 ? 0.25f : 0.45f;          // (a bed's sheer face keeps more of its own light and shade)
 			FVector Ns = R.WallN.IsZero() ? Nf : ((1.f - ToWall) * Nf + ToWall * R.WallN).GetSafeNormal();
-			if (R.Kind == 1 && bInWall)
+			if (R.bBed)
 			{
 				// (2026-11-16: beds on a fall's shaded face came out darker than the bare face round them. The ground's
 				// normals are smoothed across a 4 m step, so a sheer face of ground is shaded as if half facing the sky;

@@ -937,6 +937,25 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
     little, like the ground's smoothed normals.
   - The ravine pass's own wall ledges are off unless `-bfoldwalls` (they were tinted by wherever they landed).
   - Island 13 now takes ~20 s to be ready (was ~12): the beds' density costs more.
+- Falls and water fixes (2026-11-16, Raven's pictures from islands 906 and 22436):
+  - Spikes 15-30 m round a big fall's pool were river points of the old cascade beside the pool: the fall reshape only
+    brought land down. Now river points there come down too and dry out (water left over lowered ground is cleared).
+    The last spire pass also runs within 2 points of any water.
+  - Steep river squares (3 m+ across a point) were all left out, so a steep reach was a row of loose diamonds. Now a
+    square with 2+ wet corners (none deep, under 5 m tall) is drawn as white water (M_BoneForgeFall), a bank corner at
+    the mean of its wet corners. Only a reshaped fall's own face is left open for the curtain.
+  - The curtain starts 1.4 m back over the river's surface, meeting it, and is pushed off the face a row at a time
+    (its edges spiked out over the bank point by point). Falls under 5 m (not reshaped, water in steps) get no curtain:
+    their water runs down as rapids.
+  - The caprock bar over the lip is gone (`-bfcaprock` puts it back); only the walls' own beds take the bed shape
+    (`FBFRock::bBed`); bare rock for colour must be grey, not tan or olive.
+- The sea (2026-11-16, Raven: "the map is mostly ocean ... a bigger island or some smaller masses out in the sea"):
+  the island's coast is further out (0.7-0.97 of the way to the edge, was 0.62-0.92; ~10 km2 of land, was ~8);
+  5-9 islets (90-440 m across: knolls and low cays, with shallows round them) and 4-8 sea stacks out past the coast;
+  the sea floor has banks and shoals (some 2-6 m down) and deepens toward the edge. `-bfoldsea`: as before.
+  `-bflandform` takes two views from high over the coast (`land_sea_ne`, `land_sea_w`). Every seed's island has
+  changed shape, so an island saved before this will load with its animals where the old ground was. Island 13
+  now takes ~25 s to be ready.
 - Lone spires by a gorge brought down to 1.5 m over the third highest point round them.
 - Rock pieces' quads split across whichever diagonal keeps both halves facing out (folded quads showed as dark flecks).
 - Checks: `-bflandform` takes 4 views a fall (front, side, the hollow from the pool, inside it looking along);

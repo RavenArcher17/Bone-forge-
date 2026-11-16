@@ -9123,6 +9123,21 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 				Look = P + FreeCam->GetActorForwardVector() * 100.f;
 				Name = TEXT("places_panel");
 			}
+			else if (K == RavViews + FallViews + 3 || K == RavViews + FallViews + 4)
+			{
+				// (2026-11-16) the sea round the island: islets, stacks and shoals; from high over the coast, looking out
+				if (bWatchPanel)
+				{
+					bWatchPanel = false;
+					WatchBack->SetVisibility(EVisibility::Collapsed);
+				}
+				const float Half = 0.5f * (ABFWorld::N - 1) * ABFWorld::CellCm;
+				const FVector Mid = I->GridOrigin() + FVector(Half, Half, 0.f);
+				const FVector Out = K == RavViews + FallViews + 3 ? FVector(1.f, 1.f, 0.f).GetSafeNormal() : FVector(-1.f, 0.4f, 0.f).GetSafeNormal();
+				P = Mid + Out * 0.55f * Half + FVector(0.f, 0.f, 60000.f);
+				Look = Mid + Out * 1.25f * Half;
+				Name = K == RavViews + FallViews + 3 ? TEXT("sea_ne") : TEXT("sea_w");
+			}
 			else
 			{
 				if (bWatchPanel)
