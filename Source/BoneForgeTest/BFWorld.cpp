@@ -3790,14 +3790,19 @@ void ABFWorld::BuildFalls()
 			continue;
 		}
 		const FVector Lip = Fa.Top - Fa.Dir * (0.35f * CellCm) + FVector(0.f, 0.f, 12.f);
+		// (2026-11-17, Raven, circled from above and from below: it began falling at once, 0.35 of a point back, so by the lip
+		// it was 1-2 m down, under the river; where the grid lies across the flow the lip's point juts out as a triangle, which
+		// lay on top of it as a green point and was seen from below as the river hanging out over the ledge. Now it runs level
+		// with the river until it's past the lip's point, then falls; -bfoldlipdrop: as before.)
+		const float TLip = FParse::Param(FCommandLine::Get(), TEXT("bfoldlipdrop")) ? 0.f : 0.55f * CellCm / Speed;
 		float Len = 0.f;
 		FVector Last = Lip;
 		float Pushed = 0.f;
 		for (int32 r = 0; r <= Rows; ++r)
 		{
 			const float u0 = float(r) / Rows;
-			const float t = Fall * u0 * u0;            // (rows closer together near the lip, where it bends over)
-			const float Down = 0.5f * 980.f * t * t;
+			const float t = (Fall + TLip) * u0 * u0;            // (rows closer together near the lip, where it bends over)
+			const float Down = 0.5f * 980.f * FMath::Square(FMath::Max(t - TLip, 0.f));
 			const FVector Mid = Lip + Fa.Dir * (Speed * t) - FVector(0.f, 0.f, FMath::Min(Down, Fa.DropM * 100.f));
 			Len += float(FVector::Dist(Mid, Last));
 			Last = Mid;

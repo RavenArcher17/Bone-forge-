@@ -9054,6 +9054,8 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 						TopAt.Add(FVector(Fa.Bottom.X, Fa.Bottom.Y, FMath::Max(Fa.Top.Z, Fa.Bottom.Z))); TopDir.Add(Fa.Dir); TopH.Add(2600.f + FMath::Max(Fa.PoolCm, 0.f)); TopNames.Add(FString::Printf(TEXT("fall%d_pool"), Fn));
 						UE_LOG(LogTemp, Display, TEXT("[BoneForge] top view: fall%d %.1f m, %.0f m wide, pool %.0f, top %s, bottom %s, dir %s"), Fn, Fa.DropM, Fa.WidthCm / 100.f, Fa.PoolCm, *Fa.Top.ToString(), *Fa.Bottom.ToString(), *Fa.Dir.ToString());
 						I->LogAround(Fa.Bottom, 8);
+						UE_LOG(LogTemp, Display, TEXT("[BoneForge] top view: fall%d at the lip"), Fn);
+						I->LogAround(Fa.Top, 3);
 						UE_LOG(LogTemp, Display, TEXT("[BoneForge] top view: fall%d 32 m downstream"), Fn);
 						I->LogAround(Fa.Top + Fa.Dir * 3200.f, 6);
 						UE_LOG(LogTemp, Display, TEXT("[BoneForge] top view: fall%d 24 m upstream"), Fn);

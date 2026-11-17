@@ -1008,9 +1008,15 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
     over the bank; `-bfrapids2`: as before).
   - Check cameras (`-bflandform`'s fall, rapids and sea views) are brought in along the line to what they look at,
     short of the first rock in the way: in a narrow ravine the front views were inside the wall beds.
-  - The `-bftop` log also prints the ground 32 m below and 24 m above each fall.
+  - Lip (Raven circled it from above and from below): a curtain began falling at once, a third of a point back from
+    the lip, so by the edge it was 1-2 m under the river. Where the grid lies across the flow the lip's point juts out
+    as a triangle, which lay on top of the curtain (a green point from above) and from below was the river hanging out
+    over the ledge. The curtain now runs level with the river until past the lip's point, then falls (`-bfoldlipdrop`:
+    as before). Checked islands 906 and 13 from above, the front and the side (reports/top_views/906_lip_top_*,
+    13_fall_front_*).
+  - The `-bftop` log also prints the ground 32 m below and 24 m above each fall, and round its lip.
   - Still: a pale shape on a shallow pond above island 13's 8 m fall (most likely the sun's glint on a pond whose edge
-    follows the 4 m grid); a green water triangle shows through the foot of most curtains.
+    follows the 4 m grid). (The "green water triangle at the foot of most curtains" was this lip point, seen from above.)
  Every seed's island has
   changed shape, so an island saved before this will load with its animals where the old ground was. Island 13
   now takes ~25 s to be ready.
