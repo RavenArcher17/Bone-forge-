@@ -790,6 +790,36 @@ void ABFWorld::MakeLand()
 				FallReach.Add(ReachOf(C0));
 			}
 		}
+		// Falls one straight after another (2026-11-16, island 906: a small fall from a lake into its own carved pool, the
+		// big one leaving that pool: two pools stacked made a box at the top) are one fall: from the first's top to the
+		// last's foot. -bfoldlip: kept apart.
+		if (!FParse::Param(FCommandLine::Get(), TEXT("bfoldlip")))
+		{
+			bool bMerged = true;
+			while (bMerged)
+			{
+				bMerged = false;
+				for (int32 a = 0; a < Falls.Num() && !bMerged; ++a)
+				{
+					for (int32 b = 0; b < Falls.Num() && !bMerged; ++b)
+					{
+						if (a != b && FVector::Dist2D(Falls[a].Bottom, Falls[b].Top) < 3.5f * CellCm && Falls[b].Top.Z <= Falls[a].Bottom.Z + 150.f)
+						{
+							FBFFall& A = Falls[a];
+							A.Bottom = Falls[b].Bottom;
+							A.Dir = (A.Bottom - A.Top).GetSafeNormal2D();
+							A.DropM = float(A.Top.Z - A.Bottom.Z) / 100.f;
+							FallRuns[a].Append(FallRuns[b]);
+							FallReach[a] = FMath::Max(FallReach[a], FallReach[b]);
+							Falls.RemoveAt(b);
+							FallRuns.RemoveAt(b);
+							FallReach.RemoveAt(b);
+							bMerged = true;
+						}
+					}
+				}
+			}
+		}
 		// Each fall's shape (Raven, 2026-11-15: "the waterfalls and rivers and the terrain around them to look more
 		// natural"). A real fall drops from a hard lip over a face undercut beneath it, into a plunge pool the water
 		// scours out, in an amphitheatre of steep rock (the falls retreating upstream leave a gorge below). On the 4 m grid:
@@ -918,9 +948,64 @@ void ABFWorld::MakeLand()
 						}
 					}
 				}
+				// The lip fed at the water's level above it (2026-11-16, Raven: "work more on waterfalls"; island 906: a lake
+				// stood 4.5 m over the fall's first point, held back by a bar of bank, and a box of water sat at the edge below
+				// it). The highest water within 3 points upstream of the lip: if it stands over the lip's level, the water
+				// runs out to the edge at that level (the channel's ground under it, the banks beside just holding it), so
+				// the fall leaves the lake's own surface. (Off: the passes after this set the river's levels again; the lip is now
+				// done last of all in MakeLand. Here, -bfinlooplip.)
+				if (FParse::Param(FCommandLine::Get(), TEXT("bfinlooplip")))
+				{
+					const float HalfW = FMath::Max(0.5f * Fa.WidthCm / CellCm, 0.6f);
+					float UpLvl = Lvl[TopC];
+					for (int32 Y = FMath::Max(int32(T.Y) - 7, 1); Y <= FMath::Min(int32(T.Y) + 7, N - 2); ++Y)
+					{
+						for (int32 X = FMath::Max(int32(T.X) - 7, 1); X <= FMath::Min(int32(T.X) + 7, N - 2); ++X)
+						{
+							const FVector2D Q(X, Y);
+							const int32 Cc = Idx(X, Y);
+							if (FVector2D::DotProduct(Q - T, Dir) <= 0.3f && FVector2D::Distance(Q, T) <= 6.5f && W[Cc] > H[Cc] + 0.05f && Kind[Cc] != 1)
+							{
+								UpLvl = FMath::Max(UpLvl, W[Cc]);
+							}
+						}
+					}
+					if (UpLvl > Lvl[TopC] + 0.4f)
+					{
+						for (int32 Y = FMath::Max(int32(T.Y) - 8, 1); Y <= FMath::Min(int32(T.Y) + 8, N - 2); ++Y)
+						{
+							for (int32 X = FMath::Max(int32(T.X) - 8, 1); X <= FMath::Min(int32(T.X) + 8, N - 2); ++X)
+							{
+								const FVector2D Q(X, Y);
+								const float Along = float(FVector2D::DotProduct(Q - T, Dir)), Lat = FMath::Abs(float(FVector2D::CrossProduct(Dir, Q - T)));
+								const int32 Cc = Idx(X, Y);
+								if (Along > 0.5f || Along < -6.5f || Kind[Cc] == 1 || Kind[Cc] == 2)
+								{
+									continue;
+								}
+								if (Lat <= HalfW + 0.25f)
+								{
+									// the channel: water at the lake's level, its bed under it
+									W[Cc] = FMath::Max(W[Cc], UpLvl);
+									H[Cc] = FMath::Min(H[Cc], UpLvl - 0.6f);
+									if (Kind[Cc] == 0)
+									{
+										Kind[Cc] = 3;
+									}
+								}
+								else if (Lat <= HalfW + 2.5f && Kind[Cc] == 0)
+								{
+									// the banks just holding it, a little over it
+									H[Cc] = FMath::Max(H[Cc], UpLvl + 0.3f + 0.4f * (Lat - HalfW - 0.25f));
+								}
+							}
+						}
+						Fa.Top.Z = UpLvl * 100.f;
+					}
+				}
 				Fa.Bottom = Origin + FVector(P.X * CellCm, P.Y * CellCm, PoolLvl * 100.f);
 				Fa.Dir = FVector(Dir.X, Dir.Y, 0.f);
-				Fa.DropM = Lvl[TopC] - PoolLvl;
+				Fa.DropM = float(Fa.Top.Z) / 100.f - PoolLvl;
 				Fa.PoolCm = PoolR * CellCm;
 			}
 		}
@@ -1459,6 +1544,77 @@ void ABFWorld::MakeLand()
 			}
 		}
 	}
+	// Each fall's lip at the water above it, last of all (2026-11-16, island 906: the passes after the falls' shaping set the
+	// river's levels again, and a lake's outlet at 160 m fed a box of water at 157 m at the edge, banks round it). The highest
+	// water within 6 points upstream of the lip; the channel from there to the edge filled to it, the banks beside just
+	// over it. -bfoldlip: as before.
+	if (!FParse::Param(FCommandLine::Get(), TEXT("bfoldlip")))
+	{
+		for (FBFFall& Fa : Falls)
+		{
+			if (Fa.PoolCm <= 0.f)
+			{
+				continue;
+			}
+			const FVector2D T((Fa.Top.X - Origin.X) / CellCm, (Fa.Top.Y - Origin.Y) / CellCm);
+			const FVector2D Dir = FVector2D(Fa.Dir).GetSafeNormal();
+			const float HalfW = FMath::Max(0.5f * Fa.WidthCm / CellCm, 0.6f);
+			float UpLvl = -1000.f;
+			for (int32 Y = FMath::Max(int32(T.Y) - 7, 1); Y <= FMath::Min(int32(T.Y) + 7, N - 2); ++Y)
+			{
+				for (int32 X = FMath::Max(int32(T.X) - 7, 1); X <= FMath::Min(int32(T.X) + 7, N - 2); ++X)
+				{
+					const FVector2D Q(X, Y);
+					const int32 Cc = Idx(X, Y);
+					const float Al = float(FVector2D::DotProduct(Q - T, Dir)), La = FMath::Abs(float(FVector2D::CrossProduct(Dir, Q - T)));
+					if (Al <= 0.3f && Al >= -6.5f && La <= HalfW + 2.f && W[Cc] > H[Cc] + 0.05f && Kind[Cc] != 1)
+					{
+						UpLvl = FMath::Max(UpLvl, W[Cc]);
+					}
+				}
+			}
+			// (only where the water above stands well over the lip, as at a lake's outlet: elsewhere the lip is left as it is.
+			// Run on every fall, it raised banks by island 13's big fall into columns that hid its curtain.)
+			const int32 Ct = Idx(FMath::Clamp(FMath::RoundToInt(T.X), 1, N - 2), FMath::Clamp(FMath::RoundToInt(T.Y), 1, N - 2));
+			const float LipNow = W[Ct] > H[Ct] + 0.05f ? W[Ct] : H[Ct];          // (the lip point's water as the passes left it)
+			if (UpLvl < LipNow + 1.5f)
+			{
+				continue;
+			}
+			for (int32 Y = FMath::Max(int32(T.Y) - 8, 1); Y <= FMath::Min(int32(T.Y) + 8, N - 2); ++Y)
+			{
+				for (int32 X = FMath::Max(int32(T.X) - 8, 1); X <= FMath::Min(int32(T.X) + 8, N - 2); ++X)
+				{
+					const FVector2D Q(X, Y);
+					const float Al = float(FVector2D::DotProduct(Q - T, Dir)), La = FMath::Abs(float(FVector2D::CrossProduct(Dir, Q - T)));
+					const int32 Cc = Idx(X, Y);
+					if (Al > 0.5f || Al < -6.5f || Kind[Cc] == 1 || Kind[Cc] == 2)
+					{
+						continue;
+					}
+					if (La <= HalfW + 0.25f)
+					{
+						W[Cc] = UpLvl;
+						H[Cc] = FMath::Min(H[Cc], UpLvl - 0.6f);
+						if (Kind[Cc] == 0)
+						{
+							Kind[Cc] = 3;
+						}
+					}
+					else if (La <= HalfW + 2.5f && !(W[Cc] > H[Cc] + 0.05f && W[Cc] >= UpLvl - 0.05f))
+					{
+						H[Cc] = FMath::Max(H[Cc], UpLvl + 0.3f + 0.4f * (La - HalfW - 0.25f));
+						W[Cc] = -1000.f;
+						if (Kind[Cc] == 3)
+						{
+							Kind[Cc] = 0;
+						}
+					}
+				}
+			}
+			Fa.Top.Z = UpLvl * 100.f;
+		}
+	}
 	{
 		float Biggest = 0.f;
 		for (const FBFFall& Fa : Falls)
@@ -1527,7 +1683,18 @@ void ABFWorld::MakeLand()
 			FColor Base = BiomeColour[uint8(B)];
 			// (2026-11-15: a river's or lake's edge is wet silt and gravel, not grass to the waterline; in a gorge, bare
 			// rock down to the water)
-			if (Kind[C] == 0 && B != EBFBiome::Beach && ToWater[C] <= 2)
+			bool bLipRock = false;
+			for (const FBFFall& Fa : Falls)
+			{
+				bLipRock = bLipRock || (Fa.PoolCm > 0.f && FVector::Dist2D(Origin + FVector(X * CellCm, Y * CellCm, 0.f), Fa.Top) < Fa.WidthCm + 3200.f);
+			}
+			if (Kind[C] == 0 && bLipRock)
+			{
+				// (2026-11-16: the banks at a fall's lip are bare wet rock, whatever is beside them: tan sand there read as a box)
+				const FColor Wr(104, 99, 90);
+				Base = FColor(uint8(FMath::Lerp(float(Base.R), float(Wr.R), 0.8f)), uint8(FMath::Lerp(float(Base.G), float(Wr.G), 0.8f)), uint8(FMath::Lerp(float(Base.B), float(Wr.B), 0.8f)));
+			}
+			else if (Kind[C] == 0 && B != EBFBiome::Beach && ToWater[C] <= 2)
 			{
 				// (and by a fall's lip, wet grey rock, not tan silt: 2026-11-16)
 				bool bByLip = false;
@@ -2989,6 +3156,11 @@ bool ABFWorld::NearFallFace(const FVector& P) const
 	// hollow cuts that ground away from under it.
 	for (const FBFFall& Fa : Falls)
 	{
+		// (2026-11-16: nor on its lip: a loose 4 m boulder sat on top of island 13's fall, beside the water)
+		if (FVector::Dist2D(P, Fa.Top) < 4500.f + 0.5f * Fa.WidthCm)
+		{
+			return true;
+		}
 		if (Fa.PoolCm > 0.f && Fa.DropM >= 8.f && FVector::Dist2D(P, Fa.Bottom) < Fa.PoolCm + 1500.f
 			&& FVector::DotProduct((P - Fa.Bottom).GetSafeNormal2D(), Fa.Dir) < 0.35f)
 		{
@@ -3207,7 +3379,8 @@ void ABFWorld::DressRavines()
 					// (and a pool keeps only its own shore clear, a hollow the face's foot: the face itself up from them and
 					// the walls round the pool are rock beds, as round them)
 					const bool bAlong = AlongF > -400.f && AlongF < Reach;
-					if (bAlong && Lat < 0.5f * Fa.WidthCm + 300.f)
+					// (2026-11-16: only the curtain's own width now: 3 m either side left the lip's banks as bare 4 m columns)
+					if (bAlong && Lat < 0.5f * Fa.WidthCm + 90.f)
 					{
 						bClear = false;
 					}
@@ -3306,13 +3479,39 @@ void ABFWorld::DressRavines()
 					const FVector2D In = Up * (0.5f * (Back - Out));
 					Rk.TopZ = float(Origin.Z) + Lv * 100.f;
 					Rk.At = FVector(P0.X + Off.X + In.X, P0.Y + Off.Y + In.Y, Rk.TopZ - float(Rk.Half.Z) + 30.f);
+					// (2026-11-16: a long bed set beside a fall's strip reached into it, hanging over the curtain: none whose length
+					// crosses the strip, its ends checked as well as its middle)
+					{
+						const FVector2D Ax = FVector2D(FRotator(0.f, float(Rk.Rot.Yaw), 0.f).Vector());
+						bool bInStrip = false;
+						for (int32 e = -2; e <= 2 && !bInStrip; ++e)
+						{
+							const FVector2D Q = FVector2D(Rk.At) + Ax * (0.5f * float(e) * float(Rk.Half.X));
+							for (const FBFFall& Fa : Falls)
+							{
+								const FVector2D D2 = FVector2D(Fa.Dir).GetSafeNormal(), Rel = Q - FVector2D(Fa.Top);
+								const float Al = float(FVector2D::DotProduct(Rel, D2)), La = FMath::Abs(float(FVector2D::CrossProduct(D2, Rel)));
+								const float Re = float(FVector2D::DotProduct(FVector2D(Fa.Bottom - Fa.Top), D2)) + Fa.PoolCm + 200.f;
+								bInStrip = bInStrip || (Al > -400.f && Al < Re && La < 0.5f * Fa.WidthCm + 90.f && Rk.TopZ > float(Fa.Bottom.Z));
+							}
+						}
+						if (bInStrip)
+						{
+							continue;
+						}
+					}
 					Rk.Tint = WallC;
 					Rk.WallN = WallN;
 					Rk.bBed = true;
 					ByBlock.FindOrAdd((Y / 30) * 1000 + X / 30).Add(Rk);
 					++Walls;
 				}
-				if (Rw.FRand() < 0.1f && G > MinZ)
+				bool bByLip = false;          // (2026-11-16: no loose block at a fall's lip: one sat on island 13's as a 4 m boulder)
+				for (const FBFFall& Fa : Falls)
+				{
+					bByLip = bByLip || FVector::Dist2D(P0, Fa.Top) < 2500.f;
+				}
+				if (Rw.FRand() < 0.1f && G > MinZ && !bByLip)
 				{
 					// a block broken from the wall, still mostly in it
 					FBFRock Rk;
@@ -3550,7 +3749,13 @@ void ABFWorld::BuildFalls()
 				GroundAt(FVector2D(At), G);
 				FBFRock Bo;
 				Bo.Seed = Rr.RandRange(0, 65535);
-				const float Big = Rr.FRandRange(60.f, 60.f + 12.f * Fa.DropM);
+				// (2026-11-16: at most 2.6 m, and only down by the pool: on a sheer fall the spot beside the pool can be the
+				// cliff's top, and one of these sat on island 13's lip as a 14 m boulder)
+				if (G > float(Fa.Bottom.Z) + 300.f)
+				{
+					continue;
+				}
+				const float Big = Rr.FRandRange(60.f, FMath::Min(60.f + 12.f * Fa.DropM, 260.f));
 				Bo.Half = FVector(Big * Rr.FRandRange(0.9f, 1.4f), Big, Big * Rr.FRandRange(0.5f, 0.8f));
 				Bo.At = FVector(At.X, At.Y, FMath::Max(G, float(Fa.Bottom.Z) - 80.f) + Bo.Half.Z * 0.2f);
 				Bo.Rot = FRotator(Rr.FRandRange(-20.f, 20.f), Rr.FRandRange(0.f, 360.f), Rr.FRandRange(-20.f, 20.f));
@@ -5314,5 +5519,20 @@ void ABFWorld::TourPoints(TArray<FVector>& At, TArray<FString>& Names) const
 	if (Islet != INDEX_NONE)
 	{
 		Add(Islet, TEXT("islet"));
+	}
+}
+
+void ABFWorld::LogAround(const FVector& P) const
+{
+	const int32 X0 = FMath::RoundToInt((P.X - Origin.X) / CellCm), Y0 = FMath::RoundToInt((P.Y - Origin.Y) / CellCm);
+	for (int32 dy = -4; dy <= 4; ++dy)
+	{
+		FString Row;
+		for (int32 dx = -4; dx <= 4; ++dx)
+		{
+			const int32 C = Idx(FMath::Clamp(X0 + dx, 0, N - 1), FMath::Clamp(Y0 + dy, 0, N - 1));
+			Row += FString::Printf(TEXT(" %5.1f/%5.1f/%d"), H[C], W[C] > H[C] ? W[C] : -1.f, int32(Biome[C]));
+		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] around dy=%d:%s"), dy, *Row);
 	}
 }

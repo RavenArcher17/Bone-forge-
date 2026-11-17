@@ -68,6 +68,8 @@ public:
 	bool GroundAt(const FVector2D& XY, float& Z) const;
 	/** Places to look at the ground from (-bfterrain): two of each kind of land, the peak, a sea cliff, an islet. */
 	void TourPoints(TArray<FVector>& At, TArray<FString>& Names) const;
+	/** Logs the ground round a point (-bflandform): kind, ground and water height of each grid point, 9 x 9. */
+	void LogAround(const FVector& P) const;
 
 	/** Rock pieces (caves, 2026-11-14): a cave carved into the hill along Path (world points, its floor flat under each
 	 *  stretch), Radii one a point. The island's own ground stays everywhere else; over the piece's footprint its tiles

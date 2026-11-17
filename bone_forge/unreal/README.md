@@ -969,6 +969,21 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
   - Falls: the curtain is the river's width + 1.5 m (was 1.6x, under the banks); ground by a fall's lip is wet grey
     rock, not tan silt; the river's surface is drawn up to the lip.
   - Still: a big fall's lip seen from below is blocky (the 4 m ground steps in columns beside it).
+- Waterfalls round two (2026-11-16, Raven: "work more on waterfalls"):
+  - `-bflandform` takes two more views of each big fall: `fallN_lip` (up the river, low, over the edge) and
+    `fallN_lipside` (from high on the bank beside it). The world log prints the ground round each fall's lip
+    (`around dy=..`: ground / water / biome per point, `ABFWorld::LogAround`).
+  - Falls one straight after another (a fall's foot within 14 m of the next one's top) are merged into one (island
+    906: a small fall from a lake into its own pool, then the 128 m one, stacked two pools into a box at the top).
+  - A lake's outlet: last of all in `MakeLand` (the passes after the falls' shaping set the river's levels again),
+    where the water within 6 points upstream stands 1.5 m or more over the lip, the channel to the edge is filled to
+    it and the banks beside it set just over it: the fall leaves the lake's own surface through a notch. The older
+    in-loop version is `-bfinlooplip`; `-bfoldlip` turns off the merge and the outlet.
+  - Wall beds whose length (not just their middle) crosses a fall's strip are left out (one hung over island 13's
+    curtain); the strip is the curtain's width + 0.9 m (was + 3 m); no loose boulders within 45 m of a fall's top,
+    and the pool's blocks only by the pool (at most 2.6 m; one sat on island 13's lip as a 14 m boulder).
+  - Ground within 32 m of a lip is bare wet grey rock.
+  - Still: the banks right at island 906's lip are tan; island 13's big fall now shows as two tiers.
  Every seed's island has
   changed shape, so an island saved before this will load with its animals where the old ground was. Island 13
   now takes ~25 s to be ready.

@@ -9042,6 +9042,8 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 					if (Fa.DropM >= 6.f)
 					{
 						UE_LOG(LogTemp, Display, TEXT("[BoneForge] landform: fall %.1f m, %.0f m wide, top %s"), Fa.DropM, Fa.WidthCm / 100.f, *Fa.Top.ToString());
+						UE_LOG(LogTemp, Display, TEXT("[BoneForge] landform: dir %s"), *Fa.Dir.ToString());
+						I->LogAround(Fa.Top);
 					}
 				}
 			}
@@ -9052,7 +9054,7 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 			}
 			Big.Sort([&](int32 A, int32 B) { return I->Falls[A].DropM > I->Falls[B].DropM; });
 			Big.SetNum(FMath::Min(Big.Num(), 2));
-			const int32 RavViews = 3 * I->Ravines.Num(), FallViews = 4 * Big.Num();
+			const int32 RavViews = 3 * I->Ravines.Num(), FallViews = 6 * Big.Num();
 			const int32 K = int32(AutoClock / 2.5f);
 			FVector P, Look;
 			FString Name;
@@ -9092,10 +9094,10 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 			}
 			else if (K < RavViews + FallViews)
 			{
-				const ABFWorld::FBFFall& Fa = I->Falls[Big[(K - RavViews) / 4]];
+				const ABFWorld::FBFFall& Fa = I->Falls[Big[(K - RavViews) / 6]];
 				const FVector Mid = (Fa.Top + Fa.Bottom) * 0.5f;
 				const FVector FSide = FVector::CrossProduct(Fa.Dir, FVector::UpVector);
-				const int32 Fv = (K - RavViews) % 4;
+				const int32 Fv = (K - RavViews) % 6;
 				if (Fv == 2 || Fv == 3)
 				{
 					// the hollow behind it: from out in the pool, off to one side, low; and from inside it, looking out
@@ -9105,7 +9107,7 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 						P = Fa.Bottom + Fa.Dir * FMath::Max(1.1f * Fa.PoolCm, 900.f) + FSide * FMath::Max(0.8f * Fa.PoolCm, 700.f);
 						P.Z = Fa.Bottom.Z + 380.f;
 						Look = Ho + FVector(0.f, 0.f, 100.f);
-						Name = FString::Printf(TEXT("fall%d_hollow"), (K - RavViews) / 4);
+						Name = FString::Printf(TEXT("fall%d_hollow"), (K - RavViews) / 6);
 					}
 					else
 					{
@@ -9113,7 +9115,7 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 						P = Ho + FSide * 0.65f * Fa.HollowCm + Fa.Dir * 0.2f * Fa.HollowCm;
 						P.Z = Fa.Bottom.Z + 170.f;
 						Look = Ho - FSide * Fa.HollowCm + Fa.Dir * 0.5f * Fa.HollowCm + FVector(0.f, 0.f, 120.f);
-						Name = FString::Printf(TEXT("fall%d_inside"), (K - RavViews) / 4);
+						Name = FString::Printf(TEXT("fall%d_inside"), (K - RavViews) / 6);
 					}
 					FreeCam->SetActorLocationAndRotation(P, (Look - P).Rotation());
 					if (AutoClock - float(K) * 2.5f > 2.f && AutoClock - DeltaTime - float(K) * 2.5f <= 2.f)
@@ -9122,16 +9124,31 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 					}
 					break;
 				}
+				if (Fv == 4 || Fv == 5)
+				{
+					// (2026-11-16) its lip: from up the river, low, looking over the edge; and from the bank above, beside it
+					P = Fv == 4 ? Fa.Top - Fa.Dir * 2600.f + FVector(0.f, 0.f, 450.f) : Fa.Top - Fa.Dir * 900.f + FSide * (1800.f + Fa.WidthCm) + FVector(0.f, 0.f, 1600.f);
+					float Gl = float(P.Z);
+					I->GroundAt(FVector2D(P), Gl);
+					P.Z = FMath::Max(float(P.Z), Gl + 250.f);
+					Look = Fv == 4 ? Fa.Top + Fa.Dir * 800.f - FVector(0.f, 0.f, 300.f) : Fa.Top + Fa.Dir * 300.f - FVector(0.f, 0.f, 500.f);
+					FreeCam->SetActorLocationAndRotation(P, (Look - P).Rotation());
+					if (AutoClock - float(K) * 2.5f > 2.f && AutoClock - DeltaTime - float(K) * 2.5f <= 2.f)
+					{
+						Shot(*FString::Printf(TEXT("land_fall%d_%s"), (K - RavViews) / 6, Fv == 4 ? TEXT("lip") : TEXT("lipside")));
+					}
+					break;
+				}
 				if (Fv == 0)
 				{
 					P = Fa.Bottom + Fa.Dir * (1500.f + 100.f * Fa.DropM) + FVector(0.f, 0.f, 300.f);
-					Name = FString::Printf(TEXT("fall%d_front"), (K - RavViews) / 4);
+					Name = FString::Printf(TEXT("fall%d_front"), (K - RavViews) / 6);
 				}
 				else
 				{
 					// (from down the gorge and off to one side, above its rim: beside it, the camera was in the rock)
 					P = Fa.Bottom + Fa.Dir * (1500.f + 60.f * Fa.DropM) + FVector::CrossProduct(Fa.Dir, FVector::UpVector) * (500.f + 30.f * Fa.DropM) + FVector(0.f, 0.f, 600.f + 60.f * Fa.DropM);
-					Name = FString::Printf(TEXT("fall%d_side"), (K - RavViews) / 4);
+					Name = FString::Printf(TEXT("fall%d_side"), (K - RavViews) / 6);
 				}
 				float Gp = float(P.Z);
 				I->GroundAt(FVector2D(P), Gp);
