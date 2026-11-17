@@ -9054,6 +9054,10 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 						TopAt.Add(FVector(Fa.Bottom.X, Fa.Bottom.Y, FMath::Max(Fa.Top.Z, Fa.Bottom.Z))); TopDir.Add(Fa.Dir); TopH.Add(2600.f + FMath::Max(Fa.PoolCm, 0.f)); TopNames.Add(FString::Printf(TEXT("fall%d_pool"), Fn));
 						UE_LOG(LogTemp, Display, TEXT("[BoneForge] top view: fall%d %.1f m, %.0f m wide, pool %.0f, top %s, bottom %s, dir %s"), Fn, Fa.DropM, Fa.WidthCm / 100.f, Fa.PoolCm, *Fa.Top.ToString(), *Fa.Bottom.ToString(), *Fa.Dir.ToString());
 						I->LogAround(Fa.Bottom, 8);
+						UE_LOG(LogTemp, Display, TEXT("[BoneForge] top view: fall%d 32 m downstream"), Fn);
+						I->LogAround(Fa.Top + Fa.Dir * 3200.f, 6);
+						UE_LOG(LogTemp, Display, TEXT("[BoneForge] top view: fall%d 24 m upstream"), Fn);
+						I->LogAround(Fa.Top - Fa.Dir * 2400.f, 6);
 						++Fn;
 					}
 					for (int32 r = 0; r < I->Ravines.Num(); ++r)
@@ -9130,6 +9134,22 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 			Big.Sort([&](int32 A, int32 B) { return I->Falls[A].DropM > I->Falls[B].DropM; });
 			Big.SetNum(FMath::Min(Big.Num(), 2));
 			const int32 RavViews = 3 * I->Ravines.Num(), FallViews = 6 * Big.Num();
+			// (2026-11-17: a camera inside a rock piece (a narrow ravine's wall beds) saw only grey faces: brought in along the
+			// line to what it looks at, to just short of the first rock between them)
+			auto ClearOfRock = [&](const FVector& From, const FVector& To) -> FVector
+			{
+				FHitResult Hit;
+				FCollisionQueryParams Q(SCENE_QUERY_STAT(BFLandCam), false);
+				if (GetPawn())
+				{
+					Q.AddIgnoredActor(GetPawn());
+				}
+				if (GetWorld()->LineTraceSingleByChannel(Hit, To, From, ECC_Visibility, Q) && Hit.Distance > 300.f)
+				{
+					return Hit.Location + (To - From).GetSafeNormal() * 120.f;
+				}
+				return From;
+			};
 			const int32 K = int32(AutoClock / 2.5f);
 			FVector P, Look;
 			FString Name;
@@ -9192,7 +9212,7 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 						Look = Ho - FSide * Fa.HollowCm + Fa.Dir * 0.5f * Fa.HollowCm + FVector(0.f, 0.f, 120.f);
 						Name = FString::Printf(TEXT("fall%d_inside"), (K - RavViews) / 6);
 					}
-					FreeCam->SetActorLocationAndRotation(P, (Look - P).Rotation());
+					FreeCam->SetActorLocationAndRotation(ClearOfRock(P, Look), (Look - ClearOfRock(P, Look)).Rotation());
 					if (AutoClock - float(K) * 2.5f > 2.f && AutoClock - DeltaTime - float(K) * 2.5f <= 2.f)
 					{
 						Shot(*FString::Printf(TEXT("land_%s"), *Name));
@@ -9207,7 +9227,7 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 					I->GroundAt(FVector2D(P), Gl);
 					P.Z = FMath::Max(float(P.Z), Gl + 250.f);
 					Look = Fv == 4 ? Fa.Top + Fa.Dir * 800.f - FVector(0.f, 0.f, 300.f) : Fa.Top + Fa.Dir * 300.f - FVector(0.f, 0.f, 500.f);
-					FreeCam->SetActorLocationAndRotation(P, (Look - P).Rotation());
+					FreeCam->SetActorLocationAndRotation(ClearOfRock(P, Look), (Look - ClearOfRock(P, Look)).Rotation());
 					if (AutoClock - float(K) * 2.5f > 2.f && AutoClock - DeltaTime - float(K) * 2.5f <= 2.f)
 					{
 						Shot(*FString::Printf(TEXT("land_fall%d_%s"), (K - RavViews) / 6, Fv == 4 ? TEXT("lip") : TEXT("lipside")));
@@ -9285,7 +9305,7 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 				Next(9);
 				break;
 			}
-			FreeCam->SetActorLocationAndRotation(P, (Look - P).Rotation());
+			FreeCam->SetActorLocationAndRotation(ClearOfRock(P, Look), (Look - ClearOfRock(P, Look)).Rotation());
 			if (AutoClock - K * 2.5f > 2.f && AutoClock - DeltaTime - K * 2.5f <= 2.f)
 			{
 				Shot(*FString::Printf(TEXT("land_%s"), *Name));

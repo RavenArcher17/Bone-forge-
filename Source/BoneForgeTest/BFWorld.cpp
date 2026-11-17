@@ -1645,6 +1645,55 @@ void ABFWorld::MakeLand()
 		}
 		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d points filled beside diagonal river steps"), DiagFilled);
 	}
+	// Perched water (2026-11-17, island 906 from above: white and green diamonds by a plunge pool). River points left from
+	// the old cascade beside a pool kept their water 6-9 m over the pool's, each drawn as a lone diamond: a point whose
+	// water stands 3 m or more over a deep neighbour's (a pool's) is dried; then any river point with no wet point round it.
+	// -bfnoperched: as before.
+	if (!FParse::Param(FCommandLine::Get(), TEXT("bfnoperched")))
+	{
+		auto WetAt = [&](int32 C) { return (Kind[C] == 3 || Kind[C] == 2) && W[C] > H[C] + 0.02f; };
+		int32 Perched = 0, Lone = 0;
+		for (int32 Pass = 0; Pass < 2; ++Pass)
+		{
+			TArray<int32> DryC;
+			for (int32 Y = 2; Y < N - 2; ++Y)
+			{
+				for (int32 X = 2; X < N - 2; ++X)
+				{
+					const int32 C = Idx(X, Y);
+					if (Kind[C] != 3 || !WetAt(C))
+					{
+						continue;
+					}
+					int32 Wet = 0;
+					bool bOver = false;
+					for (int32 dy = -1; dy <= 1; ++dy)
+					{
+						for (int32 dx = -1; dx <= 1; ++dx)
+						{
+							const int32 E = Idx(X + dx, Y + dy);
+							if ((dx || dy) && WetAt(E))
+							{
+								++Wet;
+								bOver = bOver || (Pass == 0 && W[E] - H[E] > 2.5f && W[C] > W[E] + 3.f);
+							}
+						}
+					}
+					if (bOver || Wet == 0)
+					{
+						DryC.Add(C);
+						(bOver ? Perched : Lone)++;
+					}
+				}
+			}
+			for (const int32 C : DryC)
+			{
+				W[C] = -1000.f;
+				Kind[C] = 0;
+			}
+		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d perched river points and %d lone ones dried"), Perched, Lone);
+	}
 	// Each fall's lip at the water above it, last of all (2026-11-16, island 906: the passes after the falls' shaping set the
 	// river's levels again, and a lake's outlet at 160 m fed a box of water at 157 m at the edge, banks round it). The highest
 	// water within 6 points upstream of the lip; the channel from there to the edge filled to it, the banks beside just
@@ -2271,7 +2320,7 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 							WetZ += float(WVerts[Ws[k]].Z);
 						}
 					}
-					if (bOnFace || bDeep || NWet < 2)
+					if (bOnFace || bDeep || NWet < (FParse::Param(FCommandLine::Get(), TEXT("bfrapids2")) ? 2 : 3))          // (2026-11-17: with only two wet corners its other two at their mean stood flat over the bank as pale diamonds, islands 13 and 906 from above; -bfrapids2: as before)
 					{
 						continue;
 					}

@@ -1001,6 +1001,16 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
   - Rock is a cooler grey (114,113,110; was 124,118,108, cream-tan in the sun from above), the lip and gorge-edge
     rock with it.
   - Every island's shape changed again (the ravines): islands saved before load their animals where the old ground was.
+  - Perched water: river points left from the old cascade beside a plunge pool kept water 6-9 m over the pool's and
+    drew as lone white/green diamonds (island 906's gorge). A river point whose water stands 3 m or more over a deep
+    neighbour's is dried, then any river point with no wet point round it (`-bfnoperched`: as before).
+  - White water is drawn on a steep square only with 3 or 4 wet corners (with 2, the others at their mean stood flat
+    over the bank; `-bfrapids2`: as before).
+  - Check cameras (`-bflandform`'s fall, rapids and sea views) are brought in along the line to what they look at,
+    short of the first rock in the way: in a narrow ravine the front views were inside the wall beds.
+  - The `-bftop` log also prints the ground 32 m below and 24 m above each fall.
+  - Still: a pale shape on a shallow pond above island 13's 8 m fall (most likely the sun's glint on a pond whose edge
+    follows the 4 m grid); a green water triangle shows through the foot of most curtains.
  Every seed's island has
   changed shape, so an island saved before this will load with its animals where the old ground was. Island 13
   now takes ~25 s to be ready.
