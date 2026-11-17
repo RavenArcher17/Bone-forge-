@@ -1014,6 +1014,21 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
     over the ledge. The curtain now runs level with the river until past the lip's point, then falls (`-bfoldlipdrop`:
     as before). Checked islands 906 and 13 from above, the front and the side (reports/top_views/906_lip_top_*,
     13_fall_front_*).
+  - A closer look (2026-11-17, Raven: "look closer and fix things you notice"):
+    - The curtain ran level 2 m past the lip (a white shelf side on): now only to just past the lip's point.
+    - It was 1.5 m wider than the river from the lip (from above, a white box standing over the banks): now the river's
+      width and a little at the lip (+0.9 m, at least 3.8 m), widening to its old width 4 m down.
+    - It stopped 1.6-2.8 m over the pool where DropM was short of the lip-to-pool height (island 906's 35 m fall,
+      island 13's 8 m and 41 m ones): now down to the pool's water and 40 cm in (`-bfolddrop`: as before).
+      `-bfoldlipdrop` also brings back the old width and level run.
+    - The gorge walls below a fall were cut from a straight line across the river, so from above the rim ran
+      ruler-straight 28-40 m (906's 35 m fall, 13's 41 m fall): their upper edge is a horseshoe round the pool now,
+      0.3 points further downstream per point aside, squared (`-bfstraightrim`: as before).
+    - Check cameras (`-bflandform`) are raised (up to 45 m) for a clear line when brought in short of the first rock
+      would leave them within 40% of the way (front views pressed against a curtain). Still: some views land over
+      a dome of rock or close to a curtain, depending on the ground.
+    - Still: a flat stepped shelf just above some lips (island 13's 41 m fall), the ground as the river left it.
+    - Pictures: reports/top_views/906_rim_*, 906_curtain_top_*, 906_lipside_*, 13_rim_*.
   - The `-bftop` log also prints the ground 32 m below and 24 m above each fall, and round its lip.
   - Still: a pale shape on a shallow pond above island 13's 8 m fall (most likely the sun's glint on a pond whose edge
     follows the 4 m grid). (The "green water triangle at the foot of most curtains" was this lip point, seen from above.)

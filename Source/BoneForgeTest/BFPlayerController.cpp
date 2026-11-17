@@ -9146,11 +9146,23 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 				{
 					Q.AddIgnoredActor(GetPawn());
 				}
-				if (GetWorld()->LineTraceSingleByChannel(Hit, To, From, ECC_Visibility, Q) && Hit.Distance > 300.f)
+				// (2026-11-17: brought in along the line it could end up a metre from a curtain, all white. Where that would leave it
+				// within 40% of the way out, it tries higher, up to 45 m up, for a line clear all the way; else as before. Raised
+				// every time, a lip side view sat over a dome of rock, all rock.)
+				const bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, To, From, ECC_Visibility, Q) && Hit.Distance > 300.f;
+				const FVector Old = bHit ? Hit.Location + (To - From).GetSafeNormal() * 120.f : From;
+				if (bHit && Hit.Distance < 0.4f * FVector::Dist(From, To))
 				{
-					return Hit.Location + (To - From).GetSafeNormal() * 120.f;
+					for (int32 k = 1; k < 7; ++k)
+					{
+						const FVector Fk = From + FVector(0.f, 0.f, 750.f * k);
+						if (!GetWorld()->LineTraceSingleByChannel(Hit, To, Fk, ECC_Visibility, Q))
+						{
+							return Fk;
+						}
+					}
 				}
-				return From;
+				return Old;
 			};
 			const int32 K = int32(AutoClock / 2.5f);
 			FVector P, Look;
