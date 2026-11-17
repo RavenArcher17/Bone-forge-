@@ -984,6 +984,23 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
     and the pool's blocks only by the pool (at most 2.6 m; one sat on island 13's lip as a 14 m boulder).
   - Ground within 32 m of a lip is bare wet grey rock.
   - Still: the banks right at island 906's lip are tan; island 13's big fall now shows as two tiers.
+- From above (2026-11-17, Raven: "take top down angle pictures of the waterfalls and other landforms, I haven't seen a
+  ravine yet"):
+  - `-bflandform -bftop`: straight down over every fall 6 m and more (`top_fallN_wide`, `_lip`, `_pool`), every ravine
+    (`top_ravineN_whole`, `_mid`), up to 6 cave mouths and the whole island; downstream is up the picture. The log
+    prints each fall and the ground round its pool (`LogAround(P, R)` now takes a radius).
+  - Every island has a ravine now (1, or 2 four times in ten): 40% had none, island 20261112 among them. Its course
+    follows the way the water drains through hollows (the steepest way down stopped in the first hollow: island
+    22436 failed 562 of 600 tries); with few stream heads, smaller streams and lower ground are taken too.
+  - A river stepping diagonally (a gorge's floor) drew as a chain of white and green diamonds: the two points beside
+    each diagonal step are joined to it (`-bfnodiagfill`: as before).
+  - Island 20261112's 44 m fall stood on a flat raised box: the banks pass let the river below the fall lay the
+    plateau beside the river above it back at 32 deg (gullies 35 m deep either side). Now no bank is laid back within
+    30 m of a fall's lip, and the lake-outlet lip takes only a lake's water or the river's right at the edge (it had
+    taken rapids 6 points upstream).
+  - Rock is a cooler grey (114,113,110; was 124,118,108, cream-tan in the sun from above), the lip and gorge-edge
+    rock with it.
+  - Every island's shape changed again (the ravines): islands saved before load their animals where the old ground was.
  Every seed's island has
   changed shape, so an island saved before this will load with its animals where the old ground was. Island 13
   now takes ~25 s to be ready.

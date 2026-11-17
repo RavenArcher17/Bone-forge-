@@ -37,7 +37,7 @@ namespace
 		FColor(72, 98, 44),      // Plains
 		FColor(52, 64, 36),      // Forest
 		FColor(64, 74, 40),      // Swamp
-		FColor(124, 118, 108),   // Rock
+		FColor(114, 113, 110),   // Rock (2026-11-17: cooler grey; 124,118,108 read as cream-tan in the sun from above)
 		FColor(84, 74, 54),      // Lake bed
 		FColor(84, 74, 54),      // River bed
 	};
@@ -316,17 +316,19 @@ void ABFWorld::MakeLand()
 	{
 		FRandomStream RR(Seed + 4242);
 		const float Pick = RR.FRand();
-		const int32 WantRav = Pick < 0.4f ? 0 : (Pick < 0.85f ? 1 : 2);
+		const int32 WantRav = Pick < 0.6f ? 1 : 2;          // (2026-11-17: every island has one; 40% had none and Raven had never seen one)
 		const float Steep = 1.75f;          // metres up the wall per metre across (~60 deg; 65 stood as flat plates)
 		// (Its head where a stream already runs, so the stream goes over it: a waterfall. Where the rain gathers, the
 		// land's own way down: each point's catchment, cells of rain, as the water will find it.)
 		TArray<int32> Heads;
+		TArray<float> Pre;
+		TArray<int32> Par;
 		if (WantRav > 0)
 		{
 			// (filled from the sea in, lowest first, as the water will be: each point drains to the one it was reached
 			// from, so the small hollows rain left don't stop the count)
 			TArray<float> F2 = H;
-			TArray<int32> Par, Popped;
+			TArray<int32> Popped;
 			Par.Init(INDEX_NONE, N * N);
 			TArray<bool> Seen;
 			Seen.Init(false, N * N);
@@ -367,7 +369,6 @@ void ABFWorld::MakeLand()
 					}
 				}
 			}
-			TArray<float> Pre;
 			Pre.Init(1.f, N * N);
 			for (int32 k = Popped.Num() - 1; k >= 0; --k)
 			{
@@ -377,12 +378,17 @@ void ABFWorld::MakeLand()
 					Pre[Par[C]] += Pre[C];
 				}
 			}
-			for (int32 C = 0; C < N * N; ++C)
+			// (2026-11-17: looser where an island has few: smaller streams and lower ground)
+			for (int32 Pass = 0; Pass < 2 && Heads.Num() < 40; ++Pass)
 			{
-				const int32 X = C % N, Y = C / N;
-				if (Pre[C] >= 6500.f && Pre[C] <= 60000.f && H[C] >= 25.f && H[C] <= 170.f && X > N / 8 && Y > N / 8 && X < N * 7 / 8 && Y < N * 7 / 8)
+				Heads.Reset();
+				for (int32 C = 0; C < N * N; ++C)
 				{
-					Heads.Add(C);
+					const int32 X = C % N, Y = C / N;
+					if (Pre[C] >= (Pass ? 2500.f : 6500.f) && Pre[C] <= 60000.f && H[C] >= (Pass ? 15.f : 25.f) && H[C] <= 170.f && X > N / 8 && Y > N / 8 && X < N * 7 / 8 && Y < N * 7 / 8)
+					{
+						Heads.Add(C);
+					}
 				}
 			}
 		}
@@ -398,6 +404,20 @@ void ABFWorld::MakeLand()
 			while (Len < WantM)
 			{
 				const FIntPoint P = Run.Last();
+				// (2026-11-17: the way the water drains, through the hollows: the steepest way down stopped in the first
+				// hollow, and 562 of 600 tries on island 22436 came out too short)
+				const int32 Dn = Par[Idx(P.X, P.Y)];
+				if (Dn != INDEX_NONE)
+				{
+					const FIntPoint B2(Dn % N, Dn / N);
+					if (H[Dn] < 3.f || B2.X <= 2 || B2.Y <= 2 || B2.X >= N - 3 || B2.Y >= N - 3)
+					{
+						break;
+					}
+					Len += CellM * ((B2.X != P.X && B2.Y != P.Y) ? 1.4142f : 1.f);
+					Run.Add(B2);
+					continue;
+				}
 				FIntPoint Best = P;
 				float BestZ = H[Idx(P.X, P.Y)];
 				for (int32 dy = -1; dy <= 1; ++dy)
@@ -1429,7 +1449,25 @@ void ABFWorld::MakeLand()
 				}
 			}
 		}
-		TArray<int32> Dry = Band.FilterByPredicate([&](int32 C) { return Kind[C] == 0; });
+		// (2026-11-17, island 20261112 from above: by a fall's lip the river below the fall laid the plateau beside the river
+		// above it back at 32 deg, two gullies 35 m deep either side, and the river above stood on a flat causeway between
+		// them. Not within 30 m of a fall's lip: the falls' own shaping has that ground.)
+		TArray<int32> Dry = Band.FilterByPredicate([&](int32 C)
+		{
+			if (Kind[C] != 0)
+			{
+				return false;
+			}
+			const FVector P = Origin + FVector((C % N) * CellCm, (C / N) * CellCm, 0.f);
+			for (const FBFFall& Fa : Falls)
+			{
+				if (Fa.PoolCm > 0.f && FVector::Dist2D(P, Fa.Top) < Fa.WidthCm + 3000.f)
+				{
+					return false;
+				}
+			}
+			return true;
+		});
 		const TArray<float> Before = H;
 		auto Base = [&](int32 C) { return Kind[C] == 2 || Kind[C] == 3 ? W[C] + 0.3f : H[C]; };
 		for (int32 Pass = 0; Pass < 10; ++Pass)
@@ -1544,6 +1582,69 @@ void ABFWorld::MakeLand()
 			}
 		}
 	}
+		// A river stepping diagonally from point to point (2026-11-17, top-down pictures of island 906's gorge): its water
+	// squares met only at their corners and drew as a chain of diamonds, white and green by turns. The two points
+	// beside each diagonal step joined to it: their water the mean of the step's two, their ground under it (at most a
+	// metre dug; higher ground is left as a bank). Not by a fall's lip, nor where the step drops more than 4.5 m.
+	// -bfnodiagfill: as before.
+	int32 DiagFilled = 0;
+	if (!FParse::Param(FCommandLine::Get(), TEXT("bfnodiagfill")))
+	{
+		TArray<int32> FillC;
+		TArray<float> FillW;
+		auto Wet3 = [&](int32 C) { return Kind[C] == 3 && W[C] > H[C] + 0.02f; };
+		for (int32 Y = 2; Y < N - 2; ++Y)
+		{
+			for (int32 X = 2; X < N - 2; ++X)
+			{
+				const int32 C = Idx(X, Y);
+				if (!Wet3(C))
+				{
+					continue;
+				}
+				for (const int32 Sx : { -1, 1 })
+				{
+					const int32 D = Idx(X + Sx, Y + 1);
+					if (!Wet3(D) || FMath::Abs(W[C] - W[D]) > 4.5f)
+					{
+						continue;
+					}
+					const int32 Ea = Idx(X + Sx, Y), Eb = Idx(X, Y + 1);
+					if (Wet3(Ea) || Wet3(Eb))
+					{
+						continue;          // (already joined along an edge)
+					}
+					const float Lv = 0.5f * (W[C] + W[D]);
+					bool bByFall = false;
+					for (const FBFFall& Fa : Falls)
+					{
+						bByFall = bByFall || FVector::Dist2D(Origin + FVector(X * CellCm, Y * CellCm, 0.f), Fa.Top) < Fa.WidthCm + 500.f;
+					}
+					if (bByFall)
+					{
+						continue;
+					}
+					for (const int32 E : { Ea, Eb })
+					{
+						if (Kind[E] != 1 && Kind[E] != 2 && H[E] < Lv + 1.f)
+						{
+							FillC.Add(E);
+							FillW.Add(Lv);
+						}
+					}
+				}
+			}
+		}
+		for (int32 i = 0; i < FillC.Num(); ++i)
+		{
+			const int32 E = FillC[i];
+			W[E] = FMath::Max(W[E] > H[E] ? W[E] : -1000.f, FillW[i]);
+			H[E] = FMath::Min(H[E], W[E] - 0.3f);
+			Kind[E] = 3;
+			++DiagFilled;
+		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d points filled beside diagonal river steps"), DiagFilled);
+	}
 	// Each fall's lip at the water above it, last of all (2026-11-16, island 906: the passes after the falls' shaping set the
 	// river's levels again, and a lake's outlet at 160 m fed a box of water at 157 m at the edge, banks round it). The highest
 	// water within 6 points upstream of the lip; the channel from there to the edge filled to it, the banks beside just
@@ -1567,7 +1668,7 @@ void ABFWorld::MakeLand()
 					const FVector2D Q(X, Y);
 					const int32 Cc = Idx(X, Y);
 					const float Al = float(FVector2D::DotProduct(Q - T, Dir)), La = FMath::Abs(float(FVector2D::CrossProduct(Dir, Q - T)));
-					if (Al <= 0.3f && Al >= -6.5f && La <= HalfW + 2.f && W[Cc] > H[Cc] + 0.05f && Kind[Cc] != 1)
+					if (Al <= 0.3f && Al >= -6.5f && La <= HalfW + 2.f && W[Cc] > H[Cc] + 0.05f && Kind[Cc] != 1 && (Kind[Cc] == 2 || Al >= -1.5f))          // (2026-11-17: a lake's water, or the river's right at the edge: the rapids 6 points up the river on island 20261112 raised its lip into a flat box)
 					{
 						UpLvl = FMath::Max(UpLvl, W[Cc]);
 					}
@@ -1691,7 +1792,7 @@ void ABFWorld::MakeLand()
 			if (Kind[C] == 0 && bLipRock)
 			{
 				// (2026-11-16: the banks at a fall's lip are bare wet rock, whatever is beside them: tan sand there read as a box)
-				const FColor Wr(104, 99, 90);
+				const FColor Wr(96, 95, 92);
 				Base = FColor(uint8(FMath::Lerp(float(Base.R), float(Wr.R), 0.8f)), uint8(FMath::Lerp(float(Base.G), float(Wr.G), 0.8f)), uint8(FMath::Lerp(float(Base.B), float(Wr.B), 0.8f)));
 			}
 			else if (Kind[C] == 0 && B != EBFBiome::Beach && ToWater[C] <= 2)
@@ -1702,7 +1803,7 @@ void ABFWorld::MakeLand()
 				{
 					bByLip = bByLip || (Fa.PoolCm > 0.f && FVector::Dist2D(Origin + FVector(X * CellCm, Y * CellCm, 0.f), Fa.Top) < Fa.WidthCm + 1600.f);
 				}
-				const FColor Wet = (Gorge[C] || bByLip) ? FColor(96, 90, 80) : FColor(98, 88, 66);
+				const FColor Wet = (Gorge[C] || bByLip) ? FColor(92, 91, 88) : FColor(98, 88, 66);
 				const float Mix = ToWater[C] <= 1 ? 0.75f : 0.35f;
 				Base = FColor(uint8(FMath::Lerp(float(Base.R), float(Wet.R), Mix)), uint8(FMath::Lerp(float(Base.G), float(Wet.G), Mix)), uint8(FMath::Lerp(float(Base.B), float(Wet.B), Mix)));
 			}
@@ -5522,13 +5623,13 @@ void ABFWorld::TourPoints(TArray<FVector>& At, TArray<FString>& Names) const
 	}
 }
 
-void ABFWorld::LogAround(const FVector& P) const
+void ABFWorld::LogAround(const FVector& P, int32 R) const
 {
 	const int32 X0 = FMath::RoundToInt((P.X - Origin.X) / CellCm), Y0 = FMath::RoundToInt((P.Y - Origin.Y) / CellCm);
-	for (int32 dy = -4; dy <= 4; ++dy)
+	for (int32 dy = -R; dy <= R; ++dy)
 	{
 		FString Row;
-		for (int32 dx = -4; dx <= 4; ++dx)
+		for (int32 dx = -R; dx <= R; ++dx)
 		{
 			const int32 C = Idx(FMath::Clamp(X0 + dx, 0, N - 1), FMath::Clamp(Y0 + dy, 0, N - 1));
 			Row += FString::Printf(TEXT(" %5.1f/%5.1f/%d"), H[C], W[C] > H[C] ? W[C] : -1.f, int32(Biome[C]));

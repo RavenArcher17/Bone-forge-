@@ -9028,6 +9028,81 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 				}
 				break;
 			}
+			// (2026-11-17: -bftop: straight down over every fall (wide and close), every ravine and every cave mouth; the
+			// way the water or the ravine runs is up the picture; 2.5 s a view)
+			static const bool bTop = FParse::Param(FCommandLine::Get(), TEXT("bftop"));
+			if (bTop)
+			{
+				static TArray<FVector> TopAt, TopDir;
+				static TArray<float> TopH;
+				static TArray<FString> TopNames;
+				if (AutoFrame == 1)
+				{
+					I->SetHours(11.5f);
+					SetFreeCam(true);
+					TopAt.Reset(); TopDir.Reset(); TopH.Reset(); TopNames.Reset();
+					int32 Fn = 0;
+					for (const ABFWorld::FBFFall& Fa : I->Falls)
+					{
+						if (Fa.DropM < 6.f)
+						{
+							continue;
+						}
+						const FVector Mid = (Fa.Top + Fa.Bottom) * 0.5f;
+						TopAt.Add(Mid); TopDir.Add(Fa.Dir); TopH.Add(9000.f + 120.f * Fa.DropM); TopNames.Add(FString::Printf(TEXT("fall%d_wide"), Fn));
+						TopAt.Add(Fa.Top + Fa.Dir * 300.f); TopDir.Add(Fa.Dir); TopH.Add(3200.f); TopNames.Add(FString::Printf(TEXT("fall%d_lip"), Fn));
+						TopAt.Add(FVector(Fa.Bottom.X, Fa.Bottom.Y, FMath::Max(Fa.Top.Z, Fa.Bottom.Z))); TopDir.Add(Fa.Dir); TopH.Add(2600.f + FMath::Max(Fa.PoolCm, 0.f)); TopNames.Add(FString::Printf(TEXT("fall%d_pool"), Fn));
+						UE_LOG(LogTemp, Display, TEXT("[BoneForge] top view: fall%d %.1f m, %.0f m wide, pool %.0f, top %s, bottom %s, dir %s"), Fn, Fa.DropM, Fa.WidthCm / 100.f, Fa.PoolCm, *Fa.Top.ToString(), *Fa.Bottom.ToString(), *Fa.Dir.ToString());
+						I->LogAround(Fa.Bottom, 8);
+						++Fn;
+					}
+					for (int32 r = 0; r < I->Ravines.Num(); ++r)
+					{
+						const ABFWorld::FBFRavine& Rv = I->Ravines[r];
+						if (Rv.Path.Num() < 2)
+						{
+							continue;
+						}
+						const float Len = float(FVector::Dist2D(Rv.Path[0], Rv.Path.Last()));
+						TopAt.Add((Rv.Path[0] + Rv.Path.Last()) * 0.5f); TopDir.Add((Rv.Path.Last() - Rv.Path[0]).GetSafeNormal2D());
+						TopH.Add(FMath::Max(0.9f * Len, 6000.f)); TopNames.Add(FString::Printf(TEXT("ravine%d_whole"), r));
+						const int32 Mi = Rv.Path.Num() / 2;
+						TopAt.Add(Rv.Path[Mi]); TopDir.Add((Rv.Path[FMath::Min(Mi + 1, Rv.Path.Num() - 1)] - Rv.Path[FMath::Max(Mi - 1, 0)]).GetSafeNormal2D());
+						TopH.Add(4000.f + 100.f * Rv.DeepM); TopNames.Add(FString::Printf(TEXT("ravine%d_mid"), r));
+					}
+					int32 Cn = 0;
+					for (const ABFWorld::FBFPlace& Pl : I->Places)
+					{
+						if (Pl.Kind < 10 && Cn < 6)
+						{
+							TopAt.Add(Pl.At); TopDir.Add(FVector(1.f, 0.f, 0.f)); TopH.Add(4500.f); TopNames.Add(FString::Printf(TEXT("cave%d"), Cn++));
+						}
+					}
+					const float Half = 0.5f * (ABFWorld::N - 1) * ABFWorld::CellCm;
+					TopAt.Add(I->GridOrigin() + FVector(Half, Half, 0.f)); TopDir.Add(FVector(1.f, 0.f, 0.f)); TopH.Add(2.3f * Half); TopNames.Add(TEXT("island"));
+					for (int32 t = 0; t < TopAt.Num(); ++t)
+					{
+						UE_LOG(LogTemp, Display, TEXT("[BoneForge] top view: %s at %s"), *TopNames[t], *TopAt[t].ToString());
+					}
+				}
+				const int32 K = int32(AutoClock / 2.5f);
+				if (K >= TopAt.Num())
+				{
+					SetFreeCam(false);
+					UE_LOG(LogTemp, Display, TEXT("[BoneForge] top views: %d"), K);
+					Next(9);
+					break;
+				}
+				float G = float(TopAt[K].Z);
+				I->GroundAt(FVector2D(TopAt[K]), G);
+				const FVector P = FVector(TopAt[K].X, TopAt[K].Y, FMath::Max(FMath::Max(G, float(TopAt[K].Z)), 0.f) + TopH[K]);
+				FreeCam->SetActorLocationAndRotation(P, FRotator(-89.9f, TopDir[K].Rotation().Yaw, 0.f));
+				if (AutoClock - K * 2.5f > 2.f && AutoClock - DeltaTime - K * 2.5f <= 2.f)
+				{
+					Shot(*FString::Printf(TEXT("top_%s"), *TopNames[K]));
+				}
+				break;
+			}
 			if (AutoFrame == 1)
 			{
 				I->SetHours(11.f);
