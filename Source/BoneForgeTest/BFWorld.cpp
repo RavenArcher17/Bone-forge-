@@ -183,6 +183,13 @@ void ABFWorld::MakeLand()
 				const float Bank = FMath::PerlinNoise2D(FVector2D(MX / 650.f, MY / 650.f) + SeaOff[0]) + 0.5f * FMath::PerlinNoise2D(FVector2D(MX / 260.f, MY / 260.f) + SeaOff[1]);
 				Floor = -30.f + 4.f * Hills + 28.f * FMath::SmoothStep(0.0f, 0.6f, Bank) - 14.f * FMath::SmoothStep(1.05f, 1.4f, FMath::Sqrt(U * U + V * V));
 			}
+			// (2026-11-17, a closer look: the open sea's floor beyond the map lies flat 32 m down; the map's own floor met it at
+			// whatever depth its banks left, and the water's colour changed along the map's edge, a square round the island
+			// from above. The last 12% of the way out it eases to 32 m; -bfoldseaedge: as before.)
+			if (!bOldSea && !FParse::Param(FCommandLine::Get(), TEXT("bfoldseaedge")))
+			{
+				Floor = FMath::Lerp(Floor, -32.f, FMath::SmoothStep(0.88f, 0.995f, FMath::Max(FMath::Abs(U), FMath::Abs(V))));
+			}
 			float Hh = FMath::Lerp(Floor, FMath::Max(Up, 3.f), Land);
 			for (const FIslet& It : Islets)
 			{
@@ -2736,7 +2743,7 @@ void ABFWorld::BuildCaveMesh(FBFCave& C)
 				GroundAt(FVector2D(P), Ground);
 				const int32 GXi = FMath::Clamp(FMath::RoundToInt((P.X - Origin.X) / CellCm), 0, N - 1), GYi = FMath::Clamp(FMath::RoundToInt((P.Y - Origin.Y) / CellCm), 0, N - 1);
 				const FLinearColor Outside = bHillSurface ? TileC : FLinearColor(Colour[Idx(GXi, GYi)]);
-				const FLinearColor Rock(FColor(118, 110, 100)), Deep(FColor(52, 47, 42)), Dark(FColor(14, 12, 11));
+				const FLinearColor Rock(FColor(114, 113, 110)), Deep(FColor(52, 47, 42)), Dark(FColor(14, 12, 11));          // (2026-11-17: the rock's cooler grey; was 118,110,100)
 				const float Under = FMath::Clamp((Ground - float(P.Z) - 100.f) / 300.f, 0.f, 1.f);         // 1: well under the hill's top
 				const float Up = FMath::Clamp((float(Nm.Z) - 0.55f) / 0.3f, 0.f, 1.f);
 				FLinearColor Cl = FMath::Lerp(Rock, Outside, bHillSurface ? FMath::Lerp(1.f, Up, Blend) : Up * (1.f - Under));
@@ -3740,6 +3747,18 @@ void ABFWorld::DressRivers()
 			const FVector At = Origin + FVector((X + R.FRandRange(-0.45f, 0.45f)) * CellCm, (Y + R.FRandRange(-0.45f, 0.45f)) * CellCm, 0.f);
 			float G = 0.f;
 			GroundAt(FVector2D(At), G);
+			// (2026-11-17, a closer look: in water deeper than it, set by its top it hung in the water over the bed, island
+			// 906's rivers 1-3 m. Now taller to reach the bed where that keeps it a boulder, else none; -bfoldboulders)
+			const float WaterZ = float(Origin.Z) + W[C] * 100.f;
+			if (!FParse::Param(FCommandLine::Get(), TEXT("bfoldboulders")) && WaterZ - G > 1.7f * Bo.Half.Z)
+			{
+				const float Need = (WaterZ - G) / 1.7f;
+				if (Need > 1.1f * Big)
+				{
+					continue;
+				}
+				Bo.Half.Z = Need;
+			}
 			// (sat on the bed, its top out of the water by a fifth of its height or more)
 			Bo.At = FVector(At.X, At.Y, FMath::Max(G + Bo.Half.Z * 0.3f, Origin.Z + W[C] * 100.f - Bo.Half.Z * 0.6f));
 			Bo.Rot = FRotator(R.FRandRange(-15.f, 15.f), R.FRandRange(0.f, 360.f), R.FRandRange(-15.f, 15.f));
@@ -3805,7 +3824,26 @@ void ABFWorld::BuildFalls()
 		const float TLip = FParse::Param(FCommandLine::Get(), TEXT("bfoldlipdrop")) ? 0.f : 0.4f * CellCm / Speed;          // (to just past the lip's point: at 0.55 it stood out level 2 m, a white shelf seen side on)
 		// (and the river's own width at the lip, widening as it falls: 1.5 m wider from the lip, from above it stood out
 		// over the banks as a white box wider than the river; -bfoldlipdrop: as before)
-		const float TopW = FParse::Param(FCommandLine::Get(), TEXT("bfoldlipdrop")) ? Width : FMath::Min(Width, FMath::Max(Fa.WidthCm + 90.f, 380.f));          // (+40, min 320: a corner of the river showed beside it)
+		// (and as wide as the water along the lip's line: narrower, the river's surface beside it stopped at the edge as a
+		// flat plate with nothing falling from it, island 906's rapids view)
+		float WetLat = 0.f;
+		{
+			const int32 TX = FMath::RoundToInt((Fa.Top.X - Origin.X) / CellCm), TY = FMath::RoundToInt((Fa.Top.Y - Origin.Y) / CellCm);
+			const FVector2D D2 = FVector2D(Fa.Dir).GetSafeNormal();
+			for (int32 dy = -4; dy <= 4; ++dy)
+			{
+				for (int32 dx = -4; dx <= 4; ++dx)
+				{
+					const int32 X = FMath::Clamp(TX + dx, 0, N - 1), Y = FMath::Clamp(TY + dy, 0, N - 1), Cc = Idx(X, Y);
+					const FVector2D Rel(float(X - TX), float(Y - TY));
+					if (W[Cc] > H[Cc] + 0.05f && Biome[Cc] == uint8(EBFBiome::River) && FMath::Abs(float(FVector2D::DotProduct(Rel, D2))) <= 0.75f && FMath::Abs(W[Cc] * 100.f - float(Fa.Top.Z)) < 60.f)          // (river points only: a lake outlet's whole shore made it a pane 8 m wide)
+					{
+						WetLat = FMath::Max(WetLat, FMath::Abs(float(FVector2D::CrossProduct(D2, Rel))) * CellCm);
+					}
+				}
+			}
+		}
+		const float TopW = FParse::Param(FCommandLine::Get(), TEXT("bfoldlipdrop")) ? Width : FMath::Min(Width * 1.2f, FMath::Max3(Fa.WidthCm + 90.f, 380.f, 2.f * WetLat + 150.f));          // (+40, min 320: a corner of the river showed beside it)
 		float Len = 0.f;
 		FVector Last = Lip;
 		float Pushed = 0.f;
@@ -3851,6 +3889,7 @@ void ABFWorld::BuildFalls()
 				T.Append({ A, A + 1, A + Cols + 1, A + 1, A + Cols + 2, A + Cols + 1 });
 			}
 		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] falls: %d, %.1f m, top width %.0f cm (river %.0f, wet %.0f either side), pushed out %.0f cm off the face"), f, Fa.DropM, TopW, Fa.WidthCm, WetLat, Pushed);
 		UProceduralMeshComponent* M = NewObject<UProceduralMeshComponent>(this);
 		M->SetupAttachment(GetRootComponent());
 		M->SetCastShadow(false);
@@ -4545,6 +4584,59 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 	{
 		return INDEX_NONE;
 	}
+	// (2026-11-17, a closer look: a rock hung in the air over island 13's ravine floor. For the checks: any rock whose
+	// lowest point stands a metre or more over all the ground under its footprint is logged.)
+	if (FParse::Param(FCommandLine::Get(), TEXT("bflandform")))
+	{
+		int32 Floating = 0;
+		for (const FBFRock& R : Rocks)
+		{
+			const FQuat Qr = R.Rot.Quaternion();
+			float Lowest = 1e9f, GroundTop = -1e9f;
+			for (int32 sx = -1; sx <= 1; ++sx)
+			{
+				for (int32 sy = -1; sy <= 1; ++sy)
+				{
+					for (int32 sz = -1; sz <= 1; sz += 2)
+					{
+						const FVector Pc = R.At + Qr.RotateVector(FVector(sx * R.Half.X, sy * R.Half.Y, sz * R.Half.Z) * 0.8f);
+						Lowest = FMath::Min(Lowest, float(Pc.Z));
+						float G;
+						if (GroundAt(FVector2D(Pc), G))
+						{
+							GroundTop = FMath::Max(GroundTop, G);
+						}
+					}
+				}
+			}
+			// (a wall's bed: its back, local -Y, should be in the wall; one standing clear of it hangs in the air)
+			if (R.bBed || R.Tint.A > 0)
+			{
+				float Back = -1e9f;
+				for (int32 sx = -1; sx <= 1; ++sx)
+				{
+					const FVector Pb = R.At + Qr.RotateVector(FVector(sx * R.Half.X * 0.6f, -R.Half.Y * 0.9f, 0.f));
+					float G;
+					if (GroundAt(FVector2D(Pb), G))
+					{
+						Back = FMath::Max(Back, G);
+					}
+				}
+				if (Back > -1e8f && Back < Lowest + 50.f && ++Floating <= 12)
+				{
+					UE_LOG(LogTemp, Display, TEXT("[BoneForge] rocks: bed clear of its wall kind %d at %s half %s, its back's ground %.0f cm under it"), int32(R.Kind), *R.At.ToString(), *R.Half.ToString(), Lowest - Back);
+				}
+			}
+			if (GroundTop > -1e8f && Lowest > GroundTop + 100.f)
+			{
+				if (++Floating <= 12)
+				{
+					UE_LOG(LogTemp, Display, TEXT("[BoneForge] rocks: floating kind %d bed %d tinted %d at %s half %s, %.0f cm over the ground"), int32(R.Kind), R.bBed ? 1 : 0, R.Tint.A > 0 ? 1 : 0, *R.At.ToString(), *R.Half.ToString(), Lowest - GroundTop);
+				}
+			}
+		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] rocks: %d of %d floating"), Floating, Rocks.Num());
+	}
 	TArray<FVector> Verts, Normals;
 	TArray<FColor> Colours;
 	TArray<int32> Tris;
@@ -4615,7 +4707,7 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 		// (2026-11-15, Raven: the rocks on the walls should "blend in better, like they're part of the wall and not just
 		// thrown in": set in a wall, the wall's own colour, a shade either way, no moss)
 		const bool bInWall = R.Tint.A > 0;
-		const FLinearColor Base = bInWall ? FLinearColor(R.Tint) * Rc.FRandRange(0.92f, 1.04f) : FLinearColor(FColor(150, 142, 130)) * Shade;
+		const FLinearColor Base = bInWall ? FLinearColor(R.Tint) * Rc.FRandRange(0.92f, 1.04f) : FLinearColor(FColor(140, 138, 133)) * Shade;          // (2026-11-17: a cooler grey with the rock's; 150,142,130 stood cream beside it from above)
 		const FLinearColor Moss(FColor(64, 84, 40));
 		auto Tri = [&](int32 a, int32 b, int32 c, const FVector& Inward)
 		{
