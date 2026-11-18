@@ -1029,6 +1029,28 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
       a dome of rock or close to a curtain, depending on the ground.
     - Still: a flat stepped shelf just above some lips (island 13's 41 m fall), the ground as the river left it.
     - Pictures: reports/top_views/906_rim_*, 906_curtain_top_*, 906_lipside_*, 13_rim_*.
+  - Exploring the rest (2026-11-17, Raven: "keep working on things you see ... caves rivers ravines"):
+    - River boulders in water deeper than them hung 1-3 m over the bed (island 906, dozens): now as tall as the water
+      needs, or none (`-bfoldboulders`). `-bflandform` logs any rock a metre or more over the ground under it, and wall
+      beds whose back is clear of the wall; `-bfprobe=XxY` logs what a check picture shows at that pixel.
+    - The sea floor met the open sea's flat floor (32 m) at whatever depth it had at the map's edge: a square round the
+      island from above. It eases to 32 m over the last 12% (`-bfoldseaedge`).
+    - A curtain's top is as wide as the river's water along the lip (lake points aside), up to 1.2x its width: narrower,
+      the river's surface beside it stopped at the edge as a plate with nothing falling.
+    - Boulders 116,114,110 (were 150,142,130, cream-white facing the sun), less moss; the caves' rock the rock's grey.
+    - Water at a fall's cliff edge outside the outlet's notch becomes a low rim of land (`-bfnorim`; 61 points on 906).
+      Still: island 13's 8 m fall leaves its pond along a straight 20 m edge; the rim pass doesn't find it.
+  - Caves flush with the land (2026-11-17, Raven: "the caves look weird like protrusions out of the land, the entrance
+    should be mostly inline with the terrain and the cave inside the mesh"):
+    - No knoll: a den, deep cave or cavern is made only where the hill's own ground is 2 m over the tunnel's roof within
+      12 m of the mouth and 60 cm over it beyond (AddCave refuses, logged; the placers try other cliffs). Dens also try
+      their mouth 4-12 m up the slope and shorter, level tunnels. No lintel or jambs (made for the knoll's face).
+    - Raven: "add some small rocks around ... little bites taken out around the top": 8-11 stones 0.4-1.2 m round
+      each mouth (two over it, the rest beside, two fallen before it; only on solid rock); a low brow (the hill raised up
+      to 80 cm over the mouth) and a finer grid (dens 35 cm, deep caves 45) for a clean rim. (Capping the tunnel under
+      the surface instead sealed the mouth in a sheet of holes.) `-bfknoll`: all as before.
+    - Fewer dens: islands 13 and 20261112 have 1 each now (13 had 1, 20261112 wanted 4; most cliffs fail the gentle-
+      approach test before this). Pictures: reports/caves_flush/.
   - The `-bftop` log also prints the ground 32 m below and 24 m above each fall, and round its lip.
   - Still: a pale shape on a shallow pond above island 13's 8 m fall (most likely the sun's glint on a pond whose edge
     follows the 4 m grid). (The "green water triangle at the foot of most curtains" was this lip point, seen from above.)

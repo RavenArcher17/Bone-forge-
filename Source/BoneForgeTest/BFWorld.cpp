@@ -1777,6 +1777,68 @@ void ABFWorld::MakeLand()
 			Fa.Top.Z = UpLvl * 100.f;
 		}
 	}
+	// A rim between a lake (or wide water) and a fall's cliff (2026-11-17, a closer look: above island 13's 8 m fall the
+	// pond ran right to the cut cliff along a straight edge 20 m wide, an infinity pool, the water falling from only 6 m
+	// of it). Near each fall, water at the cliff's edge (a neighbour 3 m or more under its level) outside the outlet's
+	// notch becomes a low rim of land just over the water; -bfnorim: as before.
+	if (!FParse::Param(FCommandLine::Get(), TEXT("bfnorim")))
+	{
+		int32 Rimmed = 0;
+		for (const FBFFall& Fa : Falls)
+		{
+			if (Fa.PoolCm <= 0.f)
+			{
+				continue;
+			}
+			const FVector2D T((Fa.Top.X - Origin.X) / CellCm, (Fa.Top.Y - Origin.Y) / CellCm);
+			const FVector2D Dir = FVector2D(Fa.Dir).GetSafeNormal();
+			const float HalfW = FMath::Max(0.5f * Fa.WidthCm / CellCm, 0.6f);
+			const float TopLvl = float(Fa.Top.Z) / 100.f;
+			TArray<int32> Dry;
+			for (int32 Y = FMath::Max(int32(T.Y) - 8, 1); Y <= FMath::Min(int32(T.Y) + 8, N - 2); ++Y)
+			{
+				for (int32 X = FMath::Max(int32(T.X) - 8, 1); X <= FMath::Min(int32(T.X) + 8, N - 2); ++X)
+				{
+					const int32 Cc = Idx(X, Y);
+					if (!(W[Cc] > H[Cc] + 0.05f) || Kind[Cc] == 1 || FMath::Abs(W[Cc] - TopLvl) > 1.5f)
+					{
+						continue;
+					}
+					const FVector2D Q(X, Y);
+					const float Al = float(FVector2D::DotProduct(Q - T, Dir)), La = FMath::Abs(float(FVector2D::CrossProduct(Dir, Q - T)));
+					if (La <= HalfW + 0.75f && Al > -3.f)
+					{
+						continue;          // the notch the water leaves by
+					}
+					bool bEdge = false;
+					for (int32 dy = -1; dy <= 1 && !bEdge; ++dy)
+					{
+						for (int32 dx = -1; dx <= 1; ++dx)
+						{
+							if (H[Idx(X + dx, Y + dy)] < W[Cc] - 3.f)
+							{
+								bEdge = true;
+								break;
+							}
+						}
+					}
+					if (bEdge)
+					{
+						Dry.Add(Cc);
+					}
+				}
+			}
+			for (const int32 Cc : Dry)
+			{
+				const int32 X = Cc % N, Y = Cc / N;
+				H[Cc] = W[Cc] + 0.35f + 0.25f * FMath::PerlinNoise2D(FVector2D(X * 0.4f, Y * 0.4f));
+				W[Cc] = -1000.f;
+				Kind[Cc] = 0;
+				++Rimmed;
+			}
+		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d lake/river points at a fall's cliff edge made a rim"), Rimmed);
+	}
 	{
 		float Biggest = 0.f;
 		for (const FBFFall& Fa : Falls)
@@ -2585,7 +2647,11 @@ float ABFWorld::CaveDensity(const FBFCave& C, const FVector& P) const
 		Solid += We * (100.f * FMath::PerlinNoise3D(Pr / 300.f + FVector(3.f, 8.f, 1.f)) + 40.f * FMath::PerlinNoise3D(Pr / 190.f + FVector(7.f, 2.f, 5.f))
 			+ 35.f * FMath::PerlinNoise3D(FVector(Pr.X / 400.f, Pr.Y / 400.f, Pr.Z / 140.f) + FVector(1.f, 4.f, 9.f)));          // (the last flattened up and down: beds of rock)
 	}
-	if (C.Kind != 1 && C.Kind != 4)
+	// (2026-11-17, Raven: "the caves look weird like protrusions out of the land, the entrance should be mostly inline
+	// with the terrain and the cave inside the mesh". The knoll is off: a cave is only made where the hill already covers
+	// it (AddCave). -bfknoll: as before.)
+	static const bool bKnoll = FParse::Param(FCommandLine::Get(), TEXT("bfknoll"));
+	if (bKnoll && C.Kind != 1 && C.Kind != 4)
 	{
 		float S2 = 1e9f, Zc = 0.f, Rc = 0.f, MaxRad = 0.f;
 		for (const float Rr : C.Radii)
@@ -2618,6 +2684,20 @@ float ABFWorld::CaveDensity(const FBFCave& C, const FVector& P) const
 			Solid = FMath::Max(Solid, FMath::Lerp(Hill - 60.f, Top, Wa * Ws) - float(P.Z));
 		}
 	}
+	// (2026-11-17, Raven: "little bites taken out around the top" of a mouth flush with the hill: over the opening the
+	// hill's surface met the tunnel's roof in a wedge thinner than the 50 cm grid, which tore into notches. A low brow
+	// over the mouth, the hill raised up to 80 cm in a smooth swell, thickens the wedge. Capping the tunnel under the
+	// surface instead sealed the mouth.)
+	if (C.Kind != 1 && C.Kind != 4 && !bKnoll)
+	{
+		const float R0 = C.Radii[0];
+		const FVector BrowAt = C.Path[0] - C.Out * (0.6f * R0) + FVector(0.f, 0.f, R0);
+		const float Db = float(FVector::Dist(P, BrowAt)) / (1.7f * R0);
+		if (Db < 1.f && float(P.Z) > float(C.Path[0].Z))
+		{
+			Solid += 80.f * FMath::Square(1.f - Db * Db) * FMath::Clamp((float(P.Z) - float(C.Path[0].Z)) / (0.5f * R0), 0.f, 1.f);
+		}
+	}
 	float Air = -1e9f;
 	for (int32 i = 0; i + 1 < C.Path.Num(); ++i)
 	{
@@ -2630,7 +2710,10 @@ float ABFWorld::CaveDensity(const FBFCave& C, const FVector& P) const
 		FVector D = P - Q;
 		D.Z *= (D.Z > 0.f ? 0.9f : 1.6f) * Sq;
 		// (lumps as big as a tenth of a big hall, no more than 1.6 m)
-		const float Lumpy = FMath::Clamp(0.12f * Rad, 70.f, 160.f);
+		// (2026-11-17, Raven: "little bites taken out around the top" of the mouth: the lumps broke through the hill's
+		// surface round the rim. Fading in over the first 7 m from the mouth.)
+		const float MouthFade = (C.Kind == 4 || FParse::Param(FCommandLine::Get(), TEXT("bfknoll"))) ? 1.f : FMath::Clamp((float(FVector::Dist(P, C.Path[0])) - 150.f) / 550.f, 0.1f, 1.f);
+		const float Lumpy = FMath::Clamp(0.12f * Rad, 70.f, 160.f) * MouthFade;
 		float Ai = Rad + Lumpy * FMath::PerlinNoise3D(FVector(P) / FMath::Max(260.f, 0.35f * Rad) + FVector(17.f, 3.f, 9.f)) - float(D.Size());
 		Ai = FMath::Min(Ai, float(P.Z - (Q.Z - CaveFloorK(Sq) * Rad)));
 		Air = FMath::Max(Air, Ai);
@@ -2880,7 +2963,46 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 	{
 		C.Squash = *Squash;
 	}
-	C.Res = Kind == 3 ? 75.f : (Kind == 2 ? 60.f : 50.f);
+	// Inside the hill (2026-11-17, Raven: the caves stood up out of the land as lumps): a den, deep cave or cavern only
+	// where the hill's own ground is 2 m or more over the tunnel's roof within 12 m of the mouth, and 60 cm or more over
+	// it from there on (a cavern's skylights aside); else none here, and the caller tries another cliff.
+	if ((Kind == 0 || Kind == 2 || Kind == 3) && !FParse::Param(FCommandLine::Get(), TEXT("bfknoll")))
+	{
+		float Walked = 0.f, CoveredAt = -1.f, Thinnest = 1e9f;
+		for (int32 i = 0; i + 1 < Path.Num(); ++i)
+		{
+			const float Seg = float(FVector::Dist(Path[i], Path[i + 1]));
+			for (float t = 0.f; t < Seg; t += 100.f)
+			{
+				const float u = t / FMath::Max(Seg, 1.f);
+				const FVector P = FMath::Lerp(Path[i], Path[i + 1], u);
+				const float Roof = float(P.Z) + 0.9f * FMath::Lerp(Radii[i], Radii[i + 1], u);
+				float G = -1e9f;
+				GroundAt(FVector2D(P), G);
+				const float Cover = G - Roof;
+				if (CoveredAt < 0.f && Cover >= 200.f)
+				{
+					CoveredAt = Walked + t;
+				}
+				else if (CoveredAt >= 0.f)
+				{
+					Thinnest = FMath::Min(Thinnest, Cover);
+				}
+			}
+			Walked += Seg;
+		}
+		const bool bShafts = Shafts && Shafts->Num() > 0;
+		if (CoveredAt < 0.f || CoveredAt > 1200.f || (!bShafts && Thinnest < 60.f))          // (7 m and 1 m: 17 refused on island 13, no dens left)
+		{
+			++CavesRefused;
+			UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: cave kind %d refused at %s: 2 m of hill over its roof from %.0f cm in, thinnest after %.0f cm, %.0f cm long"), int32(Kind), *Path[0].ToString(), CoveredAt, Thinnest, Walked);
+			return INDEX_NONE;
+		}
+	}
+	// (2026-11-17: finer for dens and deep caves, 35 and 45 cm: at 50 and 60 the slope met a mouth flush with the hill
+	// in ragged notches round its top; -bfknoll: as before)
+	const bool bOldRes = FParse::Param(FCommandLine::Get(), TEXT("bfknoll"));
+	C.Res = Kind == 3 ? 75.f : (Kind == 2 ? (bOldRes ? 60.f : 45.f) : (Kind == 0 && !bOldRes ? 35.f : 50.f));
 	for (int32 i = 0; i < Path.Num(); ++i)
 	{
 		C.Floor.Add(Path[i] - FVector(0.f, 0.f, CaveFloorK(C.Squash[i]) * Radii[i] - 5.f));       // (the flat floor under each point, see CaveDensity)
@@ -2989,9 +3111,19 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 		Lip.Half = FVector(300.f * Sc, R0 * 1.45f, 105.f * Sc);
 		Lip.At = M0 - Out * 150.f * Sc + FVector(0.f, 0.f, R0 + 55.f * Sc);
 		Lip.Rot = FRotator(Rc.FRandRange(-9.f, -3.f), Yaw, Rc.FRandRange(-6.f, 6.f));
-		Rim.Add(Lip);
+		// (2026-11-17: with no knoll, no lintel or jambs: made for the knoll's face, on the hill's own ground the lintel lay
+		// out as a flat slab 6 by 8 m over the mouth; -bfknoll: as before)
+		const bool bFrame = FParse::Param(FCommandLine::Get(), TEXT("bfknoll"));
+		if (bFrame)
+		{
+			Rim.Add(Lip);
+		}
 		for (const float S : { -1.f, 1.f })
 		{
+			if (!bFrame)
+			{
+				break;
+			}
 			FBFRock Jamb;
 			Jamb.Kind = 2;
 			Jamb.Seed = Rc.RandRange(0, 65535);
@@ -3014,6 +3146,41 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 				Bo.At = FVector(P.X, P.Y, G + Bo.Half.Z * 0.25f);
 				Bo.Rot = FRotator(Rc.FRandRange(-10.f, 10.f), Rc.FRandRange(0.f, 360.f), Rc.FRandRange(-10.f, 10.f));
 				Rim.Add(Bo);
+			}
+		}
+		// (2026-11-17, Raven: "add some small rocks around" the mouth: 6-9 stones 0.4-1.2 m, half sunk in the slope round its
+		// sides and top, a few fallen out on the ground before it; none across the way in)
+		if (!bFrame)
+		{
+			const int32 Stones = Rc.RandRange(8, 11);
+			for (int32 b = 0; b < Stones; ++b)
+			{
+				FBFRock St;
+				St.Kind = 0;
+				St.Seed = Rc.RandRange(0, 65535);
+				const float Big = Rc.FRandRange(20.f, 60.f) * FMath::Sqrt(Sc);
+				St.Half = FVector(Big * Rc.FRandRange(1.f, 1.4f), Big, Big * Rc.FRandRange(0.5f, 0.75f));
+				FVector P;
+				if (b < Stones - 2)
+				{
+					// round the sides and top: an arc over the mouth, set a little back into the hill
+					const float Ang = (b < 2 ? Rc.FRandRange(-0.4f, 0.4f) : (b % 2 == 0 ? 1.f : -1.f) * Rc.FRandRange(0.6f, 1.45f));          // radians from straight up: two over it, the rest beside
+					const float Rr = R0 + Rc.FRandRange(60.f, 260.f);
+					P = M0 + Side * (FMath::Sin(Ang) * Rr) - Out * (FMath::Cos(Ang) * Rr * 0.8f + Rc.FRandRange(0.f, 120.f));          // (up the slope is into the hill)
+				}
+				else
+				{
+					// fallen out before it, to the sides of the way in
+					P = M0 + Out * Rc.FRandRange(200.f, 600.f) + Side * ((b % 2 == 0 ? 1.f : -1.f) * Rc.FRandRange(R0 + 40.f, R0 + 250.f));
+				}
+				float G = 0.f;
+				// (solid rock under it: the hill's heights run on over the mouth, where the cave has cut them away)
+				if (GroundAt(FVector2D(P), G) && CaveDensity(Caves.Last(), FVector(P.X, P.Y, G - 40.f)) > 0.f)
+				{
+					St.At = FVector(P.X, P.Y, G + St.Half.Z * 0.1f);
+					St.Rot = FRotator(Rc.FRandRange(-20.f, 20.f), Rc.FRandRange(0.f, 360.f), Rc.FRandRange(-20.f, 20.f));
+					Rim.Add(St);
+				}
 			}
 		}
 		AddRocks(Rim);
@@ -3242,6 +3409,7 @@ void ABFWorld::PlaceCaves()
 	// Up to five dens at the feet of the island's cliffs (none within 150 m of another, nor within 100 m of where you
 	// arrive): a tunnel 2.6-3.2 m round going 14-22 m in and up a little to a chamber 4.5-6 m round. The same for a seed.
 	FRandomStream R(Seed + 515);
+	CavesRefused = 0;
 	const FVector Start = StartPoint();
 	// (2026-11-15, Raven: not every island needs everything; no two alike. Each island rolls how many dens it wants
 	// (1-5), deep caves (0-2) and whether a mountain has a cavern (6 in 10); each gets what its land has room for.)
@@ -3292,10 +3460,29 @@ void ABFWorld::PlaceCaves()
 		const float R0 = R.FRandRange(260.f, 320.f), Deep = R.FRandRange(1400.f, 2200.f), Room = R.FRandRange(450.f, 600.f);
 		const FVector In = -Dn;
 		const FVector M0 = FVector(Top.X, Top.Y, 0.f) + Dn * (FootD - 150.f) + FVector(0.f, 0.f, GFoot + 30.f + 0.55f * R0);
-		const TArray<FVector> Path = { M0, M0 + In * (0.4f * Deep) + FVector(0.f, 0.f, 40.f), M0 + In * (0.75f * Deep) + FVector(0.f, 0.f, 90.f), M0 + In * Deep + FVector(0.f, 0.f, 120.f) };
-		if (AddCave(Path, { R0, R0 * 1.05f, R0 * 1.15f, Room }, 0, nullptr, nullptr, FString::Printf(TEXT("Den %d"), IslandDens + 1)) != INDEX_NONE)
+		// (2026-11-17: with no knoll the hill has to cover it: refused, it tries again shorter and level, at 70% and 50%)
+		// (and its mouth further up the slope, 4, 8 or 12 m in, its floor on the ground there: at a gentle foot the hill only
+		// covered the tunnel 15 m in)
+		bool bMade = false;
+		for (int32 Try = 0; Try < 12 && !bMade; ++Try)
 		{
-			++IslandDens;
+			const float Shift = 400.f * float(Try / 3);
+			FVector Ms = M0 + In * Shift;
+			if (Shift > 0.f)
+			{
+				float Gs = 0.f;
+				GroundAt(FVector2D(Ms), Gs);
+				Ms.Z = Gs + 30.f + 0.55f * R0;
+			}
+			const int32 Len = Try % 3;
+			const float Dp = Deep * (Len == 0 ? 1.f : (Len == 1 ? 0.7f : 0.5f)), Rise = Len == 0 ? 1.f : 0.f;
+			const FVector Mm = Ms;
+			const TArray<FVector> Path = { Mm, Mm + In * (0.4f * Dp) + FVector(0.f, 0.f, 40.f * Rise), Mm + In * (0.75f * Dp) + FVector(0.f, 0.f, 90.f * Rise), Mm + In * Dp + FVector(0.f, 0.f, 120.f * Rise) };
+			if (AddCave(Path, { R0, R0 * 1.05f, R0 * 1.15f, Room }, 0, nullptr, nullptr, FString::Printf(TEXT("Den %d"), IslandDens + 1)) != INDEX_NONE)
+			{
+				++IslandDens;
+				bMade = true;
+			}
 		}
 	}
 	PlaceBigCaves(WantDeep, bWantCavern, Roll);
@@ -3309,6 +3496,7 @@ void ABFWorld::PlaceCaves()
 	CaveSummary = FString::Printf(TEXT("%d dens (wanted %d), %d deep caves (wanted %d), %d caverns (%s)"), IslandDens, WantDens,
 		Caves.FilterByPredicate([](const FBFCave& Cv) { return Cv.Kind == 2; }).Num(), WantDeep,
 		Caves.FilterByPredicate([](const FBFCave& Cv) { return Cv.Kind == 3; }).Num(), bWantCavern ? TEXT("wanted one") : TEXT("none wanted"));
+	CaveSummary += FString::Printf(TEXT(", %d places refused (the hill not over the tunnel)"), CavesRefused);
 	UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: caves: %s"), *CaveSummary);
 }
 
@@ -4707,7 +4895,7 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 		// (2026-11-15, Raven: the rocks on the walls should "blend in better, like they're part of the wall and not just
 		// thrown in": set in a wall, the wall's own colour, a shade either way, no moss)
 		const bool bInWall = R.Tint.A > 0;
-		const FLinearColor Base = bInWall ? FLinearColor(R.Tint) * Rc.FRandRange(0.92f, 1.04f) : FLinearColor(FColor(140, 138, 133)) * Shade;          // (2026-11-17: a cooler grey with the rock's; 150,142,130 stood cream beside it from above)
+		const FLinearColor Base = bInWall ? FLinearColor(R.Tint) * Rc.FRandRange(0.92f, 1.04f) : FLinearColor(FColor(116, 114, 110)) * Shade;          // (2026-11-17: the rock's cooler grey and as dark; at 150,142,130, facing the sun, they stood cream-white beside it from above)
 		const FLinearColor Moss(FColor(64, 84, 40));
 		auto Tri = [&](int32 a, int32 b, int32 c, const FVector& Inward)
 		{
@@ -4725,7 +4913,7 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 				return;
 			}
 			const float Up = FMath::Clamp((float(Nf.Z) - 0.6f) / 0.3f, 0.f, 1.f);
-			FColor Cl = FMath::Lerp(Base, Moss, bInWall ? 0.f : (R.Kind == 0 ? 0.45f * Up : 0.12f * Up)).ToFColor(true);
+			FColor Cl = FMath::Lerp(Base, Moss, bInWall ? 0.f : (R.Kind == 0 ? 0.3f * Up : 0.12f * Up)).ToFColor(true);
 			if (bInWall)
 			{
 				// (2026-11-16: a shade per block picked each one out as a brick. The wall's colour in bands by height, the

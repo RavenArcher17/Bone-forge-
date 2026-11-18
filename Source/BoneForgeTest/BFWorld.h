@@ -125,6 +125,7 @@ public:
 	FString WaterText(const FVector& At) const;
 	/** The island's own caves (dens at the feet of cliffs), made with it. */
 	int32 IslandDens = 0;
+	int32 CavesRefused = 0;          // caves not made: the hill not over the tunnel (AddCave)
 	FString LakeText;
 	bool NearFallFace(const FVector& P) const;          // where a fall's hollow will be cut (no rocks set there)
 	TArray<uint8> Gorge;          // ground points a ravine cut            // what kinds of lake the island has (MakeLand)
