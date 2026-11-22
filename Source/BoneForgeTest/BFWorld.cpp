@@ -2727,6 +2727,15 @@ float ABFWorld::CaveDensity(const FBFCave& C, const FVector& P) const
 		const float Rs = float(S.W) * (1.f + 0.6f * T);
 		Air = FMath::Max(Air, Rs + 90.f * FMath::PerlinNoise3D(FVector(P) / 240.f + FVector(4.f, 9.f, 1.f)) - float(FVector::Dist(P, Q)));
 	}
+	// (2026-11-22, a closer look at every mouth: "scalloped bites" along the top of the rim and loose black specks over
+	// it. Surface nets bead a sharp crease, and the rim is one: the hill's surface meeting the tunnel's. A smooth min, a
+	// 60 cm fillet, rounds it over; -bfknoll: the hard crease as before.)
+	if (!bKnoll && C.Kind != 1 && C.Kind != 4)
+	{
+		const float A = Solid, B = -Air, K = 60.f;
+		const float Hh = FMath::Clamp(0.5f + 0.5f * (B - A) / K, 0.f, 1.f);
+		return FMath::Lerp(B, A, Hh) - K * Hh * (1.f - Hh);
+	}
 	return FMath::Min(Solid, -Air);
 }
 
@@ -3175,7 +3184,17 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 				}
 				float G = 0.f;
 				// (solid rock under it: the hill's heights run on over the mouth, where the cave has cut them away)
-				if (GroundAt(FVector2D(P), G) && CaveDensity(Caves.Last(), FVector(P.X, P.Y, G - 40.f)) > 0.f)
+				float Gx0 = 0.f, Gx1 = 0.f, Gy0 = 0.f, Gy1 = 0.f;
+				GroundAt(FVector2D(P) + FVector2D(120.f, 0.f), Gx1);
+				GroundAt(FVector2D(P) - FVector2D(120.f, 0.f), Gx0);
+				GroundAt(FVector2D(P) + FVector2D(0.f, 120.f), Gy1);
+				GroundAt(FVector2D(P) - FVector2D(0.f, 120.f), Gy0);
+				const bool bSteep = FVector2D((Gx1 - Gx0) / 240.f, (Gy1 - Gy0) / 240.f).Size() > 0.9f;          // (2026-11-22: over ~42 deg, stuck to a gorge cavern's cliff face)
+				// (and its front edge too over rock: on the rim's lip, two hung half over the opening)
+				const FVector Front = P + Out * St.Half.X;
+				float Gf = 0.f;
+				const bool bLip = GroundAt(FVector2D(Front), Gf) && CaveDensity(Caves.Last(), FVector(Front.X, Front.Y, Gf - 40.f)) <= 0.f;
+				if (!bSteep && !bLip && GroundAt(FVector2D(P), G) && CaveDensity(Caves.Last(), FVector(P.X, P.Y, G - 40.f)) > 0.f)
 				{
 					St.At = FVector(P.X, P.Y, G + St.Half.Z * 0.1f);
 					St.Rot = FRotator(Rc.FRandRange(-20.f, 20.f), Rc.FRandRange(0.f, 360.f), Rc.FRandRange(-20.f, 20.f));
