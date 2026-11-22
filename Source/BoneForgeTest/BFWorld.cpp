@@ -3140,6 +3140,23 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 			}
 			// (2026-11-22: and its water: behind a fall the river's sheet hung in the hollow's air. Each triangle whose middle
 			// is over a cut cell goes; -bfoldholewater: as before)
+			// (a fall's hollow: water only at its pool's level, the lowest in the hole; a strip a metre or more over it hung
+			// behind island 20261112's 44 m fall)
+			float HoleLowW = 1e9f;
+			if (Kind == 4)
+			{
+				for (int32 Y = C.Hole.Min.Y; Y < C.Hole.Max.Y; ++Y)
+				{
+					for (int32 X = C.Hole.Min.X; X < C.Hole.Max.X; ++X)
+					{
+						const int32 Cc = Idx(X, Y);
+						if (W[Cc] > H[Cc] + 0.05f)
+						{
+							HoleLowW = FMath::Min(HoleLowW, W[Cc]);
+						}
+					}
+				}
+			}
 			if (!FParse::Param(FCommandLine::Get(), TEXT("bfoldholewater")))
 			{
 				for (const TArray<int32>* Of : { &WaterTileOf, &RapidsTileOf })
@@ -3159,7 +3176,11 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 						// (only where the piece has cut air out from under the water's bed: a fall's pool in its hole keeps its water)
 						const int32 Cw = Idx(FMath::Clamp(GX, 0, N - 1), FMath::Clamp(GY, 0, N - 1));
 						const bool bHangs = GX >= C.Hole.Min.X && GX < C.Hole.Max.X && GY >= C.Hole.Min.Y && GY < C.Hole.Max.Y
-							&& CaveDensity(C, FVector(Mid.X, Mid.Y, Origin.Z + H[Cw] * 100.f - 40.f)) < 0.f;          // (its bed itself cut away)
+							&& (CaveDensity(C, FVector(Mid.X, Mid.Y, Origin.Z + H[Cw] * 100.f - 40.f)) < 0.f || (float(Mid.Z) > Origin.Z + HoleLowW * 100.f + 100.f && Falls.ContainsByPredicate([&](const FBFFall& Fa)
+							{
+								// (only below a fall's lip: the river above it is in the hole too, and went dry)
+								return FVector::Dist2D(Mid, Fa.Top) < 4000.f && FVector2D::DotProduct(FVector2D(Mid - Fa.Top), FVector2D(Fa.Dir).GetSafeNormal()) > 0.6f * CellCm;
+							})));          // (its bed itself cut away)
 						if (!bHangs)
 						{
 							Keep.Append({ Sec->ProcIndexBuffer[k], Sec->ProcIndexBuffer[k + 1], Sec->ProcIndexBuffer[k + 2] });
