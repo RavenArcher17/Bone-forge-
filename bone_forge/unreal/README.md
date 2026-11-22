@@ -1076,6 +1076,10 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
     - Single dry points with water on all four sides, under 60 cm over it, go under (`-bfoldwetdots`; 65 on island
       20261112, 27 on 906). Still: a small tan triangle where a point has water on only three sides (above 20261112's
       44 m fall).
+    - And one-point spits (water on three sides, the dry side no higher): 124 on 20261112, 76 on 906 with the four-sided
+      ones. The tan triangle above 20261112's fall is still there (the lip views aren't probed; not found). Hollow water
+      now within 40 cm of the pool's level; a thin sliver still shows at the back of that hollow.
+    - The pale mark far out in the sea_w views hits nothing (`-bfprobe`): it's in the sky, not the island.
   - The `-bftop` log also prints the ground 32 m below and 24 m above each fall, and round its lip.
   - Still: a pale shape on a shallow pond above island 13's 8 m fall (most likely the sun's glint on a pond whose edge
     follows the 4 m grid). (The "green water triangle at the foot of most curtains" was this lip point, seen from above.)

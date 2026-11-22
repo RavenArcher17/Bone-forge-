@@ -1906,18 +1906,29 @@ void ABFWorld::MakeLand()
 				const int32 Nb[4] = { Idx(X + 1, Y), Idx(X - 1, Y), Idx(X, Y + 1), Idx(X, Y - 1) };
 				float Hi = -1e9f, Lo = 1e9f, Sum = 0.f;
 				uint8 K = 0;
-				bool bAll = true;
+				int32 Wet = 0;
 				for (const int32 Ni : Nb)
 				{
-					bAll = bAll && W[Ni] > H[Ni] + 0.05f && Kind[Ni] != 1;
+					if (!(W[Ni] > H[Ni] + 0.05f) || Kind[Ni] == 1)
+					{
+						continue;
+					}
+					++Wet;
 					Hi = FMath::Max(Hi, W[Ni]);
 					Lo = FMath::Min(Lo, W[Ni]);
 					Sum += W[Ni];
 					K = Kind[Ni];
 				}
-				if (bAll && H[C] < Hi + 0.6f && Hi - Lo < 1.f)
+				// (2026-11-22: three sides too, a one-point spit, the dry side's ground no higher than its own: with four only, a
+				// tan triangle stayed in the river above island 20261112's 44 m fall)
+				bool bSpit = Wet == 3;
+				for (const int32 Ni : Nb)
 				{
-					W[C] = 0.25f * Sum;
+					bSpit = bSpit && ((W[Ni] > H[Ni] + 0.05f && Kind[Ni] != 1) || H[Ni] <= H[C] + 0.1f);
+				}
+				if ((Wet == 4 || bSpit) && H[C] < Hi + 0.6f && Hi - Lo < 1.f)
+				{
+					W[C] = Sum / float(Wet);
 					H[C] = FMath::Min(H[C], Lo - 0.2f);
 					Kind[C] = K;
 					++Dots;
@@ -3214,7 +3225,7 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 						// (only where the piece has cut air out from under the water's bed: a fall's pool in its hole keeps its water)
 						const int32 Cw = Idx(FMath::Clamp(GX, 0, N - 1), FMath::Clamp(GY, 0, N - 1));
 						const bool bHangs = GX >= C.Hole.Min.X && GX < C.Hole.Max.X && GY >= C.Hole.Min.Y && GY < C.Hole.Max.Y
-							&& (CaveDensity(C, FVector(Mid.X, Mid.Y, Origin.Z + H[Cw] * 100.f - 40.f)) < 0.f || (float(Mid.Z) > Origin.Z + HoleLowW * 100.f + 100.f && Falls.ContainsByPredicate([&](const FBFFall& Fa)
+							&& (CaveDensity(C, FVector(Mid.X, Mid.Y, Origin.Z + H[Cw] * 100.f - 40.f)) < 0.f || (float(Mid.Z) > Origin.Z + HoleLowW * 100.f + 40.f && Falls.ContainsByPredicate([&](const FBFFall& Fa)
 							{
 								// (only below a fall's lip: the river above it is in the hole too, and went dry)
 								return FVector::Dist2D(Mid, Fa.Top) < 4000.f && FVector2D::DotProduct(FVector2D(Mid - Fa.Top), FVector2D(Fa.Dir).GetSafeNormal()) > 0.6f * CellCm;
