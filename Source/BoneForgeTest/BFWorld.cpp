@@ -2502,6 +2502,8 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 		Water->RegisterComponent();
 		Water->CreateMeshSection(0, WVerts, WTris, WNormals, {}, {}, {}, false);
 		Water->SetMaterial(0, FreshMat);
+		if (WaterTileOf.Num() != PerSide * PerSide) { WaterTileOf.Init(INDEX_NONE, PerSide * PerSide); }
+		WaterTileOf[CY * PerSide + CX] = Tiles.Num();
 		Tiles.Add(Water);
 	}
 	if (RTris.Num() > 0)
@@ -2514,6 +2516,8 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 		Rapids->RegisterComponent();
 		Rapids->CreateMeshSection(0, RVerts, RTris, RNormals, RUV, {}, {}, false);
 		Rapids->SetMaterial(0, WhiteMat ? WhiteMat : FreshMat.Get());
+		if (RapidsTileOf.Num() != PerSide * PerSide) { RapidsTileOf.Init(INDEX_NONE, PerSide * PerSide); }
+		RapidsTileOf[CY * PerSide + CX] = Tiles.Num();
 		Tiles.Add(Rapids);
 	}
 }
@@ -3133,6 +3137,41 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 				TArray<FColor> Colours;
 				GroundSection(cx, cy, Verts, Tris, Normals, Colours);
 				Tiles[TI]->CreateMeshSection(0, Verts, Tris, Normals, {}, Colours, {}, true);
+			}
+			// (2026-11-22: and its water: behind a fall the river's sheet hung in the hollow's air. Each triangle whose middle
+			// is over a cut cell goes; -bfoldholewater: as before)
+			if (!FParse::Param(FCommandLine::Get(), TEXT("bfoldholewater")))
+			{
+				for (const TArray<int32>* Of : { &WaterTileOf, &RapidsTileOf })
+				{
+					const int32 WI = Of->IsValidIndex(cy * PerSide + cx) ? (*Of)[cy * PerSide + cx] : INDEX_NONE;
+					UProceduralMeshComponent* Wm = Tiles.IsValidIndex(WI) ? Tiles[WI].Get() : nullptr;
+					FProcMeshSection* Sec = Wm ? Wm->GetProcMeshSection(0) : nullptr;
+					if (!Sec)
+					{
+						continue;
+					}
+					TArray<uint32> Keep;
+					for (int32 k = 0; k + 2 < Sec->ProcIndexBuffer.Num(); k += 3)
+					{
+						const FVector Mid = (Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[k]].Position + Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[k + 1]].Position + Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[k + 2]].Position) / 3.0;
+						const int32 GX = FMath::FloorToInt((Mid.X - Origin.X) / CellCm), GY = FMath::FloorToInt((Mid.Y - Origin.Y) / CellCm);
+						// (only where the piece has cut air out from under the water's bed: a fall's pool in its hole keeps its water)
+						const int32 Cw = Idx(FMath::Clamp(GX, 0, N - 1), FMath::Clamp(GY, 0, N - 1));
+						const bool bHangs = GX >= C.Hole.Min.X && GX < C.Hole.Max.X && GY >= C.Hole.Min.Y && GY < C.Hole.Max.Y
+							&& CaveDensity(C, FVector(Mid.X, Mid.Y, Origin.Z + H[Cw] * 100.f - 40.f)) < 0.f;          // (its bed itself cut away)
+						if (!bHangs)
+						{
+							Keep.Append({ Sec->ProcIndexBuffer[k], Sec->ProcIndexBuffer[k + 1], Sec->ProcIndexBuffer[k + 2] });
+						}
+					}
+					UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: cave kind %d chunk %d,%d: %d of %d water triangles over its air cut"), int32(C.Kind), cx, cy, (Sec->ProcIndexBuffer.Num() - Keep.Num()) / 3, Sec->ProcIndexBuffer.Num() / 3);
+					if (Keep.Num() != Sec->ProcIndexBuffer.Num())
+					{
+						Sec->ProcIndexBuffer = Keep;
+						Wm->SetProcMeshSection(0, *Sec);
+					}
+				}
 			}
 		}
 	}

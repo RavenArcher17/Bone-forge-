@@ -302,6 +302,8 @@ private:
 	void BuildFalls();
 	void PlaceBigCaves(int32 WantDeep, bool bWantCavern, FRandomStream& R);
 	TArray<int32> GroundTile;
+	TArray<int32> WaterTileOf;          // each chunk's fresh-water and white-water components (Tiles index pairs), to cut cave holes out of
+	TArray<int32> RapidsTileOf;
 	bool CellHoled(int32 GX, int32 GY) const;
 	void GroundSection(int32 CX, int32 CY, TArray<FVector>& Verts, TArray<int32>& Tris, TArray<FVector>& Normals, TArray<FColor>& Colours) const;
 	float CaveDensity(const FBFCave& C, const FVector& P) const;

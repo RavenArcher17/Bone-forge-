@@ -1051,6 +1051,20 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
       the surface instead sealed the mouth in a sheet of holes.) `-bfknoll`: all as before.
     - Fewer dens: islands 13 and 20261112 have 1 each now (13 had 1, 20261112 wanted 4; most cliffs fail the gentle-
       approach test before this). Pictures: reports/caves_flush/.
+  - Whole sweep (2026-11-22, Raven: "keep going until you think it's perfect"), islands 906, 13, 20261112, 22436:
+    - Cave rims: the hill's surface and the tunnel's met in a sharp crease that the surface nets beaded into "bites" and
+      loose specks; a smooth min (60 cm fillet) rounds it. Mouth stones not on ground over ~42 deg (they stuck to a gorge
+      cavern's cliff) nor where their front edge is over the opening.
+    - Lake-outlet lips: the rim pass now takes the diagonal side points too (island 13's 8 m fall left its pond along a
+      straight 20 m edge). Dens get 200 tries (4 islands: 1/1, 2/2, 3/4, 2/2 wanted).
+    - Falls: the curtain goes down to the lowest water within 8 m of where it lands (island 22436's 6 m fall stopped on
+      a dry ledge 1.2 m over its water); its level run ends at the lip's point; no white-water squares just upstream of
+      a lip (`-bfoldlipwhite`); pushed off the face 1.5 m at most (on 22436 it went out 10 m flat over the pool).
+    - Blades: a dry point with low water on two opposite sides, both 5 m under it, comes down (`-bfnoblades`; island
+      20261112's gorge had a 13 m spike one point thick between two channels). Run last of all in MakeLand.
+    - Water over a cave piece's air: triangles whose bed the piece has cut away are dropped when the piece is made
+      (`-bfoldholewater`; 906's hollow lost its floating line). Still: a strip of water behind island 20261112's 44 m
+      fall, inside its hollow.
   - The `-bftop` log also prints the ground 32 m below and 24 m above each fall, and round its lip.
   - Still: a pale shape on a shallow pond above island 13's 8 m fall (most likely the sun's glint on a pond whose edge
     follows the 4 m grid). (The "green water triangle at the foot of most curtains" was this lip point, seen from above.)
