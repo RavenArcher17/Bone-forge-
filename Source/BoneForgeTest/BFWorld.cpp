@@ -1806,7 +1806,7 @@ void ABFWorld::MakeLand()
 					}
 					const FVector2D Q(X, Y);
 					const float Al = float(FVector2D::DotProduct(Q - T, Dir)), La = FMath::Abs(float(FVector2D::CrossProduct(Dir, Q - T)));
-					if (La <= HalfW + 0.75f && Al > -3.f)
+					if (La <= HalfW + 0.3f && Al > -3.f)          // (2026-11-22: +0.75 spared the diagonal neighbours, island 13's 8 m fall leaving its pond along 3 points)
 					{
 						continue;          // the notch the water leaves by
 					}
@@ -3416,7 +3416,7 @@ void ABFWorld::PlaceCaves()
 	FRandomStream Roll(Seed + 9091);
 	const int32 WantDens = Roll.RandRange(1, 5), WantDeep = Roll.RandRange(0, 2);
 	const bool bWantCavern = Roll.FRand() < 0.6f;
-	for (int32 k = 0; k < 60 && IslandDens < WantDens; ++k)
+	for (int32 k = 0; k < 200 && IslandDens < WantDens; ++k)          // (2026-11-22: 60, too few once a den needs the hill over it)
 	{
 		const FVector Near = Origin + FVector(R.FRandRange(0.15f, 0.85f) * SizeCm(), R.FRandRange(0.15f, 0.85f) * SizeCm(), 0.f);
 		FVector Top, Dn;
