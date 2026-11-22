@@ -3177,6 +3177,13 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 	}
 	// No island tree standing in its mouth; no plant inside it (2026-11-15: ferns grew in the dens, from the old ground).
 	ClearTreesNear(FVector2D(Path[0]), MaxR + 800.f);
+	// (2026-11-22: a fall's hollow piece reshapes the rock all round the curtain; a tree fern stood on its dome beside island
+	// 13's 41 m fall. Nothing on the piece's cut ground.)
+	if (Kind == 4 && !FParse::Param(FCommandLine::Get(), TEXT("bfoldfallplants")))
+	{
+		const FVector2D Hc = FVector2D(Origin) + FVector2D(0.5f * (C.Hole.Min.X + C.Hole.Max.X), 0.5f * (C.Hole.Min.Y + C.Hole.Max.Y)) * CellCm;
+		ClearTreesNear(Hc, 0.5f * CellCm * FMath::Max(C.Hole.Width(), C.Hole.Height()), true);
+	}
 	for (int32 i = 0; i + 1 < Path.Num(); ++i)
 	{
 		for (float t = 0.f; t < 1.f; t += 0.2f)
@@ -3627,6 +3634,8 @@ bool ABFWorld::NearFallFace(const FVector& P) const
 	return false;
 }
 
+static FColor CoolRock(const FColor& C);
+
 void ABFWorld::DressRavines()
 {
 	// A ravine's rock (Raven: "large chunks carved out of it"): blocks broken off the walls lying on its floor (1.5-6 m,
@@ -3957,7 +3966,7 @@ void ABFWorld::DressRavines()
 							continue;
 						}
 					}
-					Rk.Tint = WallC;
+					Rk.Tint = CoolRock(WallC);
 					Rk.WallN = WallN;
 					Rk.bBed = true;
 					ByBlock.FindOrAdd((Y / 30) * 1000 + X / 30).Add(Rk);
@@ -3980,7 +3989,7 @@ void ABFWorld::DressRavines()
 					const FVector2D In = Up * (0.6f * float(Rk.Half.Y));
 					Rk.At = FVector(P0.X + In.X, P0.Y + In.Y, G);
 					Rk.TopZ = float(Rk.At.Z) + float(Rk.Half.Z) * 0.5f;
-					Rk.Tint = WallC;
+					Rk.Tint = CoolRock(WallC);
 					Rk.WallN = WallN;
 					ByBlock.FindOrAdd((Y / 30) * 1000 + X / 30).Add(Rk);
 					++Walls;
@@ -4217,6 +4226,15 @@ void ABFWorld::BuildFalls()
 		M->RegisterComponent();
 		M->CreateMeshSection(0, V, T, Nm, UV, {}, {}, false);
 		M->SetVisibility(!FParse::Param(FCommandLine::Get(), TEXT("bfnocurtain")));
+		// (2026-11-22, the sweep: tree ferns and ferns stood on the bare rock beside curtains and on stones in their pools,
+		// grown from the ground before the fall was shaped. None on its face, by its curtain or round its pool.)
+		if (!FParse::Param(FCommandLine::Get(), TEXT("bfoldfallplants")))
+		{
+			for (float t = 0.f; t <= 1.001f; t += 0.125f)
+			{
+				ClearTreesNear(FVector2D(FMath::Lerp(Fa.Top, Fa.Bottom, t)), 0.5f * Width + 300.f + t * FMath::Max(Fa.PoolCm, 0.f), true);
+			}
+		}
 		if (Mat)
 		{
 			M->SetMaterial(0, Mat);
@@ -4807,6 +4825,20 @@ void ABFWorld::PlacePlants(const TArray<int32>& ToWater, const TArray<uint8>& Ki
 			PlantGrid[GY * GridN + GX].Add(FIntPoint(KV, i));
 		}
 	}
+}
+
+// (2026-11-22, the sweep: gorge wall beds took the ground's colour where they stand, and by water that's wet tan silt:
+// cream blocks beside grey rock, island 13's 41 m fall. Half way to the rock's own grey, keeping 1 in 2 of the warmth.)
+static FColor CoolRock(const FColor& C)
+{
+	if (FParse::Param(FCommandLine::Get(), TEXT("bfwarmbeds")))
+	{
+		return C;
+	}
+	const FLinearColor Rock(FColor(114, 113, 110));
+	FColor Out = FMath::Lerp(FLinearColor(C), Rock, 0.55f).ToFColor(true);
+	Out.A = 255;
+	return Out;
 }
 
 float ABFWorld::RockDensity(const FBFRock& R, const FVector& P) const

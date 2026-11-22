@@ -1065,6 +1065,12 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
     - Water over a cave piece's air: triangles whose bed the piece has cut away are dropped when the piece is made
       (`-bfoldholewater`; 906's hollow lost its floating line). Still: a strip of water behind island 20261112's 44 m
       fall, inside its hollow.
+    - Gorge wall beds took the ground's colour where they stand, by water wet tan silt (cream blocks beside grey rock,
+      island 13's 41 m fall): now 55% of the way to the rock's grey (`-bfwarmbeds`: as before).
+    - No plants on a fall's face, by its curtain, round its pool or on its hollow's ground (`-bfoldfallplants`; a fern
+      stood on a pool stone at island 906's fall). Tree ferns still grow on wet rock near water elsewhere, by design.
+    - Left as they are: the horizon line in the sea views is the horizon; the small pale mark far out in every sea_w
+      view is the same on every island, so it's not the island's (unidentified).
   - The `-bftop` log also prints the ground 32 m below and 24 m above each fall, and round its lip.
   - Still: a pale shape on a shallow pond above island 13's 8 m fall (most likely the sun's glint on a pond whose edge
     follows the 4 m grid). (The "green water triangle at the foot of most curtains" was this lip point, seen from above.)
