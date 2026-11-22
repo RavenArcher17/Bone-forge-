@@ -1839,6 +1839,55 @@ void ABFWorld::MakeLand()
 		}
 		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d lake/river points at a fall's cliff edge made a rim"), Rimmed);
 	}
+	// Blades between water (2026-11-22, island 20261112's gorge: a wall of ground one point thick stood 13 m over two
+	// channels either side of it, a spike seen end on; last of all, after the falls and rims have cut their channels). A dry point with water within a point on two opposite sides,
+	// both 5 m or more under it, comes down to 1.5 m over the higher of those two sides' ground. -bfnoblades: as before.
+	if (!FParse::Param(FCommandLine::Get(), TEXT("bfnoblades")))
+	{
+		int32 Blades = 0;
+		for (int32 Pass = 0; Pass < 2; ++Pass)
+		{
+			TArray<TPair<int32, float>> Cut;
+			for (int32 Y = 2; Y < N - 2; ++Y)
+			{
+				for (int32 X = 2; X < N - 2; ++X)
+				{
+					const int32 C = Idx(X, Y);
+					if (W[C] > H[C] + 0.05f || Kind[C] == 1)
+					{
+						continue;
+					}
+					auto WetLow = [&](int32 dx, int32 dy, float& G) -> bool
+					{
+						// the side's ground 5 m lower, with water there or one further on
+						const int32 A = Idx(X + dx, Y + dy), B = Idx(X + 2 * dx, Y + 2 * dy);
+						G = H[A];
+						return H[A] < H[C] - 5.f && (W[A] > H[A] + 0.05f || (W[B] > H[B] + 0.05f && H[B] < H[C] - 5.f));
+					};
+					float G0, G1;
+					const int32 Ax[4][2] = { { 1, 0 }, { 0, 1 }, { 1, 1 }, { 1, -1 } };
+					for (const auto& Ad : Ax)
+					{
+						if (WetLow(Ad[0], Ad[1], G0) && WetLow(-Ad[0], -Ad[1], G1))
+						{
+							Cut.Add({ C, FMath::Max(G0, G1) + 1.5f });
+							break;
+						}
+					}
+				}
+			}
+			for (const auto& Pc : Cut)
+			{
+				if (H[Pc.Key] > Pc.Value)
+				{
+					H[Pc.Key] = Pc.Value;
+					++Blades;
+				}
+			}
+		}
+		SpiresCut += Blades;
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d blade points between water brought down"), Blades);
+	}
 	{
 		float Biggest = 0.f;
 		for (const FBFFall& Fa : Falls)
