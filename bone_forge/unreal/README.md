@@ -1071,6 +1071,11 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
       stood on a pool stone at island 906's fall). Tree ferns still grow on wet rock near water elsewhere, by design.
     - Left as they are: the horizon line in the sea views is the horizon; the small pale mark far out in every sea_w
       view is the same on every island, so it's not the island's (unidentified).
+    - Fall hollows: water there only at the pool's level below the lip (the strip behind island 20261112's 44 m fall;
+      the river above the lip, in the hole too, keeps its water). A small sliver remains at the back of that hollow.
+    - Single dry points with water on all four sides, under 60 cm over it, go under (`-bfoldwetdots`; 65 on island
+      20261112, 27 on 906). Still: a small tan triangle where a point has water on only three sides (above 20261112's
+      44 m fall).
   - The `-bftop` log also prints the ground 32 m below and 24 m above each fall, and round its lip.
   - Still: a pale shape on a shallow pond above island 13's 8 m fall (most likely the sun's glint on a pond whose edge
     follows the 4 m grid). (The "green water triangle at the foot of most curtains" was this lip point, seen from above.)

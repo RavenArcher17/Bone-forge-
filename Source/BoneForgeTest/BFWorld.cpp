@@ -1888,6 +1888,44 @@ void ABFWorld::MakeLand()
 		SpiresCut += Blades;
 		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d blade points between water brought down"), Blades);
 	}
+	// Single points of ground just out of the water (2026-11-22, the sweep: a tan square in the river above island
+	// 20261112's 44 m fall). A dry point with water on all four sides, its ground under 60 cm over the highest of it, goes
+	// under: the water the four's mean, the ground 20 cm under the lowest. -bfoldwetdots: as before.
+	if (!FParse::Param(FCommandLine::Get(), TEXT("bfoldwetdots")))
+	{
+		int32 Dots = 0;
+		for (int32 Y = 1; Y < N - 1; ++Y)
+		{
+			for (int32 X = 1; X < N - 1; ++X)
+			{
+				const int32 C = Idx(X, Y);
+				if (W[C] > H[C] + 0.05f || Kind[C] == 1)
+				{
+					continue;
+				}
+				const int32 Nb[4] = { Idx(X + 1, Y), Idx(X - 1, Y), Idx(X, Y + 1), Idx(X, Y - 1) };
+				float Hi = -1e9f, Lo = 1e9f, Sum = 0.f;
+				uint8 K = 0;
+				bool bAll = true;
+				for (const int32 Ni : Nb)
+				{
+					bAll = bAll && W[Ni] > H[Ni] + 0.05f && Kind[Ni] != 1;
+					Hi = FMath::Max(Hi, W[Ni]);
+					Lo = FMath::Min(Lo, W[Ni]);
+					Sum += W[Ni];
+					K = Kind[Ni];
+				}
+				if (bAll && H[C] < Hi + 0.6f && Hi - Lo < 1.f)
+				{
+					W[C] = 0.25f * Sum;
+					H[C] = FMath::Min(H[C], Lo - 0.2f);
+					Kind[C] = K;
+					++Dots;
+				}
+			}
+		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d lone dry points in water put under"), Dots);
+	}
 	{
 		float Biggest = 0.f;
 		for (const FBFFall& Fa : Falls)
