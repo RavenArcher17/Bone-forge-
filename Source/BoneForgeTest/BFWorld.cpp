@@ -2370,7 +2370,7 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 						const FVector2D D2 = FVector2D(Fa.Dir).GetSafeNormal(), Rel = FVector2D(Mid - Fa.Top);
 						const float AlongF = float(FVector2D::DotProduct(Rel, D2)), Lat = FMath::Abs(float(FVector2D::CrossProduct(D2, Rel)));
 						const float Reach = float(FVector2D::DotProduct(FVector2D(Fa.Bottom - Fa.Top), D2));
-						bOnFace = bOnFace || (AlongF > 0.3f * CellCm && AlongF < Reach + CellCm && Lat < 0.5f * Fa.WidthCm + 2.f * CellCm);
+						bOnFace = bOnFace || (AlongF > (FParse::Param(FCommandLine::Get(), TEXT("bfoldlipwhite")) ? 0.3f : -0.6f) * CellCm && AlongF < Reach + CellCm && Lat < 0.5f * Fa.WidthCm + 2.f * CellCm);
 					}
 					// (and not with a dry corner: a bank point takes the nearest water's level, which on a steep reach may be
 					// metres off, and those squares stood up as green shards across the gorge)
@@ -4013,7 +4013,32 @@ void ABFWorld::BuildFalls()
 		// (2026-11-17: down to the pool's water and 40 cm into it. DropM can be short of it (falls merged, levels moved after):
 		// island 906's 35 m fall stopped 2.8 m over its pool, island 13's two 1.6 m over; -bfolddrop: DropM as before.)
 		const float DropCm = FParse::Param(FCommandLine::Get(), TEXT("bfolddrop")) ? Fa.DropM * 100.f : FMath::Max(Fa.DropM * 100.f, float(Fa.Top.Z - Fa.Bottom.Z) + 52.f);
-		const float Fall = FMath::Sqrt(2.f * DropCm / 980.f);                     // seconds
+		// (2026-11-22, island 22436's 6 m fall: its pool's water steps 16.8-19.8 m, and it stopped over a dry ledge 1.2 m
+		// over the water it lands in. Down to the lowest water within 8 m of where it lands, and 40 cm in.)
+		float DropCm2 = DropCm;
+		if (!FParse::Param(FCommandLine::Get(), TEXT("bfolddrop")))
+		{
+			const float T0 = FMath::Sqrt(2.f * DropCm / 980.f);
+			const FVector Land = Fa.Top + Fa.Dir * (FMath::Clamp(150.f + 25.f * Fa.DropM, 200.f, 320.f) * T0);
+			const int32 LX = FMath::RoundToInt((Land.X - Origin.X) / CellCm), LY = FMath::RoundToInt((Land.Y - Origin.Y) / CellCm);
+			float LowW = 1e9f;
+			for (int32 dy = -2; dy <= 2; ++dy)
+			{
+				for (int32 dx = -2; dx <= 2; ++dx)
+				{
+					const int32 Cc = Idx(FMath::Clamp(LX + dx, 0, N - 1), FMath::Clamp(LY + dy, 0, N - 1));
+					if (W[Cc] > H[Cc] + 0.05f)
+					{
+						LowW = FMath::Min(LowW, W[Cc]);
+					}
+				}
+			}
+			if (LowW < 1e8f)
+			{
+				DropCm2 = FMath::Max(DropCm, float(Fa.Top.Z) + 12.f - (LowW * 100.f - 40.f));
+			}
+		}
+		const float Fall = FMath::Sqrt(2.f * DropCm2 / 980.f);                     // seconds
 		// (2026-11-16, Raven: "start of the waterfalls not connected": it began 2 m out past the lip, with a gap between it
 		// and the river's surface, which ends at the lip's point. Now it begins a little back over the river's own surface
 		// and leaves the lip from there.)
@@ -4028,7 +4053,7 @@ void ABFWorld::BuildFalls()
 		// it was 1-2 m down, under the river; where the grid lies across the flow the lip's point juts out as a triangle, which
 		// lay on top of it as a green point and was seen from below as the river hanging out over the ledge. Now it runs level
 		// with the river until it's past the lip's point, then falls; -bfoldlipdrop: as before.)
-		const float TLip = FParse::Param(FCommandLine::Get(), TEXT("bfoldlipdrop")) ? 0.f : 0.4f * CellCm / Speed;          // (to just past the lip's point: at 0.55 it stood out level 2 m, a white shelf seen side on)
+		const float TLip = FParse::Param(FCommandLine::Get(), TEXT("bfoldlipdrop")) ? 0.f : 0.35f * CellCm / Speed;          // (2026-11-22: to the lip's point exactly; 0.4 still showed a white shelf from the side) (to just past the lip's point: at 0.55 it stood out level 2 m, a white shelf seen side on)
 		// (and the river's own width at the lip, widening as it falls: 1.5 m wider from the lip, from above it stood out
 		// over the banks as a white box wider than the river; -bfoldlipdrop: as before)
 		// (and as wide as the water along the lip's line: narrower, the river's surface beside it stopped at the edge as a
@@ -4059,7 +4084,7 @@ void ABFWorld::BuildFalls()
 			const float u0 = float(r) / Rows;
 			const float t = (Fall + TLip) * u0 * u0;            // (rows closer together near the lip, where it bends over)
 			const float Down = 0.5f * 980.f * FMath::Square(FMath::Max(t - TLip, 0.f));
-			const FVector Mid = Lip + Fa.Dir * (Speed * t) - FVector(0.f, 0.f, FMath::Min(Down, DropCm));
+			const FVector Mid = Lip + Fa.Dir * (Speed * t) - FVector(0.f, 0.f, FMath::Min(Down, DropCm2));
 			Len += float(FVector::Dist(Mid, Last));
 			Last = Mid;
 			// (keep it off the face: a whole row out from the lip together, never less than the row above, so its edges stay
@@ -4072,7 +4097,7 @@ void ABFWorld::BuildFalls()
 					const float u = float(c) / Cols - 0.5f;
 					FVector P = Mid + Side * u * FMath::Min(Width, Fa.WidthCm + 200.f) * (1.f + 0.35f * u0) + Fa.Dir * Pushed;
 					float G = float(P.Z);
-					for (int32 k = 0; k < 20 && GroundAt(FVector2D(P), G) && float(P.Z) < G + 60.f; ++k)
+					for (int32 k = 0; k < 20 && Pushed < 150.f && GroundAt(FVector2D(P), G) && float(P.Z) < G + 60.f; ++k)          // (2026-11-22: at most 1.5 m: reaching a ledge at its foot, its last rows went out 10 m flat over the pool)
 					{
 						P += Fa.Dir * 50.f;
 						Pushed += 50.f;
