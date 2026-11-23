@@ -2196,6 +2196,7 @@ void ABFWorld::MakeLand()
 	int32 Cragged = 0;
 	if (!bOldSea && !FParse::Param(FCommandLine::Get(), TEXT("bfnocrags")))
 	{
+		const TArray<float> Hc0 = H;          // (read from a copy: the slope reads the neighbours, which the loop changes)
 		ParallelFor(N, [&](int32 Y)
 		{
 			for (int32 X = 2; X < N - 2; ++X)
@@ -2205,7 +2206,11 @@ void ABFWorld::MakeLand()
 				{
 					continue;
 				}
-				float Wt = FMath::SmoothStep(60.f, 120.f, H[C]) * FMath::Min((ToWater[C] - 4) / 4.f, 1.f);
+				// (only on slopes, 12-25 deg and up: on gentle high ground the crags took the level ground dens need before
+				// their mouths, islands 13 and 906 lost theirs; a bench or saddle stays smooth)
+				const float Gx = (Hc0[C + 1] - Hc0[C - 1]) / (2.f * CellM), Gy = (Hc0[C + N] - Hc0[C - N]) / (2.f * CellM);
+				const float SlD = FMath::RadiansToDegrees(FMath::Atan(FMath::Sqrt(Gx * Gx + Gy * Gy)));
+				float Wt = FMath::SmoothStep(60.f, 120.f, H[C]) * FMath::Min((ToWater[C] - 4) / 4.f, 1.f) * FMath::SmoothStep(12.f, 25.f, SlD);
 				const FVector P3 = Origin + FVector(X * CellCm, Y * CellCm, 0.f);
 				for (const FBFFall& Fa : Falls)
 				{
@@ -3435,7 +3440,12 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 			Walked += Seg;
 		}
 		const bool bShafts = Shafts && Shafts->Num() > 0;
-		if (CoveredAt < 0.f || CoveredAt > 1200.f || (!bShafts && Thinnest < 60.f))          // (7 m and 1 m: 17 refused on island 13, no dens left)
+		// (2026-11-22: a cavern's mouth is 12-15 m across, its roof ~13 m up: the hill has to climb past that first, and on
+		// island 22436 every one of 21 tries was covered from 14-20 m in. For a cavern the 12 m grows by 1.5 of its mouth's
+		// round; -bfoldcavernrule: as before)
+		static const bool bOldCavernRule = FParse::Param(FCommandLine::Get(), TEXT("bfoldcavernrule"));
+		const float CoverBy = 1200.f + (Kind == 3 && !bOldCavernRule ? 1.5f * Radii[0] : 0.f);
+		if (CoveredAt < 0.f || CoveredAt > CoverBy || (!bShafts && Thinnest < 60.f))          // (7 m and 1 m: 17 refused on island 13, no dens left)
 		{
 			++CavesRefused;
 			UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: cave kind %d refused at %s: 2 m of hill over its roof from %.0f cm in, thinnest after %.0f cm, %.0f cm long"), int32(Kind), *Path[0].ToString(), CoveredAt, Thinnest, Walked);
@@ -3586,6 +3596,16 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 	}
 	// No island tree standing in its mouth; no plant inside it (2026-11-15: ferns grew in the dens, from the old ground).
 	ClearTreesNear(FVector2D(Path[0]), MaxR + 800.f);
+	// (2026-11-22: and its doorstep: a conifer's tiers hung across island 13's den 2 seen from in front. Trees cleared over
+	// the 12 m before the mouth, out along the way it faces; -bfolddoorstep: as before)
+	if (!FParse::Param(FCommandLine::Get(), TEXT("bfolddoorstep")))
+	{
+		const FVector OutD = (Path[0] - Path[1]).GetSafeNormal2D();
+		for (float d = 400.f; d <= 1200.f; d += 400.f)
+		{
+			ClearTreesNear(FVector2D(Path[0] + OutD * (MaxR + d)), MaxR + 300.f);
+		}
+	}
 	// (2026-11-22: a fall's hollow piece reshapes the rock all round the curtain; a tree fern stood on its dome beside island
 	// 13's 41 m fall. Nothing on the piece's cut ground.)
 	if (Kind == 4 && !FParse::Param(FCommandLine::Get(), TEXT("bfoldfallplants")))
@@ -3939,7 +3959,7 @@ void ABFWorld::PlaceCaves()
 	FRandomStream Roll(Seed + 9091);
 	const int32 WantDens = Roll.RandRange(1, 5), WantDeep = Roll.RandRange(0, 2);
 	const bool bWantCavern = Roll.FRand() < 0.6f;
-	for (int32 k = 0; k < 200 && IslandDens < WantDens; ++k)          // (2026-11-22: 60, too few once a den needs the hill over it)
+	for (int32 k = 0; k < 500 && IslandDens < WantDens; ++k)          // (2026-11-22: 60, too few once a den needs the hill over it; 200, too few with crags on the slopes)
 	{
 		const FVector Near = Origin + FVector(R.FRandRange(0.15f, 0.85f) * SizeCm(), R.FRandRange(0.15f, 0.85f) * SizeCm(), 0.f);
 		FVector Top, Dn;
@@ -4870,7 +4890,7 @@ void ABFWorld::PlaceBigCaves(int32 WantDeep, bool bWantCavern, FRandomStream& R)
 	for (int32 k = 0; k < 400; ++k)
 	{
 		const FVector Near = Origin + FVector(R.FRandRange(0.12f, 0.88f) * SizeCm(), R.FRandRange(0.12f, 0.88f) * SizeCm(), 0.f);
-		FVector Top, Dn, M0;
+		FVector Top, Dn, M0, MBase;
 		const float R0 = R.FRandRange(600.f, 750.f);
 		if (!FindCliff(Near, 40000.f, float(Origin.Z) + 2500.f, R, Top, Dn) || !MouthAt(Top, Dn, R0, M0) || !Clear(M0, 8000.f))
 		{
@@ -4878,6 +4898,15 @@ void ABFWorld::PlaceBigCaves(int32 WantDeep, bool bWantCavern, FRandomStream& R)
 		}
 		const FVector In = -Dn;
 		const float Hall = R.FRandRange(1800.f, 2800.f), HallSq = R.FRandRange(1.5f, 1.9f);
+		MBase = M0;
+		// (2026-11-22: and its mouth further up the slope, 6 or 12 m in, its floor on the ground there, as a den's)
+		for (int32 Shift = 0; Shift < (FParse::Param(FCommandLine::Get(), TEXT("bfoldcavernrule")) ? 1 : 3); ++Shift)
+		{
+		M0 = MBase + In * (600.f * Shift);
+		if (Shift > 0)
+		{
+			M0.Z = Ground(M0) + 30.f + CaveFloorK(1.f) * R0;
+		}
 		const float F0 = float(M0.Z) - CaveFloorK(1.f) * R0;
 		const float Fl[4] = { F0, F0 + 60.f, F0 + 150.f, F0 + 250.f };
 		const float Rd[4] = { R0, R0 * 1.05f, 900.f, Hall };
@@ -4913,6 +4942,7 @@ void ABFWorld::PlaceBigCaves(int32 WantDeep, bool bWantCavern, FRandomStream& R)
 		if (AddCave(Path, Radii, 3, &Sq, &Shafts, Shafts.Num() > 0 ? TEXT("The lit cavern") : TEXT("The great cavern")) != INDEX_NONE)
 		{
 			return;
+		}
 		}
 	}
 }

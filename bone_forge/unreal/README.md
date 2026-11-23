@@ -1124,6 +1124,12 @@ smoothly into the water. Now:
   tarn; `-bfoldshores`); lake and river beds a darker mud (they showed salmon through shallow water).
 - Crags on high ground (`-bfnocrags`): from 60 m up, ridged relief up to ~5 m over 15-40 m, which the ledge pass then
   steps; mountain tops were smooth domes close up.
+- Crags only on slopes (12-25 deg and up), read from a copy of the ground: on gentle high ground they took the level
+  approach dens need (islands 13 and 906 lost theirs). Dens get 500 tries (was 200).
+- Caverns: the hill may first cover the passage 12 m + 1.5 of the mouth's round in (a 12-15 m mouth's roof is ~13 m up),
+  and the mouth may move 6 or 12 m up the slope (`-bfoldcavernrule`). Island 22436 now has its cavern (21 refused before).
+  Counts: 13 2/2 dens, 2 deep, 1 cavern; 906 1/1, 1 cavern; 22436 2/2, 1 deep, 1 cavern; 20261112 4/4, 1 cavern.
+- No trees on a cave's doorstep, the 12 m out in front of its mouth (`-bfolddoorstep`).
 - `-bfprobeshot=NAME -bfprobe=XxY`: the pixel probe on any check picture whose name holds NAME (the tour's too).
 - Test runs: launched with `-DDC=InstalledNoZenLocalFallback` when the engine's cache server (ZenServer) hangs at
   start-up (it did twice while another Unreal project was running).
