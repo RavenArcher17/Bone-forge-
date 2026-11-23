@@ -6524,10 +6524,12 @@ void ABFWorld::TourPoints(TArray<FVector>& At, TArray<FString>& Names) const
 				continue;
 			}
 			// (well inside it: the same kind 3 points round)
+			// (2026-11-22: a river 1 point round, not 3: rivers are rarely 7 points wide, and the tour never showed one)
+			const int32 Rin = Kd.B == EBFBiome::River ? 1 : 3;
 			bool bIn = true;
-			for (int32 dy = -3; dy <= 3 && bIn; dy += 3)
+			for (int32 dy = -Rin; dy <= Rin && bIn; dy += Rin)
 			{
-				for (int32 dx = -3; dx <= 3 && bIn; dx += 3)
+				for (int32 dx = -Rin; dx <= Rin && bIn; dx += Rin)
 				{
 					bIn = Biome[Idx(X + dx, Y + dy)] == uint8(Kd.B);
 				}

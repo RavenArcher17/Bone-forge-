@@ -1129,6 +1129,10 @@ smoothly into the water. Now:
 - Caverns: the hill may first cover the passage 12 m + 1.5 of the mouth's round in (a 12-15 m mouth's roof is ~13 m up),
   and the mouth may move 6 or 12 m up the slope (`-bfoldcavernrule`). Island 22436 now has its cavern (21 refused before).
   Counts: 13 2/2 dens, 2 deep, 1 cavern; 906 1/1, 1 cavern; 22436 2/2, 1 deep, 1 cavern; 20261112 4/4, 1 cavern.
+- Grass colour varies in patches 100-330 m across as well as 11-28 m (softer), a little less saturated, with browner
+  litter in patches a few metres across. From 4-5 km up the island still shows a forest/meadow lacework: that is the
+  biome map on the ground, the trees being drawn only to 4 km.
+- The tour now finds rivers (a river point 1 point in, not 3).
 - No trees on a cave's doorstep, the 12 m out in front of its mouth (`-bfolddoorstep`).
 - `-bfprobeshot=NAME -bfprobe=XxY`: the pixel probe on any check picture whose name holds NAME (the tour's too).
 - Test runs: launched with `-DDC=InstalledNoZenLocalFallback` when the engine's cache server (ZenServer) hangs at

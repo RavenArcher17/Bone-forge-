@@ -8568,7 +8568,7 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 			GetViewportSize(VX, VY);
 			FVector WO, WD;
 			FHitResult Hp;
-			if (VX > 0 && DeprojectScreenPositionToWorld(FCString::Atof(*Sx) * VX / 1600.f, FCString::Atof(*Sy) * VY / 900.f, WO, WD) && GetWorld()->LineTraceSingleByChannel(Hp, WO, WO + WD * 30000.f, ECC_Visibility))
+			if (VX > 0 && DeprojectScreenPositionToWorld(FCString::Atof(*Sx) * VX / 1600.f, FCString::Atof(*Sy) * VY / 900.f, WO, WD) && GetWorld()->LineTraceSingleByChannel(Hp, WO, WO + WD * 2000000.f, ECC_Visibility))
 			{
 				float Gp = 0.f;
 				ProbeIsl->GroundAt(FVector2D(Hp.Location), Gp);

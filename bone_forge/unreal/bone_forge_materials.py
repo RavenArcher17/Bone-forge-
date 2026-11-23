@@ -435,7 +435,10 @@ float3 p = P / 100.0;                          // metres
 float3 nn = normalize(N);
 float up = saturate(nn.z);
 float n0 = G.N3(p * 3.3), n1 = G.N3(p * 0.9 + 17.0), n2 = G.N3(p * 0.3 + 31.0), n3 = G.N3(p * 0.09 + 5.0), n4 = G.N3(p * 0.035 + 11.0);
-float broad = n4 * 0.6 + n3 * 0.4;
+// (2026-11-22: broad patches 100-330 m across too: at 11-28 m alone the plains from the air were an even leopard print of
+// pale spots)
+float n5 = G.N3(p * 0.008 + 23.0), n6 = G.N3(p * 0.003 + 37.0);
+float broad = n6 * 0.45 + n5 * 0.35 + n4 * 0.12 + n3 * 0.08;
 // which ground: from the painted colour, the edges ragged with noise
 float edge = n1 * 0.35 + n0 * 0.2;
 float green = saturate((c.g - max(c.r, c.b)) * 12.0 + edge);
@@ -446,12 +449,14 @@ float3 o3 = c * mott * (0.9 + 0.2 * (0.5 + 0.5 * broad));
 // grass: clumps, broad dry olive and lush dark patches, a little soil showing
 float clump = n1 * 0.6 + n0 * 0.4;
 float3 g = c * mott * (1.0 + 0.14 * clump);
-g = lerp(g, g * float3(1.35, 1.12, 0.6), 0.55 * smoothstep(0.05, 0.6, broad));
-g = lerp(g, g * float3(0.72, 0.86, 0.78), 0.5 * smoothstep(0.05, 0.6, -broad));
+g = lerp(g, g * float3(1.3, 1.1, 0.64), 0.45 * smoothstep(0.0, 0.55, broad));
+g = lerp(g, g * float3(0.74, 0.87, 0.8), 0.4 * smoothstep(0.0, 0.55, -broad));
 g = lerp(g, g * float3(1.15, 1.05, 0.75), 0.3 * smoothstep(0.2, 0.8, n2));
 float gl = dot(g, float3(0.3, 0.59, 0.11));
-g = lerp(float3(gl, gl, gl), g, 0.82);
-float soil = smoothstep(0.5, 0.85, n0 * 0.55 + n1 * 0.45) * 0.4;
+g = lerp(float3(gl, gl, gl) * float3(1.04, 1.0, 0.92), g, 0.74);          // (0.82: from the ground a meadow read as a lawn)
+float soil = smoothstep(0.45, 0.85, n0 * 0.55 + n1 * 0.45) * 0.45;
+// fallen fronds and litter, a browner cast in patches a few metres across
+g = lerp(g, g * float3(1.18, 1.02, 0.72), 0.3 * smoothstep(0.15, 0.7, n2 * 0.6 + n1 * 0.4));
 g = lerp(g, float3(0.075, 0.058, 0.038), soil);
 // sand: darker than paint (it read near white from the air), faint ripples, wet and dark just above the sea
 float rip = sin((p.x * 0.8 + p.y * 0.6) * 9.0 + n2 * 3.0);
