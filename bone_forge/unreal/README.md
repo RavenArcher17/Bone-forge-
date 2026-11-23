@@ -1093,6 +1093,34 @@ Undercuts and rough gorge walls (2026-11-15, Raven: "add the undercut behind the
 - Still: tall blade-like spires stand beside the 63 m fall on island 13 (the spire pass didn't take them: not lone
   points); island 2's 15 m fall is dense enough that the hollow barely shows through it.
 
+Land look pass (2026-11-22, Raven: "make the land look good and real ... all terrain aspects, rivers, cliffs,
+caves"). A ground tour (`-bflandform -bfterrain -bfcaveseed=S`: two of each kind of land, the peak, a sea cliff and
+an islet, near and far) on islands 906, 13 and 20261112 showed bare rock as pale smooth plaster banded by height,
+grass as one lawn green, near-white sand ending in a step into the sea, islets as smooth cones and high coasts sliding
+smoothly into the water. Now:
+- Ground material (`GROUND_HLSL`, `GROUND_NORMAL_HLSL`; rebuild with `BF_TERRAIN_ONLY=1` + `run_bf_materials.py`):
+  3D noise (no stretching down faces); rock darker, warm to cool grey, thin cracks, staining down steep faces, lichen
+  and moss on what faces up, no height bands, and steep faces rock grey whatever biome was painted under them; grass in
+  broad olive, lush and dry patches with soil showing; sand darker, wet and dark just above the sea; ragged edges
+  between them. A world-space normal adds small relief (strong on rock, faint on grass), fading out past ~4 km.
+- Beaches shelve into the sea (`-bfoldshore`): low land within 24 m of the sea comes down to a 1-in-10 slope and the sea
+  floor within 48 m of land up to about 1 in 9, both measured from a smoothed signed distance to the waterline, so the
+  shore curves instead of stepping along the grid. Waterline steps over 2.5 m: 792 -> 0 (906), 1167 -> 0 (13).
+- Sea cliffs (`-bfnoseacliffs`): along much of the high coast (a slow noise; ground behind over 10 m) the last 12-18 m
+  of land is lifted toward the high ground behind it, the lift smoothed so the bluff has no grid teeth or spikes.
+- Rock ledges (`-bfnoledges`): dry ground steeper than 28-42 deg, away from water, gorges and falls, is stepped into
+  beds 4-7 m high, tilted gently, blended in 55% (a monotone reshaping: no new hollows).
+- Islets (`-bfoldislets`): knobs and gullies, their tops off to one side.
+- Saved islands keep their animals' places; the ground under them moves a little on the coast and steep rock.
+- Rivers above falls: a fall's hollow runs back under the river above its lip, its roof thin, and its "water over the
+  air cut" cleanup dropped the river's triangles there, the tan bed showing through as bow-ties (islands 906 and
+  20261112; a probe in the lip views, `-bfprobe=XxY`, found 50 cm of water over the bed there). Water upstream of a lip
+  now always stays (`-bfoldbedtest`). Also: lone points put under water go down to their neighbours' bed, and shoals
+  under 25 cm amid water twice as deep are deepened (`-bfoldshoals`); river beds near a lip are painted wet rock
+  (`-bfoldlipbed`).
+- Caves, ravines and falls looked over again on the new ground (`-bflandform`, `-bftop`, `-bfcavelook`): mouths flush,
+  gorge walls now show their ledges.
+
 Editor (Raven: "I don't know how to make the wings larger so it can fly or edit the base body"):
 - Under Start from: what the body is (the trunk and its flight muscle come from the animal you start from; picking
   another starts over, Undo brings it back), and a Whole body Size (compose.py's `size`, 10-300%).

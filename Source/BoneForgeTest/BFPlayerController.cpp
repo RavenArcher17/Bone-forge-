@@ -9245,6 +9245,35 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 					if (AutoClock - float(K) * 2.5f > 2.f && AutoClock - DeltaTime - float(K) * 2.5f <= 2.f)
 					{
 						Shot(*FString::Printf(TEXT("land_fall%d_%s"), (K - RavViews) / 6, Fv == 4 ? TEXT("lip") : TEXT("lipside")));
+						// (2026-11-22: the probe here too: tan triangles on the river above a lip)
+						const FString LipName = FString::Printf(TEXT("fall%d_%s"), (K - RavViews) / 6, Fv == 4 ? TEXT("lip") : TEXT("lipside"));
+						// (-bfprobe=XxY: what the picture shows at that pixel of a 1600x900 shot, for the checks: the thing hit, where,
+						// and the ground there)
+						FString Probe;
+						if (FParse::Value(FCommandLine::Get(), TEXT("bfprobe="), Probe))
+						{
+							FString Sx, Sy;
+							Probe.Split(TEXT("x"), &Sx, &Sy);          // (695x340: a comma ends the value)
+							int32 VX = 0, VY = 0;
+							GetViewportSize(VX, VY);
+							FVector WO, WD;
+							if (VX > 0 && DeprojectScreenPositionToWorld(FCString::Atof(*Sx) * VX / 1600.f, FCString::Atof(*Sy) * VY / 900.f, WO, WD))
+							{
+								FHitResult Hp;
+								if (GetWorld()->LineTraceSingleByChannel(Hp, WO, WO + WD * 30000.f, ECC_Visibility))
+								{
+									float Gp = 0.f;
+									I->GroundAt(FVector2D(Hp.Location), Gp);
+									UE_LOG(LogTemp, Display, TEXT("[BoneForge] probe %s at %s: %s on %s at %s, %.0f m away, ground there %.0f"), *LipName, *Probe, *GetNameSafe(Hp.GetComponent()), *GetNameSafe(Hp.GetActor()), *Hp.Location.ToString(), Hp.Distance / 100.f, Gp);
+									I->LogAround(Hp.Location, 2);
+								}
+								else
+								{
+									UE_LOG(LogTemp, Display, TEXT("[BoneForge] probe %s at %s: nothing hit"), *LipName, *Probe);
+								}
+							}
+						}
+
 					}
 					break;
 				}

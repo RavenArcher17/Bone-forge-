@@ -407,55 +407,118 @@ def build_skin_master(tiles):
 # bytes, so squared back to linear here), given grain by two of the tiles laid flat across the land: pebbles a couple of
 # metres across and broad patches tens of metres across, so open ground doesn't read as flat paint.
 GROUND_HLSL = r"""
-// (2026-11-16, Raven: "terrain polish ... more realistic". The grain was a dinosaur's scale tile laid flat (pebbles 2.6 m
-// and 4.3 m across): every slope, beach and lawn read as a cracked tiled floor with pale blotches. Now the grain is
-// noise with no cells or lines: mottling from 30 cm to 25 m, the broad tile only for patches 60 m across; grass in
-// clumps and dry patches, sand rippled faintly, and bare rock (steep, or grey) banded by height with darker streaks
-// running down it.)
-float3 c = pow(saturate(VC), 2.2);
-float2 m = P.xy / 100.0;                       // metres
-float n[5];
-float fr[5] = { 3.3, 0.9, 0.3, 0.09, 0.04 };   // 30 cm, 1.1 m, 3.3 m, 11 m, 25 m
-[unroll] for (int o = 0; o < 5; ++o)
+// (2026-11-16, Raven: "terrain polish ... more realistic": noise grain instead of a scale tile.)
+// (2026-11-22, Raven: "make the land look good and real". From the ground tour: bare rock read as pale smooth plaster with
+// contour stripes (a sine banded it by height), grass as one flat lawn green, sand near white from the air with a hard
+// blob edge to the grass. Now: 3D noise (no stretching down steep faces), rock darker and varied in tone (warm brown-grey
+// to cool blue-grey) with thin cracks, staining down steep faces, lichen and moss on its upward faces and no regular
+// bands; grass in broad olive, lush and dry patches with bare soil showing; sand darker with a wet band at the sea; the
+// edges between grass, sand and rock ragged with noise. The bumps themselves are in GROUND_NORMAL_HLSL.)
+struct BFG
 {
-    float2 q = m * fr[o] + float2(o * 17.3, o * 5.1);
-    float2 i = floor(q), f = frac(q);
-    f = f * f * (3.0 - 2.0 * f);
-    float4 h;
-    float2 k0 = frac((i + float2(0, 0)) * 0.3183099 + 0.1) * 17.0;
-    float2 k1 = frac((i + float2(1, 0)) * 0.3183099 + 0.1) * 17.0;
-    float2 k2 = frac((i + float2(0, 1)) * 0.3183099 + 0.1) * 17.0;
-    float2 k3 = frac((i + float2(1, 1)) * 0.3183099 + 0.1) * 17.0;
-    h.x = frac(k0.x * k0.y * (k0.x + k0.y));
-    h.y = frac(k1.x * k1.y * (k1.x + k1.y));
-    h.z = frac(k2.x * k2.y * (k2.x + k2.y));
-    h.w = frac(k3.x * k3.y * (k3.x + k3.y));
-    n[o] = lerp(lerp(h.x, h.y, f.x), lerp(h.z, h.w, f.x), f.y) * 2.0 - 1.0;
-}
-// (no tile at all: the broad one is a sauropod's polygon scales too, and even 60 m across its scales showed as 3 m cells)
-float broad = 0.5 + 0.35 * n[4] + 0.15 * n[3];
-float green = saturate((c.g - max(c.r, c.b)) * 12.0);           // grass
-float sand = saturate((c.r - c.b) * 6.0) * (1.0 - green);       // sand and silt
-float up = saturate(normalize(N).z);
-float rock = saturate(max((0.82 - up) / 0.22, saturate(1.0 - abs(c.r - c.b) * 8.0) * (1.0 - green) * 0.7));
-// everywhere: soft mottling
-float mott = 1.0 + 0.05 * n[1] + 0.06 * n[2] + 0.07 * n[3] + 0.04 * n[0];
-float3 o3 = c * mott * (0.88 + 0.24 * broad);
-// grass: clumps darker and lusher, dry patches yellower
-float clump = n[1] * 0.6 + n[0] * 0.4;
-float dry = smoothstep(0.25, 0.75, n[4] * 0.5 + n[3] * 0.35 + 0.5);
-float3 g = o3 * (1.0 + 0.12 * clump + 0.08 * n[3]);
-g = lerp(g, g * float3(1.25, 1.08, 0.66), 0.45 * dry);
+    float H3(float3 p)
+    {
+        p = frac(p * 0.3183099 + 0.1) * 17.0;
+        return frac(p.x * p.y * p.z * (p.x + p.y + p.z));
+    }
+    float N3(float3 x)
+    {
+        float3 i = floor(x), f = frac(x);
+        f = f * f * (3.0 - 2.0 * f);
+        return lerp(lerp(lerp(H3(i), H3(i + float3(1, 0, 0)), f.x), lerp(H3(i + float3(0, 1, 0)), H3(i + float3(1, 1, 0)), f.x), f.y),
+                    lerp(lerp(H3(i + float3(0, 0, 1)), H3(i + float3(1, 0, 1)), f.x), lerp(H3(i + float3(0, 1, 1)), H3(i + float3(1, 1, 1)), f.x), f.y), f.z) * 2.0 - 1.0;
+    }
+};
+BFG G;
+float3 c = pow(saturate(VC), 2.2);
+float3 p = P / 100.0;                          // metres
+float3 nn = normalize(N);
+float up = saturate(nn.z);
+float n0 = G.N3(p * 3.3), n1 = G.N3(p * 0.9 + 17.0), n2 = G.N3(p * 0.3 + 31.0), n3 = G.N3(p * 0.09 + 5.0), n4 = G.N3(p * 0.035 + 11.0);
+float broad = n4 * 0.6 + n3 * 0.4;
+// which ground: from the painted colour, the edges ragged with noise
+float edge = n1 * 0.35 + n0 * 0.2;
+float green = saturate((c.g - max(c.r, c.b)) * 12.0 + edge);
+float sand = saturate((c.r - c.b) * 6.0 + edge * 0.5) * (1.0 - green);
+float rock = saturate(max((0.84 - up) / 0.2 + edge * 0.6, saturate(1.0 - abs(c.r - c.b) * 8.0) * (1.0 - green) * 0.8));
+float mott = 1.0 + 0.05 * n0 + 0.06 * n1 + 0.06 * n2 + 0.05 * n3;
+float3 o3 = c * mott * (0.9 + 0.2 * (0.5 + 0.5 * broad));
+// grass: clumps, broad dry olive and lush dark patches, a little soil showing
+float clump = n1 * 0.6 + n0 * 0.4;
+float3 g = c * mott * (1.0 + 0.14 * clump);
+g = lerp(g, g * float3(1.35, 1.12, 0.6), 0.55 * smoothstep(0.05, 0.6, broad));
+g = lerp(g, g * float3(0.72, 0.86, 0.78), 0.5 * smoothstep(0.05, 0.6, -broad));
+g = lerp(g, g * float3(1.15, 1.05, 0.75), 0.3 * smoothstep(0.2, 0.8, n2));
+float gl = dot(g, float3(0.3, 0.59, 0.11));
+g = lerp(float3(gl, gl, gl), g, 0.82);
+float soil = smoothstep(0.5, 0.85, n0 * 0.55 + n1 * 0.45) * 0.4;
+g = lerp(g, float3(0.075, 0.058, 0.038), soil);
+// sand: darker than paint (it read near white from the air), faint ripples, wet and dark just above the sea
+float rip = sin((p.x * 0.8 + p.y * 0.6) * 9.0 + n2 * 3.0);
+float3 s3 = c * 0.72 * (1.0 + 0.035 * rip + 0.05 * n1 + 0.06 * n3);
+float wet = (1.0 - smoothstep(0.25, 1.1, p.z + 0.25 * n1)) * step(-3.0, p.z);
+s3 = lerp(s3, s3 * float3(0.55, 0.55, 0.6), wet);
+// rock: darker, varied in tone, cracked, stained down steep faces, lichen and moss on what faces up
+// (steep faces are rock whatever was painted there: a sea bluff took the beach's tan, a steep meadow its green)
+float3 rk = lerp(c, float3(0.165, 0.16, 0.152), 0.7 * saturate((0.84 - up) / 0.2)) * 0.66;
+rk *= lerp(float3(1.1, 1.0, 0.86), float3(0.9, 0.97, 1.06), 0.5 + 0.5 * n3);
+rk *= 0.72 + 0.4 * (0.5 + 0.5 * n2) + 0.1 * n1;
+float cr = smoothstep(0.97, 0.997, 1.0 - abs(G.N3(p * float3(0.55, 0.55, 1.4) + 3.0)));
+float cr2 = smoothstep(0.975, 0.998, 1.0 - abs(G.N3(p * 2.1 + 41.0)));
+rk *= 1.0 - 0.2 * cr - 0.12 * cr2;
+float st = smoothstep(0.45, 0.95, abs(G.N3(float3(p.x * 1.3, p.y * 1.3, p.z * 0.07) + 7.0))) * saturate((0.9 - up) * 2.0);
+rk *= 1.0 - 0.35 * st;
+float strata = smoothstep(0.6, 0.95, G.N3(float3(p.x * 0.05, p.y * 0.05, p.z * 0.7) + 19.0));
+rk *= 1.0 - 0.15 * strata;
+float li = smoothstep(0.5, 0.85, n1 * 0.5 + n0 * 0.5) * saturate(up * 1.5 - 0.2);
+rk = lerp(rk, rk * float3(1.25, 1.2, 0.85) + float3(0.02, 0.02, 0.0), 0.45 * li);
+float moss = smoothstep(0.6, 0.85, up) * smoothstep(-0.05, 0.45, n3 * 0.6 + n2 * 0.4);
+rk = lerp(rk, float3(0.05, 0.07, 0.03) * (1.0 + 0.3 * n0), 0.55 * moss);
 o3 = lerp(o3, g, green);
-// sand: faint wind ripples and wetter darker hollows
-float rip = sin((P.x * 0.8 + P.y * 0.6) / 100.0 * 9.0 + n[2] * 3.0);
-o3 = lerp(o3, o3 * (1.0 + 0.035 * rip + 0.04 * n[1]), sand);
-// rock: bands by height, darker streaks down it, lighter edges
-float band = sin(P.z / 100.0 * 1.6 + n[3] * 2.5 + n[4] * 3.0);
-float streak = smoothstep(0.55, 0.95, abs(n[1] * 0.7 + n[0] * 0.3));
-float3 r3 = o3 * (1.0 + 0.09 * band + 0.07 * n[2] + 0.06 * n[3]) * (1.0 - 0.28 * streak);
-o3 = lerp(o3, r3, rock);
+o3 = lerp(o3, s3, sand);
+o3 = lerp(o3, rk, rock);
 return o3;
+"""
+
+# The ground's small relief (2026-11-22): a world-space normal bent by 3D noise, bumps a fifth of a metre to two across on
+# bare rock (knobs, ledges, cracks catching the low sun), much gentler on grass and sand, so the 4 m grid of points
+# doesn't read as smooth cloth.
+GROUND_NORMAL_HLSL = r"""
+struct BFG
+{
+    float H3(float3 p)
+    {
+        p = frac(p * 0.3183099 + 0.1) * 17.0;
+        return frac(p.x * p.y * p.z * (p.x + p.y + p.z));
+    }
+    float N3(float3 x)
+    {
+        float3 i = floor(x), f = frac(x);
+        f = f * f * (3.0 - 2.0 * f);
+        return lerp(lerp(lerp(H3(i), H3(i + float3(1, 0, 0)), f.x), lerp(H3(i + float3(0, 1, 0)), H3(i + float3(1, 1, 0)), f.x), f.y),
+                    lerp(lerp(H3(i + float3(0, 0, 1)), H3(i + float3(1, 0, 1)), f.x), lerp(H3(i + float3(0, 1, 1)), H3(i + float3(1, 1, 1)), f.x), f.y), f.z) * 2.0 - 1.0;
+    }
+    float Hgt(float3 q, float r)
+    {
+        float hr = 0.22 * N3(q * 0.5 + 3.0) + 0.1 * N3(q * 1.5 + 9.0) + 0.035 * N3(q * 4.5 + 21.0) - 0.03 * abs(N3(q * float3(0.55, 0.55, 1.4) + 3.0));
+        float hg = 0.05 * N3(q * 0.7 + 5.0) + 0.015 * N3(q * 2.5 + 13.0);
+        return lerp(hg, hr, r);
+    }
+};
+BFG G;
+float3 c = pow(saturate(VC), 2.2);
+float3 p = P / 100.0;
+float3 nn = normalize(N);
+float up = saturate(nn.z);
+float green = saturate((c.g - max(c.r, c.b)) * 12.0);
+float r = saturate(max((0.84 - up) / 0.2, saturate(1.0 - abs(c.r - c.b) * 8.0) * (1.0 - green) * 0.8));
+float e = 0.04;
+float h0 = G.Hgt(p, r);
+float3 gr = float3(G.Hgt(p + float3(e, 0, 0), r) - h0, G.Hgt(p + float3(0, e, 0), r) - h0, G.Hgt(p + float3(0, 0, e), r) - h0) / e;
+gr -= dot(gr, nn) * nn;
+// (fades out far off, where it would only shimmer)
+float fade = 1.0 - smoothstep(150.0, 600.0, D / 100.0);
+return normalize(nn - gr * 0.35 * fade);
 """
 
 
@@ -464,6 +527,7 @@ def build_terrain_master(tiles):
     # (two-sided, 2026-11-15: where a cave's rock folds over itself in the big caverns a triangle's back faces you, and
     # one-sided it showed as a hole to the sky)
     mat.set_editor_property("two_sided", True)
+    mat.set_editor_property("tangent_space_normal", False)       # GROUND_NORMAL_HLSL returns a world-space normal
     vc = mel.create_material_expression(mat, unreal.MaterialExpressionVertexColor, -900, 0)
     wp = mel.create_material_expression(mat, unreal.MaterialExpressionWorldPosition, -900, -200)
     fine = param(mat, unreal.MaterialExpressionTextureObjectParameter, "FineTile", -900, 200, tiles.get("trex_pebble"))
@@ -475,10 +539,17 @@ def build_terrain_master(tiles):
     connect(vc, "", ground, "VC")
     connect(fine, "", ground, "TFine")
     connect(broad, "", ground, "TBroad")
+    dist = mel.create_material_expression(mat, unreal.MaterialExpressionPixelDepth, -900, 800)
+    bump = custom(mat, GROUND_NORMAL_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["P", "VC", "N", "D"], -500, 500, "Ground relief")
+    connect(wp, "", bump, "P")
+    connect(vc, "", bump, "VC")
+    connect(nws, "", bump, "N")
+    connect(dist, "", bump, "D")
     rough = param(mat, unreal.MaterialExpressionScalarParameter, "Roughness", -500, 250, 0.97)
     spec = param(mat, unreal.MaterialExpressionScalarParameter, "Specular", -500, 350, 0.2)
     mel.connect_material_property(spec, "", unreal.MaterialProperty.MP_SPECULAR)
     mel.connect_material_property(ground, "", unreal.MaterialProperty.MP_BASE_COLOR)
+    mel.connect_material_property(bump, "", unreal.MaterialProperty.MP_NORMAL)
     mel.connect_material_property(rough, "", unreal.MaterialProperty.MP_ROUGHNESS)
     mel.recompile_material(mat)
     eal.save_asset(mat.get_path_name())

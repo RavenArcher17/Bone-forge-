@@ -126,6 +126,7 @@ void ABFWorld::MakeLand()
 	// the edge.) -bfoldsea: as before.
 	const bool bOldSea = FParse::Param(FCommandLine::Get(), TEXT("bfoldsea"));
 	struct FIslet { FVector2D At; float R; float Peak; };
+	const bool bOldIslets = FParse::Param(FCommandLine::Get(), TEXT("bfoldislets"));
 	TArray<FIslet> Islets;
 	FVector2D SeaOff[3];
 	{
@@ -202,8 +203,19 @@ void ABFWorld::MakeLand()
 				const float Ragged = 1.f + 0.35f * FMath::PerlinNoise2D(FVector2D(MX / 60.f, MY / 60.f) + SeaOff[2]);
 				const float T = Dm / (It.R * Ragged);
 				const bool bStack = It.R < 30.f;
+				// (2026-11-22, Raven: "make the land look real": a knoll was a smooth grey cone. Now knobs 15-35 m across
+				// and gullies down its sides, its top off to one side; -bfoldislets: as before.)
+				const float K1 = FMath::Max(1.f - T, 0.f);
+				float Rough = 0.f;
+				if (!bOldIslets)
+				{
+					const FVector2D Q(MX, MY);
+					const float Knobs = 0.22f * FMath::PerlinNoise2D(Q / 35.f + SeaOff[1] * 2.1f) + 0.12f * FMath::PerlinNoise2D(Q / 14.f + SeaOff[0] * 1.7f);
+					const float Gl = 1.f - FMath::Min(FMath::Abs(FMath::PerlinNoise2D(Q / 22.f + SeaOff[2] * 0.9f)), 1.f);
+					Rough = It.Peak * (K1 * K1 * Knobs - K1 * (1.f - K1) * 0.5f * FMath::Max(Gl * Gl - 0.5f, 0.f));
+				}
 				const float Top = bStack ? It.Peak * (1.f - FMath::SmoothStep(0.75f, 1.f, T))
-					: 2.f + It.Peak * FMath::Square(FMath::Max(1.f - T, 0.f)) + 3.f * Hills * FMath::Max(1.f - T, 0.f);
+					: 2.f + It.Peak * K1 * K1 + Rough + 3.f * Hills * K1;
 				const float Shelf = FMath::Lerp(-3.f, Floor, FMath::SmoothStep(1.f, 2.2f, T));          // (shallows round it)
 				Hh = FMath::Max(Hh, T < 1.f ? FMath::Max(Top, 1.5f * (1.f - T)) : Shelf);
 			}
@@ -1904,7 +1916,7 @@ void ABFWorld::MakeLand()
 					continue;
 				}
 				const int32 Nb[4] = { Idx(X + 1, Y), Idx(X - 1, Y), Idx(X, Y + 1), Idx(X, Y - 1) };
-				float Hi = -1e9f, Lo = 1e9f, Sum = 0.f;
+				float Hi = -1e9f, Lo = 1e9f, Sum = 0.f, Bed = 0.f;
 				uint8 K = 0;
 				int32 Wet = 0;
 				for (const int32 Ni : Nb)
@@ -1917,6 +1929,7 @@ void ABFWorld::MakeLand()
 					Hi = FMath::Max(Hi, W[Ni]);
 					Lo = FMath::Min(Lo, W[Ni]);
 					Sum += W[Ni];
+					Bed += H[Ni];
 					K = Kind[Ni];
 				}
 				// (2026-11-22: three sides too, a one-point spit, the dry side's ground no higher than its own: with four only, a
@@ -1929,12 +1942,46 @@ void ABFWorld::MakeLand()
 				if ((Wet == 4 || bSpit) && H[C] < Hi + 0.6f && Hi - Lo < 1.f)
 				{
 					W[C] = Sum / float(Wet);
-					H[C] = FMath::Min(H[C], Lo - 0.2f);
+					// (2026-11-22: down to its wet neighbours' bed, not just 20 cm under the water: a point 20 cm deep amid
+					// water a metre deep showed through as tan bow-tie triangles on the river above island 906's falls)
+					H[C] = FMath::Min(H[C], FMath::Min(Lo - 0.2f, Bed / float(Wet)));
 					Kind[C] = K;
 					++Dots;
 				}
 			}
 		}
+		// (and the same shoal left by any pass: a wet point under 25 cm deep, all four round it wet and on average twice as
+		// deep or more, goes down to their mean bed. -bfoldshoals: as before.)
+		int32 Shoals = 0;
+		if (!FParse::Param(FCommandLine::Get(), TEXT("bfoldshoals")))
+		{
+			for (int32 Y = 1; Y < N - 1; ++Y)
+			{
+				for (int32 X = 1; X < N - 1; ++X)
+				{
+					const int32 C = Idx(X, Y);
+					if (!(W[C] > H[C] + 0.05f) || W[C] - H[C] > 0.25f || (Kind[C] != 2 && Kind[C] != 3))
+					{
+						continue;
+					}
+					const int32 Nb[4] = { Idx(X + 1, Y), Idx(X - 1, Y), Idx(X, Y + 1), Idx(X, Y - 1) };
+					float Depth = 0.f, Bed = 0.f;
+					bool bAll = true;
+					for (const int32 Ni : Nb)
+					{
+						bAll = bAll && W[Ni] > H[Ni] + 0.05f && (Kind[Ni] == 2 || Kind[Ni] == 3) && FMath::Abs(W[Ni] - W[C]) < 0.5f;
+						Depth += W[Ni] - H[Ni];
+						Bed += H[Ni];
+					}
+					if (bAll && Depth / 4.f >= 2.f * (W[C] - H[C]) && Depth / 4.f > 0.3f)
+					{
+						H[C] = FMath::Min(H[C], Bed / 4.f);
+						++Shoals;
+					}
+				}
+			}
+		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d shoal points in rivers and lakes deepened"), Shoals);
 		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d lone dry points in water put under"), Dots);
 	}
 	{
@@ -1947,6 +1994,246 @@ void ABFWorld::MakeLand()
 			Ravines.Num() ? *FString::Printf(TEXT(" (the deepest %.0f m)"), Ravines[0].DeepM) : TEXT(""), Falls.Num(), Biggest);
 	}
 	UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %s; river banks laid back at %d points; %d spire points cut; %s"), *LakeText, BanksLowered, SpiresCut, *LandformText);
+	// (2026-11-22, Raven: "make the land look good and real". From the ground, steep bare slopes were smooth cloth: rain
+	// erosion and the 4 m grid round everything off. Rock that steep stands in beds: ledges and short faces. Steep dry
+	// ground (28-42 deg and up), away from water, gorges and falls, is stepped into beds 4-7 m high, tilted gently across
+	// the island, each bed's face steep and its top a shelf, blended in 55% so it stays rough rather than stairs. A
+	// monotone reshaping of the height, so it makes no new hollows for water to stand in. -bfnoledges: as before.)
+	// (2026-11-22, Raven: "make the land look good and real". From above, many beaches ended in a step: flat sand 1-2 m up,
+	// then the sea floor 3-5 m down a cell out (an islet's shelf began at -3 m right at its edge), so the shore was a pale
+	// ledge in steps along the grid with the foam drawn on its lip. A beach shelves into the sea: low ground within 24 m of
+	// the sea is brought down to a slope rising 0.4 m every 4 m from the waterline, and the sea floor within 48 m of land
+	// up to one going down 0.45 m every 4 m, measured straight out (a chamfer distance, so no diamonds). Only lowering land
+	// and raising sea floor, and none by fresh water. -bfoldshore: as before.)
+	int32 ShoreLand = 0, ShoreSea = 0, ShoreDropsBefore = 0, ShoreDropsAfter = 0;
+	{
+		auto CountDrops = [&]()
+		{
+			int32 Dn = 0;
+			for (int32 C = N + 1; C < N * N - N - 1; ++C)
+			{
+				if (Kind[C] == 0 && H[C] > 0.2f)
+				{
+					for (const int32 O : { 1, -1, N, -N })
+					{
+						if (Kind[C + O] == 1 && H[C + O] < H[C] - 2.5f)
+						{
+							++Dn;
+							break;
+						}
+					}
+				}
+			}
+			return Dn;
+		};
+		ShoreDropsBefore = CountDrops();
+		if (!bOldSea && !FParse::Param(FCommandLine::Get(), TEXT("bfoldshore")))
+		{
+			// metres to the nearest sea point (land) and to the nearest land point (sea)
+			TArray<float> DSea, DLand;
+			DSea.Init(1e6f, N * N);
+			DLand.Init(1e6f, N * N);
+			for (int32 C = 0; C < N * N; ++C)
+			{
+				(Kind[C] == 1 ? DSea : DLand)[C] = 0.f;
+			}
+			for (TArray<float>* Dp : { &DSea, &DLand })
+			{
+				TArray<float>& D = *Dp;
+				for (int32 Pass = 0; Pass < 2; ++Pass)
+				{
+					const int32 S = Pass == 0 ? 1 : -1;
+					for (int32 Yi = 0; Yi < N; ++Yi)
+					{
+						const int32 Y = Pass == 0 ? Yi : N - 1 - Yi;
+						for (int32 Xi = 0; Xi < N; ++Xi)
+						{
+							const int32 X = Pass == 0 ? Xi : N - 1 - Xi;
+							float& V = D[Idx(X, Y)];
+							const int32 PX = X - S, PY = Y - S;
+							if (PX >= 0 && PX < N) { V = FMath::Min(V, D[Idx(PX, Y)] + CellM); }
+							if (PY >= 0 && PY < N)
+							{
+								V = FMath::Min(V, D[Idx(X, PY)] + CellM);
+								if (PX >= 0 && PX < N) { V = FMath::Min(V, D[Idx(PX, PY)] + 1.4142f * CellM); }
+								if (X + S >= 0 && X + S < N) { V = FMath::Min(V, D[Idx(X + S, PY)] + 1.4142f * CellM); }
+							}
+						}
+					}
+				}
+			}
+			// The waterline itself from a smoothed signed distance (land +, sea -), so it curves instead of following the grid's
+			// land/sea squares in steps (shelving against the squares drew the shore as a staircase from above).
+			TArray<float> SD, Tmp;
+			SD.SetNumUninitialized(N * N);
+			for (int32 C = 0; C < N * N; ++C)
+			{
+				SD[C] = Kind[C] == 1 ? 0.5f * CellM - DLand[C] : DSea[C] - 0.5f * CellM;
+				SD[C] = FMath::Clamp(SD[C], -60.f, 60.f);
+			}
+			Tmp = SD;
+			for (int32 Pass = 0; Pass < 4; ++Pass)
+			{
+				ParallelFor(N, [&](int32 Y)
+				{
+					for (int32 X = 0; X < N; ++X)
+					{
+						float Sum = 0.f;
+						int32 Num = 0;
+						for (int32 d = -2; d <= 2; ++d)
+						{
+							const int32 Q = Pass % 2 == 0 ? Idx(FMath::Clamp(X + d, 0, N - 1), Y) : Idx(X, FMath::Clamp(Y + d, 0, N - 1));
+							Sum += SD[Q];
+							++Num;
+						}
+						Tmp[Idx(X, Y)] = Sum / Num;
+					}
+				});
+				Swap(SD, Tmp);
+			}
+			// (2026-11-22, Raven: "all terrain aspects ... cliffs". A high coast slid smoothly down into the sea, a sand-tan band
+			// along its foot. Real high coasts the sea has cut back: over much of their length (a slow noise) the last 16 m
+			// of land (measured from the smoothed waterline, so the lip curves instead of standing in grid teeth) is lifted toward the highest ground just behind it, so it breaks off near sheer at the water, its top
+			// ragged; the ledge pass then gives the face its beds. Not by fresh water. -bfnoseacliffs: as before.)
+			if (!FParse::Param(FCommandLine::Get(), TEXT("bfnoseacliffs")))
+			{
+				TArray<float> H0 = H, Lift;
+				Lift.Init(0.f, N * N);
+				int32 CliffPts = 0;
+				for (int32 Y = 4; Y < N - 4; ++Y)
+				{
+					for (int32 X = 4; X < N - 4; ++X)
+					{
+						const int32 C = Idx(X, Y);
+						if (Kind[C] != 0 || DSea[C] > 18.f || ToWater[C] < 3)
+						{
+							continue;
+						}
+						const float MX = X * CellM, MY = Y * CellM;
+						const float Where = FMath::PerlinNoise2D(FVector2D(MX / 260.f, MY / 260.f) + SeaOff[2] * 2.3f);
+						if (Where < -0.15f)
+						{
+							continue;
+						}
+						float Top = 0.f;
+						for (int32 dy = -4; dy <= 4; ++dy)
+						{
+							for (int32 dx = -4; dx <= 4; ++dx)
+							{
+								const int32 Q = Idx(X + dx, Y + dy);
+								if (Kind[Q] == 0 && DSea[Q] <= 30.f)
+								{
+									Top = FMath::Max(Top, H0[Q]);
+								}
+							}
+						}
+						if (Top < 10.f)
+						{
+							continue;
+						}
+						const float Tg = Top * (0.78f + 0.12f * FMath::PerlinNoise2D(FVector2D(MX / 30.f, MY / 30.f) + SeaOff[0] * 3.1f));
+						const float Wt = FMath::SmoothStep(1.f, 13.f, SD[C]) * (1.f - FMath::SmoothStep(12.f, 18.f, DSea[C])) * FMath::SmoothStep(-0.15f, 0.15f, Where) * FMath::SmoothStep(10.f, 16.f, Top);
+						Lift[C] = FMath::Max(FMath::Lerp(H0[C], Tg, Wt) - H0[C], 0.f);
+					}
+				}
+				// (the lift smoothed over 12 m: lifted one point at a time, a face slanting across the grid stood in teeth and
+				// the top in single-point spikes)
+				TArray<float> Tl = Lift;
+				for (int32 Pass = 0; Pass < 4; ++Pass)
+				{
+					ParallelFor(N, [&](int32 Y)
+					{
+						for (int32 X = 0; X < N; ++X)
+						{
+							float Sum = 0.f;
+							for (int32 d = -1; d <= 1; ++d)
+							{
+								Sum += Lift[Pass % 2 == 0 ? Idx(FMath::Clamp(X + d, 0, N - 1), Y) : Idx(X, FMath::Clamp(Y + d, 0, N - 1))];
+							}
+							Tl[Idx(X, Y)] = Sum / 3.f;
+						}
+					});
+					Swap(Lift, Tl);
+				}
+				for (int32 C = 0; C < N * N; ++C)
+				{
+					if (Kind[C] == 0 && ToWater[C] >= 3 && Lift[C] > 0.2f)
+					{
+						H[C] = H0[C] + Lift[C];
+						++CliffPts;
+					}
+				}
+				UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: sea cliffs: %d coast points lifted"), CliffPts);
+			}
+			for (int32 C = 0; C < N * N; ++C)
+			{
+				if (Kind[C] == 0 && DSea[C] <= 24.f && H[C] < 5.f && ToWater[C] >= 3)
+				{
+					const float Cap = 0.1f * SD[C];
+					if (H[C] > Cap)
+					{
+						H[C] = FMath::Lerp(Cap, H[C], FMath::SmoothStep(16.f, 24.f, DSea[C]));
+						++ShoreLand;
+					}
+				}
+				else if (Kind[C] == 1 && DLand[C] <= 48.f)
+				{
+					const float Floor = FMath::Min(0.1125f * SD[C], 0.3f);
+					if (H[C] < Floor)
+					{
+						H[C] = FMath::Lerp(Floor, H[C], FMath::SmoothStep(36.f, 48.f, DLand[C]));
+						++ShoreSea;
+					}
+				}
+			}
+		}
+		ShoreDropsAfter = CountDrops();
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: shores: %d land and %d sea floor points shelved; %d steps over 2.5 m at the waterline before, %d after"), ShoreLand, ShoreSea, ShoreDropsBefore, ShoreDropsAfter);
+	}
+	int32 Ledged = 0;
+	if (!bOldSea && !FParse::Param(FCommandLine::Get(), TEXT("bfnoledges")))
+	{
+		TArray<float> H2 = H;
+		ParallelFor(N, [&](int32 Y)
+		{
+			for (int32 X = 2; X < N - 2; ++X)
+			{
+				const int32 C = Idx(X, Y);
+				if (Y < 2 || Y >= N - 2 || Kind[C] != 0 || ToWater[C] < 4 || Gorge[C] || H[C] < 4.f)
+				{
+					continue;
+				}
+				const float GX = (H[C + 1] - H[C - 1]) / (2.f * CellM), GY = (H[C + N] - H[C - N]) / (2.f * CellM);
+				const float Sl = FMath::RadiansToDegrees(FMath::Atan(FMath::Sqrt(GX * GX + GY * GY)));
+				float Str = FMath::SmoothStep(28.f, 42.f, Sl) * FMath::Min((ToWater[C] - 3) / 4.f, 1.f);
+				if (Str <= 0.f)
+				{
+					continue;
+				}
+				const FVector P3 = Origin + FVector(X * CellCm, Y * CellCm, 0.f);
+				for (const FBFFall& Fa : Falls)
+				{
+					Str *= FMath::SmoothStep(3000.f, 6000.f, float(FVector::Dist2D(P3, Fa.Top)));
+				}
+				if (Str <= 0.f)
+				{
+					continue;
+				}
+				const float MX = X * CellM, MY = Y * CellM;
+				const float Bed = 4.f + 3.f * (0.5f + 0.5f * FMath::PerlinNoise2D(FVector2D(MX / 400.f, MY / 400.f) + SeaOff[0] * 1.9f));
+				const float Tilt = 6.f * FMath::PerlinNoise2D(FVector2D(MX / 700.f, MY / 700.f) + SeaOff[1] * 1.3f);
+				const float T = (H[C] + Tilt) / Bed, Fl = FMath::Floor(T);
+				const float Stepped = (Fl + FMath::SmoothStep(0.25f, 0.75f, T - Fl)) * Bed - Tilt;
+				H2[C] = FMath::Lerp(H[C], Stepped, 0.55f * Str);
+			}
+		});
+		for (int32 C = 0; C < N * N; ++C)
+		{
+			Ledged += H2[C] != H[C] ? 1 : 0;
+		}
+		H = MoveTemp(H2);
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d steep rock points stepped into ledges"), Ledged);
+	}
 	SeaSteps.SetNumUninitialized(N * N);
 	for (int32 C = 0; C < N * N; ++C)
 	{
@@ -2010,8 +2297,10 @@ void ABFWorld::MakeLand()
 			{
 				bLipRock = bLipRock || (Fa.PoolCm > 0.f && FVector::Dist2D(Origin + FVector(X * CellCm, Y * CellCm, 0.f), Fa.Top) < Fa.WidthCm + 3200.f);
 			}
-			if (Kind[C] == 0 && bLipRock)
+			if ((Kind[C] == 0 || (Kind[C] == 3 && !FParse::Param(FCommandLine::Get(), TEXT("bfoldlipbed")))) && bLipRock)
 			{
+				// (2026-11-22: and the river's own bed there: the lip's rim lies just under the water, and over tan silt its
+				// shallows showed as tan triangles on the river above a fall, islands 906 and 20261112; -bfoldlipbed: as before)
 				// (2026-11-16: the banks at a fall's lip are bare wet rock, whatever is beside them: tan sand there read as a box)
 				const FColor Wr(96, 95, 92);
 				Base = FColor(uint8(FMath::Lerp(float(Base.R), float(Wr.R), 0.8f)), uint8(FMath::Lerp(float(Base.G), float(Wr.G), 0.8f)), uint8(FMath::Lerp(float(Base.B), float(Wr.B), 0.8f)));
@@ -3223,9 +3512,16 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 						const FVector Mid = (Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[k]].Position + Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[k + 1]].Position + Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[k + 2]].Position) / 3.0;
 						const int32 GX = FMath::FloorToInt((Mid.X - Origin.X) / CellCm), GY = FMath::FloorToInt((Mid.Y - Origin.Y) / CellCm);
 						// (only where the piece has cut air out from under the water's bed: a fall's pool in its hole keeps its water)
+						// (2026-11-22: but never the river above a fall's lip: a hollow runs back under it, its roof thin, and the water
+						// there went in triangles, the bed showing tan through the holes, island 906; -bfoldbedtest: as before)
+						static const bool bOldBed = FParse::Param(FCommandLine::Get(), TEXT("bfoldbedtest"));
+						const bool bAboveLip = !bOldBed && Kind == 4 && Falls.ContainsByPredicate([&](const FBFFall& Fa)
+						{
+							return FVector::Dist2D(Mid, Fa.Top) < 4000.f && FVector2D::DotProduct(FVector2D(Mid - Fa.Top), FVector2D(Fa.Dir).GetSafeNormal()) < 0.3f * CellCm;
+						});
 						const int32 Cw = Idx(FMath::Clamp(GX, 0, N - 1), FMath::Clamp(GY, 0, N - 1));
 						const bool bHangs = GX >= C.Hole.Min.X && GX < C.Hole.Max.X && GY >= C.Hole.Min.Y && GY < C.Hole.Max.Y
-							&& (CaveDensity(C, FVector(Mid.X, Mid.Y, Origin.Z + H[Cw] * 100.f - 40.f)) < 0.f || (float(Mid.Z) > Origin.Z + HoleLowW * 100.f + 40.f && Falls.ContainsByPredicate([&](const FBFFall& Fa)
+							&& ((CaveDensity(C, FVector(Mid.X, Mid.Y, Origin.Z + H[Cw] * 100.f - 40.f)) < 0.f && !bAboveLip) || (float(Mid.Z) > Origin.Z + HoleLowW * 100.f + 40.f && Falls.ContainsByPredicate([&](const FBFFall& Fa)
 							{
 								// (only below a fall's lip: the river above it is in the hole too, and went dry)
 								return FVector::Dist2D(Mid, Fa.Top) < 4000.f && FVector2D::DotProduct(FVector2D(Mid - Fa.Top), FVector2D(Fa.Dir).GetSafeNormal()) > 0.6f * CellCm;
