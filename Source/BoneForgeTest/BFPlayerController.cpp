@@ -8557,6 +8557,25 @@ void ABFPlayerController::TickRealismChecks(float DeltaTime)
 		const FString File = FPaths::Combine(AutoOut, FString::Printf(TEXT("%s_%s.png"), *M->GetSpecies()[AutoSpecies].Key, Tag));
 		FScreenshotRequest::RequestScreenshot(File, true, false);
 		UE_LOG(LogTemp, Display, TEXT("[BoneForge] screenshot %s"), *File);
+		// (2026-11-22: -bfprobeshot=NAME -bfprobe=XxY: the pixel probe on any picture whose name holds NAME, the tour's too)
+		FString PName, Probe;
+		ABFWorld* ProbeIsl = M->GetIsland();
+		if (ProbeIsl && FParse::Value(FCommandLine::Get(), TEXT("bfprobeshot="), PName) && FString(Tag).Contains(PName) && FParse::Value(FCommandLine::Get(), TEXT("bfprobe="), Probe))
+		{
+			FString Sx, Sy;
+			Probe.Split(TEXT("x"), &Sx, &Sy);
+			int32 VX = 0, VY = 0;
+			GetViewportSize(VX, VY);
+			FVector WO, WD;
+			FHitResult Hp;
+			if (VX > 0 && DeprojectScreenPositionToWorld(FCString::Atof(*Sx) * VX / 1600.f, FCString::Atof(*Sy) * VY / 900.f, WO, WD) && GetWorld()->LineTraceSingleByChannel(Hp, WO, WO + WD * 30000.f, ECC_Visibility))
+			{
+				float Gp = 0.f;
+				ProbeIsl->GroundAt(FVector2D(Hp.Location), Gp);
+				UE_LOG(LogTemp, Display, TEXT("[BoneForge] probe %s at %s: %s at %s, %.0f m away, ground there %.0f"), Tag, *Probe, *GetNameSafe(Hp.GetComponent()), *Hp.Location.ToString(), Hp.Distance / 100.f, Gp);
+				ProbeIsl->LogAround(Hp.Location, 3);
+			}
+		}
 	};
 	auto Next = [&](int32 Step) { AutoStep = Step; AutoClock = 0.f; AutoFrame = 0; };
 	switch (AutoStep)

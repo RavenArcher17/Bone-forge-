@@ -38,8 +38,8 @@ namespace
 		FColor(52, 64, 36),      // Forest
 		FColor(64, 74, 40),      // Swamp
 		FColor(114, 113, 110),   // Rock (2026-11-17: cooler grey; 124,118,108 read as cream-tan in the sun from above)
-		FColor(84, 74, 54),      // Lake bed
-		FColor(84, 74, 54),      // River bed
+		FColor(66, 62, 48),      // Lake bed (2026-11-22: darker mud; 84,74,54 showed salmon through shallow water from above)
+		FColor(72, 66, 50),      // River bed
 	};
 	const TCHAR* BiomeName[] = { TEXT("sea"), TEXT("beach"), TEXT("plains"), TEXT("forest"), TEXT("swamp"), TEXT("rock"), TEXT("lake"), TEXT("river") };
 }
@@ -2190,6 +2190,44 @@ void ABFWorld::MakeLand()
 		ShoreDropsAfter = CountDrops();
 		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: shores: %d land and %d sea floor points shelved; %d steps over 2.5 m at the waterline before, %d after"), ShoreLand, ShoreSea, ShoreDropsBefore, ShoreDropsAfter);
 	}
+	// (2026-11-22: mountain tops were smooth grey domes from close by, rain having rounded everything. High ground, from
+	// 60 m up and fully by 120 m, away from water, falls, caves' hills and gorges, gets crags: ridged relief up to ~5 m
+	// over 15-40 m, sharp crests and softer hollows, which the ledge pass then steps into beds. -bfnocrags: as before.)
+	int32 Cragged = 0;
+	if (!bOldSea && !FParse::Param(FCommandLine::Get(), TEXT("bfnocrags")))
+	{
+		ParallelFor(N, [&](int32 Y)
+		{
+			for (int32 X = 2; X < N - 2; ++X)
+			{
+				const int32 C = Idx(X, Y);
+				if (Y < 2 || Y >= N - 2 || Kind[C] != 0 || ToWater[C] < 5 || Gorge[C] || H[C] < 60.f)
+				{
+					continue;
+				}
+				float Wt = FMath::SmoothStep(60.f, 120.f, H[C]) * FMath::Min((ToWater[C] - 4) / 4.f, 1.f);
+				const FVector P3 = Origin + FVector(X * CellCm, Y * CellCm, 0.f);
+				for (const FBFFall& Fa : Falls)
+				{
+					Wt *= FMath::SmoothStep(4000.f, 7000.f, float(FVector::Dist2D(P3, Fa.Top)));
+				}
+				if (Wt <= 0.f)
+				{
+					continue;
+				}
+				const FVector2D Q(X * CellM, Y * CellM);
+				const float R1 = 1.f - FMath::Abs(FMath::PerlinNoise2D(Q / 38.f + SeaOff[1] * 3.3f));
+				const float R2 = 1.f - FMath::Abs(FMath::PerlinNoise2D(Q / 16.f + SeaOff[2] * 2.7f));
+				const float Crag = 5.f * (R1 * R1 - 0.45f) + 2.f * (R2 * R2 - 0.45f);
+				H[C] += Crag * Wt;
+			}
+		});
+		for (int32 C = 0; C < N * N; ++C)
+		{
+			Cragged += (Kind[C] == 0 && H[C] >= 60.f && ToWater[C] >= 5) ? 1 : 0;
+		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: crags on %d high points"), Cragged);
+	}
 	int32 Ledged = 0;
 	if (!bOldSea && !FParse::Param(FCommandLine::Get(), TEXT("bfnoledges")))
 	{
@@ -2267,7 +2305,8 @@ void ABFWorld::MakeLand()
 			{
 				B = EBFBiome::River;
 			}
-			else if (H[C] < 3.f && ToSea[C] < 20)
+			// (2026-11-22: not where it's steep: a sea bluff's foot came out sand-tan under its rock; -bfoldbeach)
+			else if (H[C] < 3.f && ToSea[C] < 20 && (SlopeDeg < 25.f || FParse::Param(FCommandLine::Get(), TEXT("bfoldbeach"))))
 			{
 				B = EBFBiome::Beach;
 			}
@@ -2313,7 +2352,11 @@ void ABFWorld::MakeLand()
 				{
 					bByLip = bByLip || (Fa.PoolCm > 0.f && FVector::Dist2D(Origin + FVector(X * CellCm, Y * CellCm, 0.f), Fa.Top) < Fa.WidthCm + 1600.f);
 				}
-				const FColor Wet = (Gorge[C] || bByLip) ? FColor(92, 91, 88) : FColor(98, 88, 66);
+				// (2026-11-22: and a mountain tarn's or any rocky shore: tan silt made a rust-orange ring round island 22436's tarn;
+				// -bfoldshores: as before)
+				static const bool bOldShores = FParse::Param(FCommandLine::Get(), TEXT("bfoldshores"));
+				const bool bRocky = !bOldShores && (B == EBFBiome::Rock || H[C] > 60.f);
+				const FColor Wet = (Gorge[C] || bByLip || bRocky) ? FColor(92, 91, 88) : FColor(98, 88, 66);
 				const float Mix = ToWater[C] <= 1 ? 0.75f : 0.35f;
 				Base = FColor(uint8(FMath::Lerp(float(Base.R), float(Wet.R), Mix)), uint8(FMath::Lerp(float(Base.G), float(Wet.G), Mix)), uint8(FMath::Lerp(float(Base.B), float(Wet.B), Mix)));
 			}
@@ -4106,7 +4149,7 @@ void ABFWorld::DressRavines()
 	{
 		FRandomStream Rw(Seed + 8181);
 		TMap<int32, TArray<FBFRock>> ByBlock;
-		int32 Walls = 0;
+		int32 Walls = 0, BluffBeds = 0;
 		const float CellM = CellCm / 100.f;
 		const float BandM = Rw.FRandRange(3.5f, 6.f);          // (the island's rock: a bed every 3.5-6 m of height)
 		// (2026-11-16, Raven: the steps "look like man made blocks and not natural". One bed every BandM made courses of
@@ -4178,7 +4221,11 @@ void ABFWorld::DressRavines()
 				static const bool bOutcrops = FParse::Param(FCommandLine::Get(), TEXT("bfoutcrops"));
 				const bool bOutcrop = bOutcrops && Biome[C] == uint8(EBFBiome::Rock) && Sl >= 0.75f && H[C] > 20.f
 					&& FMath::PerlinNoise2D(FVector2D(X, Y) * 0.025f + FVector2D(Seed % 53, 11.f)) > 0.12f;
-				if (!(bByGorge || bByFall || bOutcrop || Sl >= 2.75f) || (bWet && !bByFall))
+				// (2026-11-22: and a sea bluff: on the 4 m ground its face stood in diagonal folds like draped cloth, island
+				// 20261112; its beds hide them as on a gorge wall. -bfnobluffbeds: as before)
+				static const bool bNoBluff = FParse::Param(FCommandLine::Get(), TEXT("bfnobluffbeds"));
+				const bool bBluff = !bNoBluff && SeaSteps[C] <= 5 && H[C] > 2.f && Sl >= 0.85f;
+				if (!(bByGorge || bByFall || bOutcrop || bBluff || Sl >= 2.75f) || (bWet && !bByFall))
 				{
 					continue;
 				}
@@ -4199,6 +4246,10 @@ void ABFWorld::DressRavines()
 				const FVector P0 = Origin + FVector((X + Rw.FRandRange(-0.4f, 0.4f)) * CellCm, (Y + Rw.FRandRange(-0.4f, 0.4f)) * CellCm, 0.f);
 				bool bClear = true;
 				float MinZ = bWet ? float(Origin.Z) + W[C] * 100.f + 300.f : -1e9f;          // (no bed's top lower than this: a pool, a hollow below it)
+				if (bBluff)
+				{
+					MinZ = FMath::Max(MinZ, float(Origin.Z) + 40.f);          // (just over the swell)
+				}
 				for (const FBFFall& Fa : Falls)
 				{
 					// (2026-11-16: the walls either side of a fall were left smooth, standing out from the stepped rock round
@@ -4337,6 +4388,7 @@ void ABFWorld::DressRavines()
 					Rk.bBed = true;
 					ByBlock.FindOrAdd((Y / 30) * 1000 + X / 30).Add(Rk);
 					++Walls;
+					BluffBeds += bBluff && !bByGorge && !bByFall ? 1 : 0;
 				}
 				bool bByLip = false;          // (2026-11-16: no loose block at a fall's lip: one sat on island 13's as a 4 m boulder)
 				for (const FBFFall& Fa : Falls)
@@ -4370,7 +4422,7 @@ void ABFWorld::DressRavines()
 			}
 			AddRocks(It.Value);
 		}
-		LandformText += FString::Printf(TEXT("; %d rocks in gorge walls (rock colour %d,%d,%d)"), Walls, RockC.R, RockC.G, RockC.B);
+		LandformText += FString::Printf(TEXT("; %d rocks in gorge walls (%d on sea bluffs; rock colour %d,%d,%d)"), Walls, BluffBeds, RockC.R, RockC.G, RockC.B);
 	}
 }
 

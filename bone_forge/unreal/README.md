@@ -1118,6 +1118,15 @@ smoothly into the water. Now:
   now always stays (`-bfoldbedtest`). Also: lone points put under water go down to their neighbours' bed, and shoals
   under 25 cm amid water twice as deep are deepened (`-bfoldshoals`); river beds near a lip are painted wet rock
   (`-bfoldlipbed`).
+- Sea bluffs get rock beds like the gorge walls (`-bfnobluffbeds`; 200-300 an island), their foot no longer painted
+  beach where it's steeper than 25 deg (`-bfoldbeach`).
+- Shores of mountain tarns and other rocky shores are wet grey stone, not tan silt (a rust ring round island 22436's
+  tarn; `-bfoldshores`); lake and river beds a darker mud (they showed salmon through shallow water).
+- Crags on high ground (`-bfnocrags`): from 60 m up, ridged relief up to ~5 m over 15-40 m, which the ledge pass then
+  steps; mountain tops were smooth domes close up.
+- `-bfprobeshot=NAME -bfprobe=XxY`: the pixel probe on any check picture whose name holds NAME (the tour's too).
+- Test runs: launched with `-DDC=InstalledNoZenLocalFallback` when the engine's cache server (ZenServer) hangs at
+  start-up (it did twice while another Unreal project was running).
 - Caves, ravines and falls looked over again on the new ground (`-bflandform`, `-bftop`, `-bfcavelook`): mouths flush,
   gorge walls now show their ledges.
 
