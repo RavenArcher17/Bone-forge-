@@ -1982,6 +1982,47 @@ void ABFWorld::MakeLand()
 			}
 		}
 		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d shoal points in rivers and lakes deepened"), Shoals);
+		// (2026-11-22: a fall's plunge pool dried by a later pass, island 22436's 10 m fall pouring onto dry ground: each
+		// fall whose foot is dry gets its pool back, at the pool's own level, out to its round, over ground no more than
+		// 2 m above that level; -bfnopoolfix: as before)
+		int32 PoolsMade = 0;
+		if (!FParse::Param(FCommandLine::Get(), TEXT("bfnopoolfix")))
+		{
+			for (const FBFFall& Fa : Falls)
+			{
+				const int32 BX = FMath::RoundToInt((Fa.Bottom.X - Origin.X) / CellCm), BY = FMath::RoundToInt((Fa.Bottom.Y - Origin.Y) / CellCm);
+				if (Fa.PoolCm <= 0.f || BX < 3 || BY < 3 || BX > N - 4 || BY > N - 4 || W[Idx(BX, BY)] > H[Idx(BX, BY)] + 0.05f)
+				{
+					continue;
+				}
+				const float Lv = float(Fa.Bottom.Z) / 100.f;
+				// (an oval out along the stream's way, 3.2 points round at least: a smaller one came out as a few square pieces)
+				const float Rr = FMath::Max(Fa.PoolCm / CellCm, 3.2f);
+				const FVector2D Dd = FVector2D(Fa.Dir).GetSafeNormal();
+				for (int32 Y = BY - 8; Y <= BY + 8; ++Y)
+				{
+					for (int32 X = BX - 8; X <= BX + 8; ++X)
+					{
+						const int32 Cc = Idx(X, Y);
+						const FVector2D Rel(float(X - BX), float(Y - BY));
+						const float Al = float(FVector2D::DotProduct(Rel, Dd)), La = float(FVector2D::CrossProduct(Dd, Rel));
+						const float T = FMath::Sqrt(FMath::Square((Al > 0.f ? Al / 1.6f : Al * 1.5f)) + La * La) / Rr;
+						if (T > 1.f || Kind[Cc] == 1 || H[Cc] > Lv + 2.f)
+						{
+							continue;
+						}
+						W[Cc] = FMath::Max(W[Cc] > H[Cc] ? W[Cc] : -1000.f, Lv);
+						H[Cc] = FMath::Min(H[Cc], Lv - 0.4f - 1.4f * (1.f - T * T));
+						if (Kind[Cc] == 0)
+						{
+							Kind[Cc] = 3;
+						}
+					}
+				}
+				++PoolsMade;
+			}
+		}
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d dry plunge pools made again"), PoolsMade);
 		UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: %d lone dry points in water put under"), Dots);
 	}
 	{
@@ -3577,7 +3618,12 @@ int32 ABFWorld::AddCave(const TArray<FVector>& Path, const TArray<float>& Radii,
 							&& ((CaveDensity(C, FVector(Mid.X, Mid.Y, Origin.Z + H[Cw] * 100.f - 40.f)) < 0.f && !bAboveLip) || (float(Mid.Z) > Origin.Z + HoleLowW * 100.f + 40.f && Falls.ContainsByPredicate([&](const FBFFall& Fa)
 							{
 								// (only below a fall's lip: the river above it is in the hole too, and went dry)
-								return FVector::Dist2D(Mid, Fa.Top) < 4000.f && FVector2D::DotProduct(FVector2D(Mid - Fa.Top), FVector2D(Fa.Dir).GetSafeNormal()) > 0.6f * CellCm;
+								// (2026-11-22: and over the fall's own pool level, not just the hole's lowest water: where the stream runs
+								// on down out of the hole, the pool at the foot of island 22436's 10 m fall stood over that and went, the
+								// curtain falling onto dry ground; -bfoldpoolkeep: as before)
+								static const bool bOldPool = FParse::Param(FCommandLine::Get(), TEXT("bfoldpoolkeep"));
+								return FVector::Dist2D(Mid, Fa.Top) < 4000.f && FVector2D::DotProduct(FVector2D(Mid - Fa.Top), FVector2D(Fa.Dir).GetSafeNormal()) > 0.6f * CellCm
+									&& (bOldPool || float(Mid.Z) > float(Fa.Bottom.Z) + 40.f);
 							})));          // (its bed itself cut away)
 						if (!bHangs)
 						{

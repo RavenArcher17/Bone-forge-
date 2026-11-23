@@ -1132,6 +1132,10 @@ smoothly into the water. Now:
 - Grass colour varies in patches 100-330 m across as well as 11-28 m (softer), a little less saturated, with browner
   litter in patches a few metres across. From 4-5 km up the island still shows a forest/meadow lacework: that is the
   biome map on the ground, the trees being drawn only to 4 km.
+- Plunge pools: a fall whose foot a later water pass left dry gets its pool back at the pool's own level, an oval out
+  along the stream over ground within 2 m of it (`-bfnopoolfix`; island 22436's 10 m fall poured onto dry ground). The
+  hollow's water rule also keeps water at the fall's own pool level (`-bfoldpoolkeep`). The islet change runs before the
+  rain, so islands near islets come out a little different (22436's fall went from 6 m to 10 m).
 - The tour now finds rivers (a river point 1 point in, not 3).
 - No trees on a cave's doorstep, the 12 m out in front of its mouth (`-bfolddoorstep`).
 - `-bfprobeshot=NAME -bfprobe=XxY`: the pixel probe on any check picture whose name holds NAME (the tour's too).
