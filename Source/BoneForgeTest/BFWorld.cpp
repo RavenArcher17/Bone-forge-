@@ -2592,6 +2592,20 @@ void ABFWorld::Tick(float DeltaSeconds)
 		TickPlants(DeltaSeconds);
 		TickFoam(DeltaSeconds);
 		TickCarpet();
+		static const bool bPerfLog = FParse::Param(FCommandLine::Get(), TEXT("bfperflog"));          // (-bfperflog: the mean frame time every 2 s, and each ground cover rebuild's)
+		if (bPerfLog)
+		{
+			static double Acc = 0.0;
+			static int32 Frames = 0;
+			Acc += DeltaSeconds;
+			++Frames;
+			if (Acc > 2.0)
+			{
+				UE_LOG(LogTemp, Display, TEXT("[BoneForge] perflog frame %.2f ms (%d frames)"), 1000.0 * Acc / Frames, Frames);
+				Acc = 0.0;
+				Frames = 0;
+			}
+		}
 		// The day goes round: the sun and the moon follow the island's clock.
 		Hours += DeltaSeconds * 24.f / FMath::Max(DaySeconds, 1.f);
 		if (Hours >= 24.f)
@@ -6742,6 +6756,7 @@ void ABFWorld::TickCarpet()
 		return;
 	}
 	CarpetAt = FVector2D(C);
+	const double CarpetT0 = FPlatformTime::Seconds();
 	constexpr int32 Kinds = 4;          // three ferns and a horsetail
 	if (Carpet.Num() == 0)
 	{
@@ -6821,5 +6836,10 @@ void ABFWorld::TickCarpet()
 		Carpet[k]->ClearInstances();
 		Carpet[k]->AddInstances(Xf[k], false, true, false);
 		CarpetCount += Xf[k].Num();
+	}
+	static const bool bCarpetLog = FParse::Param(FCommandLine::Get(), TEXT("bfperflog"));
+	if (bCarpetLog)
+	{
+		UE_LOG(LogTemp, Display, TEXT("[BoneForge] perflog carpet %d in %.2f ms"), CarpetCount, 1000.0 * (FPlatformTime::Seconds() - CarpetT0));
 	}
 }
