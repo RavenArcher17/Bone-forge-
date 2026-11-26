@@ -2601,6 +2601,31 @@ void ABFWorld::Tick(float DeltaSeconds)
 		}
 		if (ABFGameMode* GM = GetWorld()->GetAuthGameMode<ABFGameMode>())
 		{
+			// (2026-11-25: in a cave the eye may open up as far as it likes: the day's exposure floor made them black)
+			if (APlayerController* PC = GetWorld()->GetFirstPlayerController(); PC && PC->PlayerCameraManager)
+			{
+				// (covered: of five lines 40 m up from the camera, straight and tilted 40 deg four ways, how many meet rock.
+				// The ground's height under a cave's mouth is lowered, so "under the hill" by height missed them)
+				const FVector Cam = PC->PlayerCameraManager->GetCameraLocation();
+				FCollisionQueryParams Qp(SCENE_QUERY_STAT(BFSky), false);
+				if (APawn* Pw = PC->GetPawn())
+				{
+					Qp.AddIgnoredActor(Pw);
+				}
+				int32 Hits = 0;
+				bool bUp = false;
+				const FVector Dirs[5] = { FVector(0, 0, 1), FVector(0.64f, 0, 0.77f), FVector(-0.64f, 0, 0.77f), FVector(0, 0.64f, 0.77f), FVector(0, -0.64f, 0.77f) };
+				for (const FVector& Dd : Dirs)
+				{
+					FHitResult Hr;
+					const bool bHit = GetWorld()->LineTraceSingleByChannel(Hr, Cam, Cam + Dd * 4000.f, ECC_Visibility, Qp) && Cast<UProceduralMeshComponent>(Hr.GetComponent());
+					Hits += bHit ? 1 : 0;
+					bUp = bUp || (bHit && Dd.Z > 0.99f);
+				}
+				// (straight up must be rock too: down a gorge the tilted lines meet its walls, and the gorge is open sky)
+				const float Want = bUp ? FMath::SmoothStep(1.f, 4.f, float(Hits)) : 0.f;
+				GM->Underground = FMath::FInterpTo(GM->Underground, Want, DeltaSeconds, 3.f);
+			}
 			GM->SetSkyAt(Hours);
 		}
 	}

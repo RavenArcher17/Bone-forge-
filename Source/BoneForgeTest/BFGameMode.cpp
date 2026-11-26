@@ -647,7 +647,7 @@ void ABFGameMode::SetSkyAt(float Hours)
 		return FParse::Param(FCommandLine::Get(), TEXT("bfoldexposure")) ? -10.f : V;
 	}();
 	NightPost->Settings.bOverride_AutoExposureMinBrightness = true;
-	NightPost->Settings.AutoExposureMinBrightness = FMath::Lerp(-10.f, DayEvMin, Day);
+	NightPost->Settings.AutoExposureMinBrightness = FMath::Lerp(-10.f, DayEvMin, Day * (1.f - Underground));
 	// Mist (Raven's list, 34): it lies low over the island from before dawn and burns off by mid-morning; a thinner haze
 	// at dusk. Low and thick (it hugs the ground and the water), the light through it warm at sunrise.
 	if (Fog && !bUnderwaterView)

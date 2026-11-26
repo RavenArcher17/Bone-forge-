@@ -131,6 +131,8 @@ public:
 	/** The sky at an hour of the day (World and AI tab, step 5): the sun across the sky from east to west, below the
 	 *  horizon at night, and a dim blue moonlight then. */
 	void SetSkyAt(float Hours);
+	/** 0 in the open, 1 well under a hill (a cave): the day's exposure floor is lifted there (set by ABFWorld each tick). */
+	float Underground = 0.f;
 	float GetMist() const { return MistNow; }
 	float MistNow = 0.f;          // 0 clear .. 1 thick morning mist
 private:

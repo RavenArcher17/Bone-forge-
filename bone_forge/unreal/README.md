@@ -1146,8 +1146,10 @@ smoothly into the water. Now:
 
 Natural pass (2026-11-25, Raven: "keep working ... nothing rough ... everything should look as natural as it can be"):
 - Exposure: by day the eye may open up only to EV100 0.5 (`-bfevmin=N` to try others, `-bfoldexposure` as before).
-  Down a gorge it opened 3-4 stops and shaded walls came out near white and blue, like snow. Open views are unchanged;
-  behind a fall it is now dark.
+  Down a gorge it opened 3-4 stops and shaded walls came out near white and blue, like snow. Open views are unchanged.
+  Under rock (straight up from the camera and most of four lines tilted 40 deg meet a rock or ground mesh within 40 m:
+  a cave, the hollow behind a fall) the floor is lifted, so the eye adapts there as before (ABFGameMode::Underground,
+  set by ABFWorld each tick). A cave seen from outside in the sun stays dark, as it should.
 - Waterfalls (M_BoneForgeFall): noise ropes 0.3-1.5 m across falling at 4-9 m/s, glassy and thin over the lip, white
   ropes with gaps lower down, thick at the foot, ragged edges. Was an even sine of 11 stripes, like corrugated plastic.
   The curtain's vertex colour carries its width (R, 10 cm) and how far down it is (G).
