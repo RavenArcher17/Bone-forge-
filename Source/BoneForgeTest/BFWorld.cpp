@@ -4437,16 +4437,18 @@ void ABFWorld::DressRavines()
 					static const bool bOldBluffBeds = FParse::Param(FCommandLine::Get(), TEXT("bfoldbluffbeds"));
 					if (bBluff && !bByGorge && !bByFall && !bOldBluffBeds)
 					{
-						if (Rw.FRand() < 0.25f)
+						// (shortened and gapped, they stood as a row of stepping stones, island 20261112: long instead, overlapping
+						// into one band of rock along the shore, a little uneven, now and then broken)
+						if (Rw.FRand() < 0.1f)
 						{
 							continue;
 						}
-						Rk.Half.X *= Rw.FRandRange(0.45f, 1.15f);
-						Rk.Half.Y *= Rw.FRandRange(0.7f, 1.25f);
-						Rk.Rot.Yaw += Rw.FRandRange(-14.f, 14.f);
-						Rk.Rot.Pitch += Rw.FRandRange(-5.f, 5.f);
-						Rk.Rot.Roll += Rw.FRandRange(-4.f, 4.f);
-						Rk.TopZ = FMath::Max(Rk.TopZ + Rw.FRandRange(-110.f, 90.f), MinZ);
+						Rk.Half.X *= Rw.FRandRange(1.4f, 2.3f);
+						Rk.Half.Y *= Rw.FRandRange(0.8f, 1.15f);
+						Rk.Rot.Yaw += Rw.FRandRange(-6.f, 6.f);
+						Rk.Rot.Pitch += Rw.FRandRange(-3.f, 3.f);
+						Rk.Rot.Roll += Rw.FRandRange(-3.f, 3.f);
+						Rk.TopZ = FMath::Max(Rk.TopZ + Rw.FRandRange(-60.f, 50.f), MinZ);
 					}
 					Rk.At = FVector(P0.X + Off.X + In.X, P0.Y + Off.Y + In.Y, Rk.TopZ - float(Rk.Half.Z) + 30.f);
 					// (2026-11-16: a long bed set beside a fall's strip reached into it, hanging over the curtain: none whose length
@@ -5599,7 +5601,9 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 				return;
 			}
 			const float Up = FMath::Clamp((float(Nf.Z) - 0.6f) / 0.3f, 0.f, 1.f);
-			FColor Cl = FMath::Lerp(Base, Moss, bInWall ? 0.f : (R.Kind == 0 ? 0.3f * Up : 0.12f * Up)).ToFColor(true);
+			// (2026-11-25: 0.3 of moss on a boulder's top, now the ground's material takes greenish paint as meadow, turned its
+			// top dark olive: loose stones on pale rock stood near black)
+			FColor Cl = FMath::Lerp(Base, Moss, bInWall ? 0.f : 0.1f * Up).ToFColor(true);
 			if (bInWall)
 			{
 				// (2026-11-16: a shade per block picked each one out as a brick. The wall's colour in bands by height, the
@@ -5845,7 +5849,7 @@ void ABFWorld::PlaceRocks()
 						FBFRock R;
 						R.Kind = 0;
 						R.Seed = int32(Rc.Next() & 0xffff);
-						const float Big = (bLoose && !bOldScree ? Rc.FRandRange(35.f, 150.f) : Rc.FRandRange(60.f, 230.f)) * (b == 0 ? 1.f : 0.6f);
+						const float Big = (bLoose && !bOldScree ? Rc.FRandRange(60.f, 170.f) : Rc.FRandRange(60.f, 230.f)) * (b == 0 ? 1.f : 0.6f);
 						R.Half = FVector(Big * Rc.FRandRange(0.8f, 1.3f), Big * Rc.FRandRange(0.7f, 1.1f), Big * Rc.FRandRange(0.55f, 0.9f));
 						const FVector2D P2 = FVector2D(Origin.X + X * CellCm, Origin.Y + Y * CellCm) + Uphill * Rc.FRandRange(-200.f, 500.f)
 							+ FVector2D(Rc.FRandRange(-600.f, 600.f), Rc.FRandRange(-600.f, 600.f));

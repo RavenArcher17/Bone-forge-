@@ -1158,10 +1158,13 @@ Natural pass (2026-11-25, Raven: "keep working ... nothing rough ... everything 
   now takes the plains' paint fully as grass (half of it was shown as raw bright paint).
 - Rock cracks come and go in stretches (they read as contour lines drawn on a map); the dark stains only on steep faces;
   moss olive and thinner, less of it high up; fern-bed paint a fifth as strong on bare rock (`-bfoldrockferns`).
-- Sea bluff beds broken up: a quarter gone, each its own length, depth, tilt and height (`-bfoldbluffbeds`). They stood
-  along the shore as a kerb of like blocks.
+- Sea bluff beds: long and overlapping, one band of rock along the shore, a little uneven in height and line, one in
+  ten gone (`-bfoldbluffbeds`). They stood along the shore as a kerb of like blocks; shortened and gapped (tried first)
+  they were a row of stepping stones.
 - Ledges from 22 deg on high ground (over 60 m), from 28 as before lower down. Loose stones on rocky ground counted
-  apart from the cliff-foot boulders, ~400-500 an island in ones and twos (`-bfoldscree`). The old shared cap of 700
+  apart from the cliff-foot boulders, ~400-500 an island in ones and twos, 0.6-1.7 m (`-bfoldscree`; smaller ones came
+  out near black). Boulders' tops take a tenth of moss, not 0.3: the ground's material now reads greenish paint as
+  meadow, and their tops went dark olive. The old shared cap of 700
   was used up by cliff feet in the first rows, so the north of an island got them all.
 - Spray, mist and dust (M_BoneForgeSpray, a new asset: remaking M_BoneForgePuff in place trips the rooted-object
   assertion, as ABFEffects' class default holds its nodes): the edge broken by drifting noise, so a puff is a wisp,
