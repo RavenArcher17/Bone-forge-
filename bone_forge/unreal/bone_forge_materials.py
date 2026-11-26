@@ -608,9 +608,15 @@ PUFF_HLSL = r"""
 // clean and cut off flat where they met the water. Now the edge is broken by drifting noise, so a puff is a wisp, and
 // it fades out where it meets the water or the rock (depth fade, after this).)
 // (a ripple ring, flat on the water, comes with 10 added to its alpha: as it was, no noise and no fade)
+// (2026-11-25: it was a flattened sphere drawn whole: a solid white disc on the water under a foot. Now a ring: a band
+// round its edge, by the engine sphere's own local position (50 cm round), broken a little by noise.)
 if (A >= 9.5)
 {
-    return A - 10.0;
+    float ang = atan2(L.y, L.x);
+    float r = length(L.xy) / 50.0 + 0.05 * sin(ang * 5.0 + T * 1.3) + 0.03 * sin(ang * 11.0 - T * 2.1);
+    float band = smoothstep(0.5, 0.8, r) * (1.0 - smoothstep(0.84, 1.0, r));
+    float broken = 0.45 + 0.55 * saturate(0.5 + 0.5 * sin(ang * 7.0 + 2.0 * sin(ang * 3.0)));
+    return (A - 10.0) * band * broken * 0.9;
 }
 float facing = saturate(dot(normalize(N), normalize(V)));
 float3 q = P / 24.0 + float3(0.0, 0.0, -T * 0.6);
@@ -742,7 +748,8 @@ def build_spray(cd):
     rgb2 = custom(puff, "return float3(R, G, B);", unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["R", "G", "B"], -300, 0, "Colour")
     for i, k in enumerate("RGB"):
         connect(cd(puff, i, -600, -100 + 120 * i), "", rgb2, k)
-    op = custom(puff, PUFF_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT1, ["N", "V", "A", "P", "T"], -300, 300, "Soft edge")
+    op = custom(puff, PUFF_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT1, ["N", "V", "A", "P", "T", "L"], -300, 300, "Soft edge")
+    connect(mel.create_material_expression(puff, unreal.MaterialExpressionLocalPosition, -600, 900), "", op, "L")
     connect(mel.create_material_expression(puff, unreal.MaterialExpressionVertexNormalWS, -600, 300), "", op, "N")
     connect(mel.create_material_expression(puff, unreal.MaterialExpressionCameraVectorWS, -600, 420), "", op, "V")
     connect(cd(puff, 3, -600, 540), "", op, "A")

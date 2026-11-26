@@ -1173,7 +1173,9 @@ Natural pass (2026-11-25, Raven: "keep working ... nothing rough ... everything 
 - Spray, mist and dust (M_BoneForgeSpray, a new asset: remaking M_BoneForgePuff in place trips the rooted-object
   assertion, as ABFEffects' class default holds its nodes): the edge broken by drifting noise, so a puff is a wisp,
   and a depth fade (70 cm) where it meets water or rock. Spray at a fall's foot read as soft white balls cut off flat
-  by the water. Ripple rings come with 10 added to their alpha and are drawn as before.
+  by the water. Ripple rings come with 10 added to their alpha and are drawn as rings: a band round the edge by the
+  sphere's local position, wobbling and broken (they were flattened spheres drawn whole, solid white discs on the
+  water under a foot).
 - ABFEffects sets its materials in BeginPlay, not its constructor, so M_BoneForgeMark and M_BoneForgeSpray can be
   remade in place (BF_FX_ONLY=1 BF_FX_REBUILD=1) without the rooted-object assertion.
 - A curtain fades out over its last 1.2 m into the pool (vertex colour B: its drop in 2 m), and in over its first 1.5 m
