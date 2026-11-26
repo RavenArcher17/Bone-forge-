@@ -2289,7 +2289,9 @@ void ABFWorld::MakeLand()
 				}
 				const float GX = (H[C + 1] - H[C - 1]) / (2.f * CellM), GY = (H[C + N] - H[C - N]) / (2.f * CellM);
 				const float Sl = FMath::RadiansToDegrees(FMath::Atan(FMath::Sqrt(GX * GX + GY * GY)));
-				float Str = FMath::SmoothStep(28.f, 42.f, Sl) * FMath::Min((ToWater[C] - 3) / 4.f, 1.f);
+				// (2026-11-25: and from 22 deg on high ground, over 60 m: the mountains' tops were still smooth grey domes)
+					const float Lo = FMath::Lerp(28.f, 22.f, FMath::SmoothStep(40.f, 70.f, H[C]));
+					float Str = FMath::SmoothStep(Lo, Lo + 14.f, Sl) * FMath::Min((ToWater[C] - 3) / 4.f, 1.f);
 				if (Str <= 0.f)
 				{
 					continue;
@@ -2589,6 +2591,7 @@ void ABFWorld::Tick(float DeltaSeconds)
 	{
 		TickPlants(DeltaSeconds);
 		TickFoam(DeltaSeconds);
+		TickCarpet();
 		// The day goes round: the sun and the moon follow the island's clock.
 		Hours += DeltaSeconds * 24.f / FMath::Max(DaySeconds, 1.f);
 		if (Hours >= 24.f)
@@ -4427,6 +4430,24 @@ void ABFWorld::DressRavines()
 					Rk.Rot = FRotator(Rw.FRandRange(-1.5f, 1.5f), Yaw + Rw.FRandRange(-5.f, 5.f), Rw.FRandRange(-1.5f, 1.5f));
 					const FVector2D In = Up * (0.5f * (Back - Out));
 					Rk.TopZ = float(Origin.Z) + Lv * 100.f;
+					// (2026-11-25, Raven: "nothing rough". A low sea bluff has only one or two beds, all at the island's set
+					// heights: along the shore they stood as a row of like blocks, the same height, length and depth, like a
+					// kerb. On a bluff they're broken: a quarter gone, each its own length, depth, tilt and height, a metre
+					// either way. -bfoldbluffbeds: as before)
+					static const bool bOldBluffBeds = FParse::Param(FCommandLine::Get(), TEXT("bfoldbluffbeds"));
+					if (bBluff && !bByGorge && !bByFall && !bOldBluffBeds)
+					{
+						if (Rw.FRand() < 0.25f)
+						{
+							continue;
+						}
+						Rk.Half.X *= Rw.FRandRange(0.45f, 1.15f);
+						Rk.Half.Y *= Rw.FRandRange(0.7f, 1.25f);
+						Rk.Rot.Yaw += Rw.FRandRange(-14.f, 14.f);
+						Rk.Rot.Pitch += Rw.FRandRange(-5.f, 5.f);
+						Rk.Rot.Roll += Rw.FRandRange(-4.f, 4.f);
+						Rk.TopZ = FMath::Max(Rk.TopZ + Rw.FRandRange(-110.f, 90.f), MinZ);
+					}
 					Rk.At = FVector(P0.X + Off.X + In.X, P0.Y + Off.Y + In.Y, Rk.TopZ - float(Rk.Half.Z) + 30.f);
 					// (2026-11-16: a long bed set beside a fall's strip reached into it, hanging over the curtain: none whose length
 					// crosses the strip, its ends checked as well as its middle)
@@ -4588,6 +4609,7 @@ void ABFWorld::BuildFalls()
 		TArray<FVector> V, Nm;
 		TArray<FVector2D> UV;
 		TArray<int32> T;
+		TArray<FColor> VC;          // (2026-11-25: for M_BoneForgeFall: R its width in 10 cm, G how far down it is, 0-255)
 		// (2026-11-16: the river's own width and a little, so it leaves the lip's notch: at 1.6 times, it went in under the banks)
 		const float Width = FMath::Max(Fa.WidthCm + 150.f, 450.f);
 		const float Speed = FMath::Clamp(150.f + 25.f * Fa.DropM, 200.f, 320.f);          // cm/s off the lip
@@ -4692,6 +4714,7 @@ void ABFWorld::BuildFalls()
 				V.Add(P);
 				Nm.Add((-Fa.Dir + FVector(0.f, 0.f, 0.3f)).GetSafeNormal());
 				UV.Add(FVector2D(u + 0.5f, Len / 200.f));
+				VC.Add(FColor(uint8(FMath::Clamp(FMath::RoundToInt(Width / 10.f), 1, 255)), uint8(FMath::Clamp(FMath::RoundToInt(255.f * Down / FMath::Max(DropCm2, 1.f)), 0, 255)), 0, 255));
 			}
 		}
 		for (int32 r = 0; r < Rows; ++r)
@@ -4708,7 +4731,7 @@ void ABFWorld::BuildFalls()
 		M->SetCastShadow(false);
 		M->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		M->RegisterComponent();
-		M->CreateMeshSection(0, V, T, Nm, UV, {}, {}, false);
+		M->CreateMeshSection(0, V, T, Nm, UV, VC, {}, false);
 		M->SetVisibility(!FParse::Param(FCommandLine::Get(), TEXT("bfnocurtain")));
 		// (2026-11-22, the sweep: tree ferns and ferns stood on the bare rock beside curtains and on stones in their pools,
 		// grown from the ground before the fall was shaped. None on its face, by its curtain or round its pool.)
@@ -5290,7 +5313,12 @@ void ABFWorld::PlacePlants(const TArray<int32>& ToWater, const TArray<uint8>& Ki
 	const FColor FernGreen(46, 78, 30), Litter(70, 60, 40);
 	for (int32 C = 0; C < N * N; ++C)
 	{
-		const float F = FMath::Clamp(FernCover[C], 0.f, 1.f) * 0.85f, T = FMath::Clamp(CrownCover[C], 0.f, 1.f) * 0.55f;
+		// (2026-11-25: on bare rock the fern beds' paint, taken as rock by the ground's material and darkened again, came out
+		// as near-black smudges down the mountains, like soot. A fern in a crack there doesn't green the slope: a fifth as
+		// much. -bfoldrockferns: as before)
+		static const bool bOldRockFerns = FParse::Param(FCommandLine::Get(), TEXT("bfoldrockferns"));
+		const float OnRock = !bOldRockFerns && Biome[C] == uint8(EBFBiome::Rock) ? 0.2f : 1.f;
+		const float F = FMath::Clamp(FernCover[C], 0.f, 1.f) * 0.85f * OnRock, T = FMath::Clamp(CrownCover[C], 0.f, 1.f) * 0.55f;
 		if (F <= 0.f && T <= 0.f)
 		{
 			continue;
@@ -5744,7 +5772,8 @@ void ABFWorld::PlaceRocks()
 	const int32 PerSide = (N - 1) / ChunkCells;
 	TArray<TArray<FBFRock>> ByTile;
 	ByTile.SetNum(PerSide * PerSide);
-	int32 Boulders = 0, Fins = 0;
+	int32 Boulders = 0, Fins = 0, Loose = 0;
+	static const bool bOldScree = FParse::Param(FCommandLine::Get(), TEXT("bfoldscree"));
 	auto SlopeAt = [&](int32 X, int32 Y, FVector2D& Grad)
 	{
 		Grad = FVector2D((H[Idx(X + 1, Y)] - H[Idx(X - 1, Y)]) / (2.f * CellCm / 100.f), (H[Idx(X, Y + 1)] - H[Idx(X, Y - 1)]) / (2.f * CellCm / 100.f));
@@ -5768,6 +5797,15 @@ void ABFWorld::PlaceRocks()
 		const int32 TY = FMath::Clamp(int32((R.At.Y - Origin.Y) / (CellCm * ChunkCells)), 0, PerSide - 1);
 		ByTile[TY * PerSide + TX].Add(R);
 	};
+	// (the rocky ground's size, so its stones are spread over all of it and not used up in the first rows)
+	float RockPts = 0.f;
+	for (int32 Y = 6; Y < N - 6; Y += 3)
+	{
+		for (int32 X = 6; X < N - 6; X += 3)
+		{
+			RockPts += Biome[Idx(X, Y)] == uint8(EBFBiome::Rock) ? 1.f : 0.f;
+		}
+	}
 	for (int32 Y = 6; Y < N - 6; Y += 3)
 	{
 		for (int32 X = 6; X < N - 6; X += 3)
@@ -5780,11 +5818,11 @@ void ABFWorld::PlaceRocks()
 			FVector2D Grad;
 			const float Slope = SlopeAt(X, Y, Grad);
 			// The foot of a cliff: gentle here, a cliff within 12 m uphill, at least 6 m higher.
-			if (Slope < 26.f && Boulders < 700)
+			if (Slope < 26.f && (Boulders < 700 || (!bOldScree && Loose < 1300)))
 			{
 				bool bFoot = false;
 				FVector2D Uphill = FVector2D::ZeroVector;
-				for (int32 d = 0; d < 8 && !bFoot; ++d)
+				for (int32 d = 0; d < 8 && !bFoot && Boulders < 700; ++d)
 				{
 					const FVector2D Dir(FMath::Cos(d * PI / 4.f), FMath::Sin(d * PI / 4.f));
 					for (int32 Far = 2; Far <= 5 && !bFoot; ++Far)
@@ -5798,16 +5836,16 @@ void ABFWorld::PlaceRocks()
 						}
 					}
 				}
-				const bool bLoose = !bFoot && Biome[Idx(X, Y)] == uint8(EBFBiome::Rock) && Rc.FRand() < 0.04f;      // a lone stone on rocky ground
+				const bool bLoose = !bFoot && Biome[Idx(X, Y)] == uint8(EBFBiome::Rock) && (bOldScree ? Boulders < 700 : Loose < 1300) && Rc.FRand() < (bOldScree ? 0.04f : FMath::Clamp(4000.f / FMath::Max(RockPts, 1.f), 0.02f, 0.3f));      // a lone stone on rocky ground (2026-11-25: and more, in twos and threes: the bare tops were smooth and empty; -bfoldscree: as before)
 				if (bLoose || (bFoot && Rc.FRand() < 0.35f))
 				{
-					const int32 Count = bLoose ? 1 : Rc.RandRange(1, 4);
+					const int32 Count = bLoose ? (bOldScree ? 1 : Rc.RandRange(1, 2)) : Rc.RandRange(1, 4);
 					for (int32 b = 0; b < Count; ++b)
 					{
 						FBFRock R;
 						R.Kind = 0;
 						R.Seed = int32(Rc.Next() & 0xffff);
-						const float Big = Rc.FRandRange(60.f, 230.f) * (b == 0 ? 1.f : 0.6f);
+						const float Big = (bLoose && !bOldScree ? Rc.FRandRange(35.f, 150.f) : Rc.FRandRange(60.f, 230.f)) * (b == 0 ? 1.f : 0.6f);
 						R.Half = FVector(Big * Rc.FRandRange(0.8f, 1.3f), Big * Rc.FRandRange(0.7f, 1.1f), Big * Rc.FRandRange(0.55f, 0.9f));
 						const FVector2D P2 = FVector2D(Origin.X + X * CellCm, Origin.Y + Y * CellCm) + Uphill * Rc.FRandRange(-200.f, 500.f)
 							+ FVector2D(Rc.FRandRange(-600.f, 600.f), Rc.FRandRange(-600.f, 600.f));
@@ -5819,7 +5857,7 @@ void ABFWorld::PlaceRocks()
 						R.At = FVector(P2.X, P2.Y, G + R.Half.Z * 0.45f);         // a little sunk in
 						R.Rot = FRotator(Rc.FRandRange(-12.f, 12.f), Rc.FRandRange(0.f, 360.f), Rc.FRandRange(-12.f, 12.f));
 						Put(R);
-						++Boulders;
+						++(bLoose && !bOldScree ? Loose : Boulders);
 					}
 				}
 			}
@@ -5870,7 +5908,7 @@ void ABFWorld::PlaceRocks()
 		}
 		IslandRockGroups = RockMeshes.Num();
 	}
-	RockSummary = FString::Printf(TEXT("%d boulders and %d crags (%d triangles, in %.2f s)"), Boulders, Fins, Tris, FPlatformTime::Seconds() - T0);
+	RockSummary = FString::Printf(TEXT("%d boulders, %d loose stones and %d crags (%d triangles, in %.2f s)"), Boulders, Loose, Fins, Tris, FPlatformTime::Seconds() - T0);
 }
 
 void ABFWorld::GrowPlants(int32 KV)
@@ -6640,5 +6678,107 @@ void ABFWorld::LogAround(const FVector& P, int32 R) const
 			Row += FString::Printf(TEXT(" %5.1f/%5.1f/%d"), H[C], W[C] > H[C] ? W[C] : -1.f, int32(Biome[C]));
 		}
 		UE_LOG(LogTemp, Display, TEXT("[BoneForge] around dy=%d:%s"), dy, *Row);
+	}
+}
+
+void ABFWorld::TickCarpet()
+{
+	// (2026-11-25, Raven: "nothing rough ... everything should look as natural as it can be". From the ground a meadow was
+	// an even green lawn out to the trees: 650 ferns a hectare is one every 15 m2, and the open ground between read as mown
+	// grass. The floor of a Cretaceous meadow is low fern, horsetail and litter. Near the camera only (45 m round it),
+	// small fern tufts and sprigs 25-80 cm tall, thick in patches and thin in others, by the ground's kind; each spot's
+	// plant fixed by where it is, so they stay put as the camera moves, shrinking away toward the edge. Only to look at:
+	// nothing eats them or bumps into them. -bfnocarpet: none.)
+	static const bool bOff = FParse::Param(FCommandLine::Get(), TEXT("bfnocarpet"));
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	if (bOff || !PlantMat || !PC || !PC->PlayerCameraManager || H.Num() != N * N || Biome.Num() != N * N || W.Num() != N * N)
+	{
+		return;
+	}
+	const FVector C = PC->PlayerCameraManager->GetCameraLocation();
+	if (FVector2D::Distance(FVector2D(C), CarpetAt) < 500.f)
+	{
+		return;
+	}
+	CarpetAt = FVector2D(C);
+	constexpr int32 Kinds = 4;          // three ferns and a horsetail
+	if (Carpet.Num() == 0)
+	{
+		for (int32 k = 0; k < Kinds; ++k)
+		{
+			UInstancedStaticMeshComponent* I = NewObject<UInstancedStaticMeshComponent>(this);
+			I->SetStaticMesh(k < 3 ? BFPlants::Mesh(EBFPlant::Fern, k, PlantMat) : BFPlants::Mesh(EBFPlant::Horsetail, 1, PlantMat));
+			I->SetNumCustomDataFloats(1);
+			I->SetCastShadow(true);
+			I->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			I->SetCanEverAffectNavigation(false);
+			I->SetCullDistances(4000, 4600);
+			I->WorldPositionOffsetDisableDistance = 3000;
+			I->SetupAttachment(GetRootComponent());
+			I->RegisterComponent();
+			Carpet.Add(I);
+		}
+	}
+	// (none while the camera is high: from 120 m up they'd be specks)
+	float G0 = 0.f;
+	const bool bLow = GroundAt(FVector2D(C), G0) && float(C.Z) - G0 < 6000.f;
+	const float R = 4600.f, Step = 120.f;
+	TArray<FTransform> Xf[Kinds];
+	const int32 X0 = FMath::FloorToInt((C.X - R) / Step), X1 = FMath::FloorToInt((C.X + R) / Step);
+	const int32 Y0 = FMath::FloorToInt((C.Y - R) / Step), Y1 = FMath::FloorToInt((C.Y + R) / Step);
+	const FVector2D Off(float(Seed % 101) * 7.3f, float(Seed % 97) * 5.1f);
+	for (int32 gy = Y0; bLow && gy <= Y1; ++gy)
+	{
+		for (int32 gx = X0; gx <= X1; ++gx)
+		{
+			FCellRand Rc{ uint32(Seed) + 7777u, uint32(gx) * 73856093u ^ uint32(gy) * 19349663u };
+			const FVector2D P(gx * Step + Rc.FRandRange(0.f, Step), gy * Step + Rc.FRandRange(0.f, Step));
+			const float D = float(FVector2D::Distance(P, FVector2D(C)));
+			if (D > R)
+			{
+				continue;
+			}
+			const int32 X = FMath::RoundToInt((P.X - Origin.X) / CellCm), Y = FMath::RoundToInt((P.Y - Origin.Y) / CellCm);
+			if (X < 1 || Y < 1 || X >= N - 1 || Y >= N - 1)
+			{
+				continue;
+			}
+			const int32 I = Idx(X, Y);
+			const EBFBiome B = EBFBiome(Biome[I]);
+			float Dens = B == EBFBiome::Plains ? 0.8f : B == EBFBiome::Forest ? 0.4f : B == EBFBiome::Swamp ? 0.55f : B == EBFBiome::Rock ? 0.05f : 0.f;
+			if (Dens <= 0.f || W[I] > H[I] + 0.05f || H[I] < 0.6f)
+			{
+				continue;
+			}
+			// thick in some patches (a few metres to 30 across), thin in others
+			const float Patch = 0.5f + 0.7f * FMath::PerlinNoise2D(P / 1300.f + Off) + 0.25f * FMath::PerlinNoise2D(P / 400.f + Off * 1.7f);
+			Dens *= 0.2f + 0.8f * FMath::SmoothStep(0.2f, 0.65f, Patch);
+			if (Rc.FRand() > Dens)
+			{
+				continue;
+			}
+			const float CellM2 = CellCm / 100.f;
+			const float GX = (H[I + 1] - H[I - 1]) / (2.f * CellM2), GY = (H[I + N] - H[I - N]) / (2.f * CellM2);
+			if (GX * GX + GY * GY > 0.45f)          // (steeper than 34 deg)
+			{
+				continue;
+			}
+			float Z = 0.f;
+			if (!GroundAt(P, Z))
+			{
+				continue;
+			}
+			const int32 K = (B == EBFBiome::Swamp && Rc.FRand() < 0.6f) || (B == EBFBiome::Plains && Rc.FRand() < 0.06f) ? 3 : Rc.RandRange(0, 2);
+			float S = K == 3 ? Rc.FRandRange(0.25f, 0.45f) : Rc.FRandRange(0.32f, 0.7f) * (0.7f + 0.4f * FMath::SmoothStep(0.4f, 0.9f, Patch));
+			S *= 1.f - 0.85f * FMath::SmoothStep(0.75f * R, R, D);
+			Xf[K].Add(FTransform(FRotator(Rc.FRandRange(-8.f, 8.f), Rc.FRandRange(0.f, 360.f), Rc.FRandRange(-8.f, 8.f)), FVector(P.X, P.Y, Z - 4.f), FVector(S)));
+		}
+	}
+	CarpetCount = 0;
+	for (int32 k = 0; k < Kinds && k < Carpet.Num(); ++k)
+	{
+		Carpet[k]->ClearInstances();
+		Carpet[k]->AddInstances(Xf[k], false, true, false);
+		CarpetCount += Xf[k].Num();
 	}
 }

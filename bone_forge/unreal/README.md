@@ -1144,6 +1144,26 @@ smoothly into the water. Now:
 - Caves, ravines and falls looked over again on the new ground (`-bflandform`, `-bftop`, `-bfcavelook`): mouths flush,
   gorge walls now show their ledges.
 
+Natural pass (2026-11-25, Raven: "keep working ... nothing rough ... everything should look as natural as it can be"):
+- Exposure: by day the eye may open up only to EV100 0.5 (`-bfevmin=N` to try others, `-bfoldexposure` as before).
+  Down a gorge it opened 3-4 stops and shaded walls came out near white and blue, like snow. Open views are unchanged;
+  behind a fall it is now dark.
+- Waterfalls (M_BoneForgeFall): noise ropes 0.3-1.5 m across falling at 4-9 m/s, glassy and thin over the lip, white
+  ropes with gaps lower down, thick at the foot, ragged edges. Was an even sine of 11 stripes, like corrugated plastic.
+  The curtain's vertex colour carries its width (R, 10 cm) and how far down it is (G).
+- Ground cover round the camera (`ABFWorld::TickCarpet`, `-bfnocarpet`): fern tufts and horsetail sprigs 25-80 cm,
+  one spot every 1.2 m out to 46 m, thick in patches and thin in others by the ground's kind, rebuilt every 5 m the
+  camera moves, none when it's over 60 m up. Only to look at. Meadows were an even mown lawn from the ground.
+- Meadow ground: an olive cast, darker, patches of dark fern and dry olive 3-30 m across, more bare soil; the shader
+  now takes the plains' paint fully as grass (half of it was shown as raw bright paint).
+- Rock cracks come and go in stretches (they read as contour lines drawn on a map); the dark stains only on steep faces;
+  moss olive and thinner, less of it high up; fern-bed paint a fifth as strong on bare rock (`-bfoldrockferns`).
+- Sea bluff beds broken up: a quarter gone, each its own length, depth, tilt and height (`-bfoldbluffbeds`). They stood
+  along the shore as a kerb of like blocks.
+- Ledges from 22 deg on high ground (over 60 m), from 28 as before lower down. Loose stones on rocky ground counted
+  apart from the cliff-foot boulders, ~400-500 an island in ones and twos (`-bfoldscree`). The old shared cap of 700
+  was used up by cliff feet in the first rows, so the north of an island got them all.
+
 Editor (Raven: "I don't know how to make the wings larger so it can fly or edit the base body"):
 - Under Start from: what the body is (the trunk and its flight muscle come from the animal you start from; picking
   another starts over, Undo brings it back), and a Whole body Size (compose.py's `size`, 10-300%).

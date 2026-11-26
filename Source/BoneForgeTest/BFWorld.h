@@ -14,6 +14,7 @@
 class UProceduralMeshComponent;
 class UMaterialInterface;
 class UHierarchicalInstancedStaticMeshComponent;
+class UInstancedStaticMeshComponent;
 
 /** One plant on the island: where (from the grid's corner, cm), the ground's slope it leans with, its turn and size. */
 struct FBFPlantSpot
@@ -107,6 +108,12 @@ public:
 	int32 SpillLowered = 0;
 	float FoamClock = 0.f;
 	void TickFoam(float DeltaSeconds);
+	/** Low ground cover round the camera (2026-11-25): small fern tufts and sprigs, rebuilt as the camera moves. */
+	UPROPERTY()
+	TArray<TObjectPtr<UInstancedStaticMeshComponent>> Carpet;
+	FVector2D CarpetAt = FVector2D(1e12, 1e12);
+	int32 CarpetCount = 0;
+	void TickCarpet();
 	int32 RunsLowered = 0;
 	/** Ravines (gorges cut down a slope: walk in at the low end, a head wall at the top) and waterfalls (a river
 	 *  dropping 3 m or more at once). */

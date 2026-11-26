@@ -441,7 +441,7 @@ float n5 = G.N3(p * 0.008 + 23.0), n6 = G.N3(p * 0.003 + 37.0);
 float broad = n6 * 0.45 + n5 * 0.35 + n4 * 0.12 + n3 * 0.08;
 // which ground: from the painted colour, the edges ragged with noise
 float edge = n1 * 0.35 + n0 * 0.2;
-float green = saturate((c.g - max(c.r, c.b)) * 12.0 + edge);
+float green = saturate((c.g - max(c.r, c.b)) * 25.0 + edge * 0.6);          // (2026-11-25: at 12 a plain was half "other ground", its paint shown bright as it was)
 float sand = saturate((c.r - c.b) * 6.0 + edge * 0.5) * (1.0 - green);
 float rock = saturate(max((0.84 - up) / 0.2 + edge * 0.6, saturate(1.0 - abs(c.r - c.b) * 8.0) * (1.0 - green) * 0.8));
 float mott = 1.0 + 0.05 * n0 + 0.06 * n1 + 0.06 * n2 + 0.05 * n3;
@@ -454,7 +454,12 @@ g = lerp(g, g * float3(0.74, 0.87, 0.8), 0.4 * smoothstep(0.0, 0.55, -broad));
 g = lerp(g, g * float3(1.15, 1.05, 0.75), 0.3 * smoothstep(0.2, 0.8, n2));
 float gl = dot(g, float3(0.3, 0.59, 0.11));
 g = lerp(float3(gl, gl, gl) * float3(1.04, 1.0, 0.92), g, 0.74);          // (0.82: from the ground a meadow read as a lawn)
-float soil = smoothstep(0.45, 0.85, n0 * 0.55 + n1 * 0.45) * 0.45;
+// (2026-11-25: still a lawn from the ground: darker, and patches of dark fern and dry olive a few metres to 30 across)
+float mid = n2 * 0.6 + n3 * 0.4;
+g = lerp(g, g * float3(0.72, 0.84, 0.7), 0.35 * smoothstep(0.05, 0.5, mid));
+g = lerp(g, g * float3(1.22, 1.04, 0.62), 0.35 * smoothstep(0.05, 0.5, -mid));
+g *= 0.88 * float3(1.04, 0.9, 0.8);          // (an olive cast: the fern floor, not a lawn)
+float soil = smoothstep(0.38, 0.85, n0 * 0.55 + n1 * 0.45) * 0.55;
 // fallen fronds and litter, a browner cast in patches a few metres across
 g = lerp(g, g * float3(1.18, 1.02, 0.72), 0.3 * smoothstep(0.15, 0.7, n2 * 0.6 + n1 * 0.4));
 g = lerp(g, float3(0.075, 0.058, 0.038), soil);
@@ -470,15 +475,19 @@ rk *= lerp(float3(1.1, 1.0, 0.86), float3(0.9, 0.97, 1.06), 0.5 + 0.5 * n3);
 rk *= 0.72 + 0.4 * (0.5 + 0.5 * n2) + 0.1 * n1;
 float cr = smoothstep(0.97, 0.997, 1.0 - abs(G.N3(p * float3(0.55, 0.55, 1.4) + 3.0)));
 float cr2 = smoothstep(0.975, 0.998, 1.0 - abs(G.N3(p * 2.1 + 41.0)));
-rk *= 1.0 - 0.2 * cr - 0.12 * cr2;
+// (2026-11-25: at one width everywhere they read as contour lines drawn on a map: now only in stretches, fading in and out)
+float crm = smoothstep(0.05, 0.45, G.N3(p * 0.22 + 61.0)) * (0.6 + 0.4 * n0);
+rk *= 1.0 - (0.3 * cr + 0.15 * cr2) * crm;
 float st = smoothstep(0.45, 0.95, abs(G.N3(float3(p.x * 1.3, p.y * 1.3, p.z * 0.07) + 7.0))) * saturate((0.9 - up) * 2.0);
-rk *= 1.0 - 0.35 * st;
+rk *= 1.0 - 0.22 * st * saturate((0.8 - up) * 3.0);          // (2026-11-25: on open slopes it read as soot: only on the steep faces, and lighter)
 float strata = smoothstep(0.6, 0.95, G.N3(float3(p.x * 0.05, p.y * 0.05, p.z * 0.7) + 19.0));
 rk *= 1.0 - 0.15 * strata;
 float li = smoothstep(0.5, 0.85, n1 * 0.5 + n0 * 0.5) * saturate(up * 1.5 - 0.2);
 rk = lerp(rk, rk * float3(1.25, 1.2, 0.85) + float3(0.02, 0.02, 0.0), 0.45 * li);
 float moss = smoothstep(0.6, 0.85, up) * smoothstep(-0.05, 0.45, n3 * 0.6 + n2 * 0.4);
-rk = lerp(rk, float3(0.05, 0.07, 0.03) * (1.0 + 0.3 * n0), 0.55 * moss);
+// (2026-11-25: dark near-black moss on the open tops read as soot from above: olive, thinner, and less of it high up)
+moss *= 1.0 - 0.7 * smoothstep(60.0, 130.0, p.z);
+rk = lerp(rk, float3(0.07, 0.085, 0.04) * (1.0 + 0.3 * n0), 0.42 * moss);
 o3 = lerp(o3, g, green);
 o3 = lerp(o3, s3, sand);
 o3 = lerp(o3, rk, rock);
@@ -604,17 +613,37 @@ return A * facing * facing;
 # 2 m a unit), in ropes of different speeds, thinning to see-through between them; lit a little from within so it reads
 # in the shade of a ravine.
 FALL_HLSL = r"""
-// (2026-11-15: bands across it read as a blind. Water falls in ropes: many thin columns, each with its own speed and
-// its own breaks, staggered so nothing lines up across.)
-float x = UV.x * 11.0;
-float col = floor(x);
-float h1 = frac(sin(col * 12.9898) * 43758.5453), h2 = frac(sin(col * 78.233) * 12543.21);
-float rope = 0.5 + 0.5 * sin(x * 6.2831 + 2.0 * sin(x * 1.3));
-float y = UV.y * (1.6 + h1) - T * (1.4 + 1.2 * h2);
-float breaks = smoothstep(0.15, 0.85, 0.5 + 0.5 * sin(y * 6.2831 + h1 * 6.2831 + 3.0 * sin(x * 2.9)));
-float a = saturate(0.42 + 0.38 * rope * (0.55 + 0.45 * breaks) + 0.12 * h2);
-float edge = smoothstep(0.0, 0.12, UV.x / max(W, 0.01)) * smoothstep(0.0, 0.12, 1.0 - UV.x / max(W, 0.01));
-return a * lerp(0.35, 1.0, edge);
+// (2026-11-15: bands across it read as a blind. Water falls in ropes.)
+// (2026-11-25, Raven: "as natural as it can be": the ropes were a regular sine, 11 even stripes like corrugated plastic,
+// with straight edges and see-through nowhere. Now noise ropes 0.3-1.5 m across falling at 4-9 m/s, glassy and whole at
+// the lip, breaking into white ropes with gaps lower down, thick white at the foot; its edges ragged and shifting.
+// VC.r is its width in 10 cm, VC.g how far down it is.)
+struct FN
+{
+    float H(float2 p) { return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453); }
+    float N(float2 p)
+    {
+        float2 i = floor(p), f = frac(p);
+        f = f * f * (3.0 - 2.0 * f);
+        return lerp(lerp(H(i), H(i + float2(1, 0)), f.x), lerp(H(i + float2(0, 1)), H(i + float2(1, 1)), f.x), f.y);
+    }
+};
+FN F;
+float wm = max(VC.r * 25.5, 2.0);
+float down = VC.g;
+float xm = UV.x * wm, ym = UV.y * 2.0;
+float r1 = F.N(float2(xm * 1.4, ym * 0.12 - T * 1.1));
+float r2 = F.N(float2(xm * 3.3 + 11.0, ym * 0.3 - T * 2.3));
+float r3 = F.N(float2(xm * 8.0 + 5.0, ym * 0.9 - T * 3.6));
+float foam = r1 * 0.5 + r2 * 0.32 + r3 * 0.18;
+float glassy = 0.3 + 0.3 * r1 + 0.12 * r3;          // (at 0.5 and white, the level run over the lip read from above as a white card)
+float ropes = smoothstep(0.28, 0.7, foam);
+float a = lerp(glassy, ropes, smoothstep(0.04, 0.4, down));
+a = lerp(a, saturate(0.55 + 0.6 * foam), smoothstep(0.75, 1.0, down));
+float e = min(UV.x, 1.0 - UV.x) * wm;
+float rag = 0.25 + 0.9 * F.N(float2(ym * 0.45 - T * 1.7, UV.x > 0.5 ? 3.0 : 17.0));
+a *= smoothstep(0.0, rag, e);
+return saturate(a);
 """
 
 
@@ -627,11 +656,12 @@ def build_fall():
     t = mel.create_material_expression(m, unreal.MaterialExpressionTime, -900, 120)
     w = mel.create_material_expression(m, unreal.MaterialExpressionConstant, -900, 240)
     w.set_editor_property("r", 1.0)
-    op = custom(m, FALL_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT1, ["UV", "T", "W"], -500, 100, "Streaming")
+    vc = mel.create_material_expression(m, unreal.MaterialExpressionVertexColor, -900, 360)
+    op = custom(m, FALL_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT1, ["UV", "T", "VC"], -500, 100, "Streaming")
     connect(uv, "", op, "UV")
     connect(t, "", op, "T")
-    connect(w, "", op, "W")
-    col = custom(m, "return lerp(float3(0.42, 0.56, 0.6), float3(0.92, 0.95, 0.97), A);", unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["A"], -250, -100, "White water")
+    connect(vc, "", op, "VC")
+    col = custom(m, "return lerp(float3(0.2, 0.3, 0.3), float3(0.9, 0.93, 0.94), smoothstep(0.35, 0.9, A));", unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["A"], -250, -100, "White water")
     connect(op, "", col, "A")
     em = custom(m, "return C * 0.25;", unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["C"], -100, 200, "Glow")
     connect(col, "", em, "C")

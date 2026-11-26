@@ -637,6 +637,17 @@ void ABFGameMode::SetSkyAt(float Hours)
 		NightPost->Settings.bOverride_AutoExposureBias = true;
 	}
 	NightPost->Settings.AutoExposureBias = -2.5f * (1.f - Day);
+	// (2026-11-25, Raven: "nothing rough ... as natural as it can be". Down a gorge or behind a fall the eye opened up
+	// three or four stops, so walls in shade came out near white and blue, like snow or plaster. By day it may open up
+	// only so far below the open island's light: shade stays shade. -bfoldexposure: as before; -bfevmin=N to try others.)
+	static const float DayEvMin = []()
+	{
+		float V = 0.5f;
+		FParse::Value(FCommandLine::Get(), TEXT("bfevmin="), V);
+		return FParse::Param(FCommandLine::Get(), TEXT("bfoldexposure")) ? -10.f : V;
+	}();
+	NightPost->Settings.bOverride_AutoExposureMinBrightness = true;
+	NightPost->Settings.AutoExposureMinBrightness = FMath::Lerp(-10.f, DayEvMin, Day);
 	// Mist (Raven's list, 34): it lies low over the island from before dawn and burns off by mid-morning; a thinner haze
 	// at dusk. Low and thick (it hugs the ground and the water), the light through it warm at sunrise.
 	if (Fog && !bUnderwaterView)
