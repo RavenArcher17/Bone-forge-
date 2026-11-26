@@ -3333,9 +3333,15 @@ void ABFWorld::BuildCaveMesh(FBFCave& C)
 				float OnSurface = 0.f;
 				GroundAt(FVector2D(P), OnSurface);
 				const bool bHillSurface = FMath::Abs(OnSurface - float(P.Z)) < 150.f;
+				// (2026-11-25, Raven: "nothing rough": from above, round each cave its mesh's box showed as a paler rectangle
+				// with straight sides: its hill surface was rockier than the ground round it and shaded by its own finer
+				// normals. Away from the mouth (over 14 m) the hill's surface is the ground's own: its colour and its
+				// normals; the rock shows only round the mouth. -bfoldcavebox: as before)
+				static const bool bOldCaveBox = FParse::Param(FCommandLine::Get(), TEXT("bfoldcavebox"));
+				const float NearMouth = bOldCaveBox ? 1.f : 1.f - FMath::SmoothStep(700.f, 1400.f, float(FVector::Dist(P, C.MouthOut)));
 				if (bHillSurface)
 				{
-					Nm = FMath::Lerp(TileN.GetSafeNormal(), Nm, Blend).GetSafeNormal();
+					Nm = FMath::Lerp(TileN.GetSafeNormal(), Nm, Blend * NearMouth).GetSafeNormal();
 				}
 				Normals.Add(Nm);
 				// In the cave (near its path, under the hill's surface) dark; outside, the ground's colour where it faces up.
@@ -3346,7 +3352,7 @@ void ABFWorld::BuildCaveMesh(FBFCave& C)
 				const FLinearColor Rock(FColor(114, 113, 110)), Deep(FColor(52, 47, 42)), Dark(FColor(14, 12, 11));          // (2026-11-17: the rock's cooler grey; was 118,110,100)
 				const float Under = FMath::Clamp((Ground - float(P.Z) - 100.f) / 300.f, 0.f, 1.f);         // 1: well under the hill's top
 				const float Up = FMath::Clamp((float(Nm.Z) - 0.55f) / 0.3f, 0.f, 1.f);
-				FLinearColor Cl = FMath::Lerp(Rock, Outside, bHillSurface ? FMath::Lerp(1.f, Up, Blend) : Up * (1.f - Under));
+				FLinearColor Cl = FMath::Lerp(Rock, Outside, bHillSurface ? FMath::Lerp(1.f, Up, Blend * NearMouth) : Up * (1.f - Under));
 				Cl = FMath::Lerp(Cl, Deep, Under);
 				// Deeper in from the mouth, darker: the daylight doesn't reach the back (the sky light isn't shadowed in caves).
 				if (Under > 0.f)

@@ -668,6 +668,8 @@ a *= smoothstep(0.0, rag, e);
 // as pale shards, island 13's 64 m fall; the spray hides the join)
 float toFoot = (1.0 - down) * max(VC.b * 510.0, 1.0);
 a *= smoothstep(0.0, 1.2, toFoot);
+// (and its first 1.5 m faded in from the river's surface: from above it began as a straight white edge across the river)
+a *= smoothstep(0.0, 1.5, ym);
 return saturate(a);
 """
 

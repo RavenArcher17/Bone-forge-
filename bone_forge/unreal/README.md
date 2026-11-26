@@ -1176,7 +1176,10 @@ Natural pass (2026-11-25, Raven: "keep working ... nothing rough ... everything 
   by the water. Ripple rings come with 10 added to their alpha and are drawn as before.
 - ABFEffects sets its materials in BeginPlay, not its constructor, so M_BoneForgeMark and M_BoneForgeSpray can be
   remade in place (BF_FX_ONLY=1 BF_FX_REBUILD=1) without the rooted-object assertion.
-- A curtain fades out over its last 1.2 m into the pool (vertex colour B: its drop in 2 m). Still rough: behind island
+- A curtain fades out over its last 1.2 m into the pool (vertex colour B: its drop in 2 m), and in over its first 1.5 m
+  from the river (from above it began as a straight white edge across the river).
+- Caves from above: the cave mesh's hill surface takes the ground's own colour and normals over 14 m from the mouth
+  (`-bfoldcavebox`); its box showed round every cave as a paler rectangle with straight sides. Still rough: behind island
   13's 64 m fall, seen from its hollow, pale flat pieces of the curtain lie on the pool beside it (gone with
   -bfnocurtain, not its foot rows; not yet found).
 
