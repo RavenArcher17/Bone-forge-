@@ -1184,8 +1184,10 @@ Natural pass (2026-11-25, Raven: "keep working ... nothing rough ... everything 
   from the river (from above it began as a straight white edge across the river).
 - Caves from above: the cave mesh's hill surface takes the ground's own colour and normals over 14 m from the mouth
   (`-bfoldcavebox`); its box showed round every cave as a paler rectangle with straight sides. Still rough: behind island
-  13's 64 m fall, seen from its hollow, pale flat pieces of the curtain lie on the pool beside it (gone with
-  -bfnocurtain, not its foot rows; not yet found).
+  13's 64 m fall, seen from its hollow, pale tilted shards lie on the pool beside it. They are something refracting
+  the white spray (with `-bfnofallspray`, the curtain but no spray, they are near invisible); not the curtain's rows
+  (logged: it falls clean to the pool), not the pool's tilted water squares within 25 m or the rapids squares in it
+  (both tried flat or gone, no change). Not yet found.
 
 Editor (Raven: "I don't know how to make the wings larger so it can fly or edit the base body"):
 - Under Start from: what the body is (the trunk and its flight muscle come from the animal you start from; picking

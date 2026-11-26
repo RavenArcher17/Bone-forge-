@@ -6021,7 +6021,7 @@ void ABFWorld::TickFoam(float DeltaSeconds)
 	// At a waterfall's foot within 200 m: spray and mist thrown up, more the bigger it is.
 	for (const FBFFall& Fa : Falls)
 	{
-		static const bool bNoCurtain = FParse::Param(FCommandLine::Get(), TEXT("bfnocurtain"));          // (a test: the rock behind it seen bare)
+		static const bool bNoCurtain = FParse::Param(FCommandLine::Get(), TEXT("bfnocurtain")) || FParse::Param(FCommandLine::Get(), TEXT("bfnofallspray"));          // (a test: the rock behind it seen bare; -bfnofallspray: the curtain without its spray)
 		if (!bNoCurtain && FVector::Dist(Fa.Bottom, C) < 20000.f && FMath::FRand() < FMath::Min(0.25f * Fa.DropM, 1.f))
 		{
 			for (int32 k = 0; k < FMath::Clamp(int32(Fa.DropM / 4.f), 1, 4); ++k)
