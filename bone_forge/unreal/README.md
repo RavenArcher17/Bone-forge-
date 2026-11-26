@@ -1163,6 +1163,10 @@ Natural pass (2026-11-25, Raven: "keep working ... nothing rough ... everything 
 - Ledges from 22 deg on high ground (over 60 m), from 28 as before lower down. Loose stones on rocky ground counted
   apart from the cliff-foot boulders, ~400-500 an island in ones and twos (`-bfoldscree`). The old shared cap of 700
   was used up by cliff feet in the first rows, so the north of an island got them all.
+- Spray, mist and dust (M_BoneForgeSpray, a new asset: remaking M_BoneForgePuff in place trips the rooted-object
+  assertion, as ABFEffects' class default holds its nodes): the edge broken by drifting noise, so a puff is a wisp,
+  and a depth fade (70 cm) where it meets water or rock. Spray at a fall's foot read as soft white balls cut off flat
+  by the water. Ripple rings come with 10 added to their alpha and are drawn as before.
 
 Editor (Raven: "I don't know how to make the wings larger so it can fly or edit the base body"):
 - Under Start from: what the body is (the trunk and its flight muscle come from the animal you start from; picking

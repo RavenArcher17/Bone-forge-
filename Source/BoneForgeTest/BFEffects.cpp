@@ -50,8 +50,8 @@ ABFEffects::ABFEffects()
 		return I;
 	};
 	PrintISM = Make(TEXT("Prints"), TEXT("/Engine/BasicShapes/Cylinder.Cylinder"), TEXT("/Game/BoneForge/Materials/M_BoneForgeMark.M_BoneForgeMark"));
-	PuffISM = Make(TEXT("Puffs"), TEXT("/Engine/BasicShapes/Sphere.Sphere"), TEXT("/Game/BoneForge/Materials/M_BoneForgePuff.M_BoneForgePuff"));
-	RingISM = Make(TEXT("Rings"), TEXT("/Engine/BasicShapes/Sphere.Sphere"), TEXT("/Game/BoneForge/Materials/M_BoneForgePuff.M_BoneForgePuff"));
+	PuffISM = Make(TEXT("Puffs"), TEXT("/Engine/BasicShapes/Sphere.Sphere"), TEXT("/Game/BoneForge/Materials/M_BoneForgeSpray.M_BoneForgeSpray"));
+	RingISM = Make(TEXT("Rings"), TEXT("/Engine/BasicShapes/Sphere.Sphere"), TEXT("/Game/BoneForge/Materials/M_BoneForgeSpray.M_BoneForgeSpray"));
 }
 
 ABFEffects* ABFEffects::Get(UWorld* World)
@@ -341,7 +341,7 @@ void ABFEffects::Tick(float DeltaSeconds)
 		Data[0] = P.Col.R;
 		Data[1] = P.Col.G;
 		Data[2] = P.Col.B;
-		Data[3] = A;
+		Data[3] = P.bRing ? A + 10.f : A;          // (2026-11-25: M_BoneForgeSpray draws a ring as it was, unfaded, by this)
 		To->SetCustomData(Idx, Data, false);
 	}
 	PuffISM->MarkRenderStateDirty();

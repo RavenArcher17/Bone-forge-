@@ -604,8 +604,29 @@ def build_water():
 # Both are drawn as instanced engine shapes, each instance's colour (and the puff's opacity) in its custom data:
 # 0..2 the colour, 3 the roughness (marks) or opacity (puffs).
 PUFF_HLSL = r"""
+// (2026-11-25, Raven: "as natural as it can be": spray at a fall's foot read as soft white balls, their round edges
+// clean and cut off flat where they met the water. Now the edge is broken by drifting noise, so a puff is a wisp, and
+// it fades out where it meets the water or the rock (depth fade, after this).)
+// (a ripple ring, flat on the water, comes with 10 added to its alpha: as it was, no noise and no fade)
+if (A >= 9.5)
+{
+    return A - 10.0;
+}
 float facing = saturate(dot(normalize(N), normalize(V)));
-return A * facing * facing;
+float3 q = P / 35.0 + float3(0.0, 0.0, -T * 0.6);
+float3 i = floor(q), f = frac(q);
+f = f * f * (3.0 - 2.0 * f);
+float h000 = frac(sin(dot(i, float3(127.1, 311.7, 74.7))) * 43758.5453);
+float h100 = frac(sin(dot(i + float3(1, 0, 0), float3(127.1, 311.7, 74.7))) * 43758.5453);
+float h010 = frac(sin(dot(i + float3(0, 1, 0), float3(127.1, 311.7, 74.7))) * 43758.5453);
+float h110 = frac(sin(dot(i + float3(1, 1, 0), float3(127.1, 311.7, 74.7))) * 43758.5453);
+float h001 = frac(sin(dot(i + float3(0, 0, 1), float3(127.1, 311.7, 74.7))) * 43758.5453);
+float h101 = frac(sin(dot(i + float3(1, 0, 1), float3(127.1, 311.7, 74.7))) * 43758.5453);
+float h011 = frac(sin(dot(i + float3(0, 1, 1), float3(127.1, 311.7, 74.7))) * 43758.5453);
+float h111 = frac(sin(dot(i + float3(1, 1, 1), float3(127.1, 311.7, 74.7))) * 43758.5453);
+float n = lerp(lerp(lerp(h000, h100, f.x), lerp(h010, h110, f.x), f.y), lerp(lerp(h001, h101, f.x), lerp(h011, h111, f.x), f.y), f.z);
+float soft = smoothstep(0.0, 1.0, facing) * smoothstep(0.15, 0.75, facing + 0.55 * (n - 0.5));
+return A * soft;
 """
 
 
@@ -676,14 +697,26 @@ def build_fall():
 def build_fx():
     # (ABFEffects loads these two in its constructor, so its class default holds them: once they exist, remaking them
     # in the editor trips an assertion (a rooted object). Remade only when asked: BF_FX_REBUILD=1, or missing.)
-    if not os.environ.get("BF_FX_REBUILD") and all(eal.does_asset_exist(f"{MATS}/{n}") for n in ("M_BoneForgeMark", "M_BoneForgePuff")):
-        log("marks and puffs: kept as they are")
+    # (2026-11-25: the puffs' material is M_BoneForgeSpray now, a new asset: remade in place, M_BoneForgePuff's rooted
+    # nodes tripped the assertion. Each is made when missing, both when BF_FX_REBUILD=1.)
+    force = bool(os.environ.get("BF_FX_REBUILD"))
+    want_mark = force or not eal.does_asset_exist(f"{MATS}/M_BoneForgeMark")
+    want_spray = force or not eal.does_asset_exist(f"{MATS}/M_BoneForgeSpray")
+    if not want_mark and not want_spray:
+        log("marks and spray: kept as they are")
         return
     def cd(mat, i, x, y):
         n = mel.create_material_expression(mat, unreal.MaterialExpressionPerInstanceCustomData, x, y)
         n.set_editor_property("data_index", i)
         return n
 
+    if want_mark:
+        build_mark(cd)
+    if want_spray:
+        build_spray(cd)
+
+
+def build_mark(cd):
     mark = fresh_material("M_BoneForgeMark")
     mark.set_editor_property("used_with_instanced_static_meshes", True)
     rgb = custom(mark, "return float3(R, G, B);", unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["R", "G", "B"], -300, 0, "Colour")
@@ -694,19 +727,30 @@ def build_fx():
     mel.recompile_material(mark)
     eal.save_asset(mark.get_path_name())
 
-    puff = fresh_material("M_BoneForgePuff")
+
+def build_spray(cd):
+    puff = fresh_material("M_BoneForgeSpray")
     puff.set_editor_property("used_with_instanced_static_meshes", True)
     puff.set_editor_property("blend_mode", unreal.BlendMode.BLEND_TRANSLUCENT)
     puff.set_editor_property("translucency_lighting_mode", unreal.TranslucencyLightingMode.TLM_VOLUMETRIC_NON_DIRECTIONAL)
     rgb2 = custom(puff, "return float3(R, G, B);", unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["R", "G", "B"], -300, 0, "Colour")
     for i, k in enumerate("RGB"):
         connect(cd(puff, i, -600, -100 + 120 * i), "", rgb2, k)
-    op = custom(puff, PUFF_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT1, ["N", "V", "A"], -300, 300, "Soft edge")
+    op = custom(puff, PUFF_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT1, ["N", "V", "A", "P", "T"], -300, 300, "Soft edge")
     connect(mel.create_material_expression(puff, unreal.MaterialExpressionVertexNormalWS, -600, 300), "", op, "N")
     connect(mel.create_material_expression(puff, unreal.MaterialExpressionCameraVectorWS, -600, 420), "", op, "V")
     connect(cd(puff, 3, -600, 540), "", op, "A")
+    connect(mel.create_material_expression(puff, unreal.MaterialExpressionWorldPosition, -600, 660), "", op, "P")
+    connect(mel.create_material_expression(puff, unreal.MaterialExpressionTime, -600, 780), "", op, "T")
+    fade = mel.create_material_expression(puff, unreal.MaterialExpressionDepthFade, -100, 300)
+    fade.set_editor_property("fade_distance_default", 70.0)
+    connect(op, "", fade, "Opacity")
+    pick = custom(puff, "return A >= 9.5 ? R : F;", unreal.CustomMaterialOutputType.CMOT_FLOAT1, ["F", "R", "A"], 100, 300, "Rings unfaded")
+    connect(fade, "", pick, "F")
+    connect(op, "", pick, "R")
+    connect(cd(puff, 3, -100, 500), "", pick, "A")
     mel.connect_material_property(rgb2, "", unreal.MaterialProperty.MP_BASE_COLOR)
-    mel.connect_material_property(op, "", unreal.MaterialProperty.MP_OPACITY)
+    mel.connect_material_property(pick, "", unreal.MaterialProperty.MP_OPACITY)
     mel.recompile_material(puff)
     eal.save_asset(puff.get_path_name())
 
