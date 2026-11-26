@@ -1167,6 +1167,11 @@ Natural pass (2026-11-25, Raven: "keep working ... nothing rough ... everything 
   assertion, as ABFEffects' class default holds its nodes): the edge broken by drifting noise, so a puff is a wisp,
   and a depth fade (70 cm) where it meets water or rock. Spray at a fall's foot read as soft white balls cut off flat
   by the water. Ripple rings come with 10 added to their alpha and are drawn as before.
+- ABFEffects sets its materials in BeginPlay, not its constructor, so M_BoneForgeMark and M_BoneForgeSpray can be
+  remade in place (BF_FX_ONLY=1 BF_FX_REBUILD=1) without the rooted-object assertion.
+- A curtain fades out over its last 1.2 m into the pool (vertex colour B: its drop in 2 m). Still rough: behind island
+  13's 64 m fall, seen from its hollow, pale flat pieces of the curtain lie on the pool beside it (gone with
+  -bfnocurtain, not its foot rows; not yet found).
 
 Editor (Raven: "I don't know how to make the wings larger so it can fly or edit the base body"):
 - Under Start from: what the body is (the trunk and its flight muscle come from the animal you start from; picking

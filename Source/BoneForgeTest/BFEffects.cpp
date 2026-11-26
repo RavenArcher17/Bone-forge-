@@ -43,15 +43,33 @@ ABFEffects::ABFEffects()
 		{
 			I->SetStaticMesh(M);
 		}
-		if (UMaterialInterface* M = LoadObject<UMaterialInterface>(nullptr, Mat, nullptr, LOAD_NoWarn | LOAD_Quiet))
-		{
-			I->SetMaterial(0, M);
-		}
+		// (2026-11-25: the material is set in BeginPlay, not here: held by the class default, a material can't be remade in
+		// the editor (the rooted-object assertion))
 		return I;
 	};
 	PrintISM = Make(TEXT("Prints"), TEXT("/Engine/BasicShapes/Cylinder.Cylinder"), TEXT("/Game/BoneForge/Materials/M_BoneForgeMark.M_BoneForgeMark"));
 	PuffISM = Make(TEXT("Puffs"), TEXT("/Engine/BasicShapes/Sphere.Sphere"), TEXT("/Game/BoneForge/Materials/M_BoneForgeSpray.M_BoneForgeSpray"));
 	RingISM = Make(TEXT("Rings"), TEXT("/Engine/BasicShapes/Sphere.Sphere"), TEXT("/Game/BoneForge/Materials/M_BoneForgeSpray.M_BoneForgeSpray"));
+}
+
+void ABFEffects::BeginPlay()
+{
+	Super::BeginPlay();
+	const TPair<UInstancedStaticMeshComponent*, const TCHAR*> Mats[] = {
+		{ PrintISM, TEXT("/Game/BoneForge/Materials/M_BoneForgeMark.M_BoneForgeMark") },
+		{ PuffISM, TEXT("/Game/BoneForge/Materials/M_BoneForgeSpray.M_BoneForgeSpray") },
+		{ RingISM, TEXT("/Game/BoneForge/Materials/M_BoneForgeSpray.M_BoneForgeSpray") },
+	};
+	for (const auto& Pm : Mats)
+	{
+		if (Pm.Key)
+		{
+			if (UMaterialInterface* M = LoadObject<UMaterialInterface>(nullptr, Pm.Value, nullptr, LOAD_NoWarn | LOAD_Quiet))
+			{
+				Pm.Key->SetMaterial(0, M);
+			}
+		}
+	}
 }
 
 ABFEffects* ABFEffects::Get(UWorld* World)

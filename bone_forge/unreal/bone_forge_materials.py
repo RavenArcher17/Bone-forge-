@@ -613,7 +613,7 @@ if (A >= 9.5)
     return A - 10.0;
 }
 float facing = saturate(dot(normalize(N), normalize(V)));
-float3 q = P / 35.0 + float3(0.0, 0.0, -T * 0.6);
+float3 q = P / 24.0 + float3(0.0, 0.0, -T * 0.6);
 float3 i = floor(q), f = frac(q);
 f = f * f * (3.0 - 2.0 * f);
 float h000 = frac(sin(dot(i, float3(127.1, 311.7, 74.7))) * 43758.5453);
@@ -625,7 +625,7 @@ float h101 = frac(sin(dot(i + float3(1, 0, 1), float3(127.1, 311.7, 74.7))) * 43
 float h011 = frac(sin(dot(i + float3(0, 1, 1), float3(127.1, 311.7, 74.7))) * 43758.5453);
 float h111 = frac(sin(dot(i + float3(1, 1, 1), float3(127.1, 311.7, 74.7))) * 43758.5453);
 float n = lerp(lerp(lerp(h000, h100, f.x), lerp(h010, h110, f.x), f.y), lerp(lerp(h001, h101, f.x), lerp(h011, h111, f.x), f.y), f.z);
-float soft = smoothstep(0.0, 1.0, facing) * smoothstep(0.15, 0.75, facing + 0.55 * (n - 0.5));
+float soft = smoothstep(0.0, 1.0, facing) * smoothstep(0.3, 0.95, facing + 0.9 * (n - 0.5));          // (0.55 of noise left a dome's top clear)
 return A * soft;
 """
 
@@ -664,6 +664,10 @@ a = lerp(a, saturate(0.55 + 0.6 * foam), smoothstep(0.75, 1.0, down));
 float e = min(UV.x, 1.0 - UV.x) * wm;
 float rag = 0.25 + 0.9 * F.N(float2(ym * 0.45 - T * 1.7, UV.x > 0.5 ? 3.0 : 17.0));
 a *= smoothstep(0.0, rag, e);
+// (its last metre faded out into the pool: there its lowest rows lay near flat over the water and showed from behind
+// as pale shards, island 13's 64 m fall; the spray hides the join)
+float toFoot = (1.0 - down) * max(VC.b * 510.0, 1.0);
+a *= smoothstep(0.0, 1.2, toFoot);
 return saturate(a);
 """
 

@@ -19,6 +19,7 @@ class BONEFORGETEST_API ABFEffects : public AActor
 public:
 	ABFEffects();
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void BeginPlay() override;
 
 	/** The world's (spawned the first time it's asked for). */
 	static ABFEffects* Get(UWorld* World);

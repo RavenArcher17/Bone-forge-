@@ -4609,7 +4609,7 @@ void ABFWorld::BuildFalls()
 		TArray<FVector> V, Nm;
 		TArray<FVector2D> UV;
 		TArray<int32> T;
-		TArray<FColor> VC;          // (2026-11-25: for M_BoneForgeFall: R its width in 10 cm, G how far down it is, 0-255)
+		TArray<FColor> VC;          // (2026-11-25: for M_BoneForgeFall: R its width in 10 cm, G how far down it is, 0-255, B its drop in 2 m)
 		// (2026-11-16: the river's own width and a little, so it leaves the lip's notch: at 1.6 times, it went in under the banks)
 		const float Width = FMath::Max(Fa.WidthCm + 150.f, 450.f);
 		const float Speed = FMath::Clamp(150.f + 25.f * Fa.DropM, 200.f, 320.f);          // cm/s off the lip
@@ -4714,7 +4714,7 @@ void ABFWorld::BuildFalls()
 				V.Add(P);
 				Nm.Add((-Fa.Dir + FVector(0.f, 0.f, 0.3f)).GetSafeNormal());
 				UV.Add(FVector2D(u + 0.5f, Len / 200.f));
-				VC.Add(FColor(uint8(FMath::Clamp(FMath::RoundToInt(Width / 10.f), 1, 255)), uint8(FMath::Clamp(FMath::RoundToInt(255.f * Down / FMath::Max(DropCm2, 1.f)), 0, 255)), 0, 255));
+				VC.Add(FColor(uint8(FMath::Clamp(FMath::RoundToInt(Width / 10.f), 1, 255)), uint8(FMath::Clamp(FMath::RoundToInt(255.f * Down / FMath::Max(DropCm2, 1.f)), 0, 255)), uint8(FMath::Clamp(FMath::RoundToInt(DropCm2 / 200.f), 1, 255)), 255));
 			}
 		}
 		for (int32 r = 0; r < Rows; ++r)
