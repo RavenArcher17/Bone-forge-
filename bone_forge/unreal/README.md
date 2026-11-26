@@ -1131,7 +1131,9 @@ smoothly into the water. Now:
   Counts: 13 2/2 dens, 2 deep, 1 cavern; 906 1/1, 1 cavern; 22436 2/2, 1 deep, 1 cavern; 20261112 4/4, 1 cavern.
 - Grass colour varies in patches 100-330 m across as well as 11-28 m (softer), a little less saturated, with browner
   litter in patches a few metres across. From 4-5 km up the island still shows a forest/meadow lacework: that is the
-  biome map on the ground, the trees being drawn only to 4 km.
+  biome map on the ground, the trees being drawn only to 4 km. (2026-11-25: the even leopard print over the plains was
+  the fern beds, clumped by one 45 m noise and painted green under: now a 140 m swell and a 17 m one are mixed in, so
+  the beds come in all sizes; `-bfoldfernbeds` as before.)
 - Plunge pools: a fall whose foot a later water pass left dry gets its pool back at the pool's own level, an oval out
   along the stream over ground within 2 m of it (`-bfnopoolfix`; island 22436's 10 m fall poured onto dry ground). The
   hollow's water rule also keeps water at the fall's own pool level (`-bfoldpoolkeep`). The islet change runs before the

@@ -5303,7 +5303,13 @@ void ABFWorld::PlacePlants(const TArray<int32>& ToWater, const TArray<uint8>& Ki
 					}
 					const bool bSmall = P == EBFPlant::Fern || P == EBFPlant::Horsetail || P == EBFPlant::Shrub || P == EBFPlant::Bennettite;
 					const float Patch = bSmall ? 45.f : 110.f;
-					const float Nz = FMath::PerlinNoise2D(FVector2D(X * CellM / Patch, Y * CellM / Patch) + Off[k]);
+					// (2026-11-25: one noise 45 m across made the fern beds, and the green painted under them, an even leopard
+					// print over every plain from the air. Beds of all sizes now: a broad swell 3x as big and a fine one a third
+					// the size mixed in. -bfoldfernbeds: as before)
+					static const bool bOldFernBeds = FParse::Param(FCommandLine::Get(), TEXT("bfoldfernbeds"));
+					const FVector2D Qn(X * CellM / Patch, Y * CellM / Patch);
+					const float Nz = (bOldFernBeds || !bSmall) ? FMath::PerlinNoise2D(Qn + Off[k])
+						: 0.55f * FMath::PerlinNoise2D(Qn + Off[k]) + 0.55f * FMath::PerlinNoise2D(Qn / 3.1f + Off[k] * 1.7f) + 0.25f * FMath::PerlinNoise2D(Qn * 2.7f + Off[k] * 0.6f);
 					const float Clump = bSmall ? 2.2f * FMath::SmoothStep(-0.3f, 0.35f, Nz) : 0.35f + 1.3f * FMath::SmoothStep(-0.4f, 0.4f, Nz);
 					const float Expect = Dens * CellHa * Clump;
 					if (P == EBFPlant::Fern || P == EBFPlant::Horsetail)
