@@ -1,4 +1,5 @@
 #include "BFWorld.h"
+#include <atomic>
 #include "BFEffects.h"
 
 #include "Async/Async.h"
@@ -2330,6 +2331,7 @@ void ABFWorld::MakeLand()
 	Raw.SetNumUninitialized(N * N);
 	int32 Count[8] = {};
 	float Steepest = 0.f;
+	std::atomic<int32> AlpineN{ 0 }, RockN{ 0 }, MidN{ 0 };
 	ParallelFor(N, [&](int32 Y)
 	{
 		for (int32 X = 0; X < N; ++X)
@@ -2408,9 +2410,31 @@ void ABFWorld::MakeLand()
 				const float Mix = ToWater[C] <= 1 ? 0.75f : 0.35f;
 				Base = FColor(uint8(FMath::Lerp(float(Base.R), float(Wet.R), Mix)), uint8(FMath::Lerp(float(Base.G), float(Wet.G), Mix)), uint8(FMath::Lerp(float(Base.B), float(Wet.B), Mix)));
 			}
+			// (2026-11-26, Raven: "still rough": every slope over 30 deg was bare grey, so hills, knolls and the lower
+			// mountains were smooth grey domes, like heaps of ash. A wet island's 30-42 deg slopes keep grass and scrub in
+			// patches, thinning as it steepens and as it climbs; bare rock in between and wherever it's steeper. The
+			// paint only (still the Rock biome): the ground's material shows the faces of ledges as rock whatever the paint,
+			// so the grass lies on their tops. -bfoldalpine: as before.)
+			static const bool bOldAlpine = FParse::Param(FCommandLine::Get(), TEXT("bfoldalpine"));
+			if (!bOldAlpine && B == EBFBiome::Rock && Kind[C] == 0 && ToWater[C] > 2 && !Gorge[C])
+			{
+				const float Patch = Fbm(2, MX / 70.f + 311.f, MY / 70.f - 97.f, 3) + 0.5f * Fbm(3, MX / 22.f + 53.f, MY / 22.f + 171.f, 2);
+				const float Cover = (1.f - FMath::SmoothStep(31.f, 44.f, SlopeDeg)) * (1.f - FMath::SmoothStep(110.f, 190.f, H[C]))
+					* FMath::SmoothStep(-0.35f, 0.2f, Patch - 0.03f * FMath::Max(SlopeDeg - 30.f, 0.f));
+				if (Cover > 0.3f) { AlpineN.fetch_add(1); }
+				if (B == EBFBiome::Rock) { RockN.fetch_add(1); if (SlopeDeg < 44.f && H[C] < 190.f) { MidN.fetch_add(1); } }
+				if (Cover > 0.f)
+				{
+					const float Dry = FMath::SmoothStep(-0.3f, 0.3f, Fbm(4, MX / 150.f - 233.f, MY / 150.f + 59.f, 2));
+					const FColor Scrub(uint8(74.f + 18.f * Dry), uint8(90.f + 4.f * Dry), uint8(44.f + 10.f * Dry));
+					const float Mx = 0.85f * Cover;
+					Base = FColor(uint8(FMath::Lerp(float(Base.R), float(Scrub.R), Mx)), uint8(FMath::Lerp(float(Base.G), float(Scrub.G), Mx)), uint8(FMath::Lerp(float(Base.B), float(Scrub.B), Mx)));
+				}
+			}
 			Raw[C] = FColor(uint8(FMath::Clamp(Base.R * Shade, 0.f, 255.f)), uint8(FMath::Clamp(Base.G * Shade, 0.f, 255.f)), uint8(FMath::Clamp(Base.B * Shade, 0.f, 255.f)));
 		}
 	});
+	UE_LOG(LogTemp, Display, TEXT("[BoneForge] world: slope grass: %d rock points, %d under 44 deg and 190 m, %d with grass patches"), RockN.load(), MidN.load(), AlpineN.load());
 	for (int32 C = 0; C < N * N; ++C)
 	{
 		++Count[Biome[C]];
@@ -2971,6 +2995,11 @@ void ABFWorld::BuildChunk(int32 CX, int32 CY)
 		Water->RegisterComponent();
 		Water->CreateMeshSection(0, WVerts, WTris, WNormals, {}, {}, {}, false);
 		Water->SetMaterial(0, FreshMat);
+		// (2026-11-26, Raven: "still rough": behind island 13's 64 m fall pale tilted shards lay on the pool. Fresh water
+		// is see-through, drawn tile by tile, and the spray too: which drew last went by where each tile's middle was, so
+		// on some tiles the spray showed over the water and on others the water hid it, in squares seen slant-wise.
+		// Fresh water is now always drawn first; the spray clips itself at the water, ABFEffects.)
+		Water->SetTranslucentSortPriority(-1);
 		if (WaterTileOf.Num() != PerSide * PerSide) { WaterTileOf.Init(INDEX_NONE, PerSide * PerSide); }
 		WaterTileOf[CY * PerSide + CX] = Tiles.Num();
 		Tiles.Add(Water);
@@ -5463,7 +5492,10 @@ float ABFWorld::RockDensity(const FBFRock& R, const FVector& P) const
 		const float TopHere = float(R.TopZ) - Ends * 80.f - 0.14f * FMath::Max(float(L.Y), 0.f)
 			+ 28.f * FMath::PerlinNoise2D(FVector2D(Pw.X / 520.f, Pw.Y / 520.f) + FVector2D(Wo.Z, Wo.X));
 		const float Cut = TopHere - float(P.Z);
-		const float K = 75.f;          // (how round the top's edge: a smooth min of the rock and the cut)
+		// (how round the top's edge: a smooth min of the rock and the cut. 2026-11-26, Raven: "still rough": at 75 cm the
+		// beds read as stacked pillows from the rim; 35 cm leaves a worn edge. -bfoldbedlook: as before)
+		static const bool bOldBedLook = FParse::Param(FCommandLine::Get(), TEXT("bfoldbedlook"));
+		const float K = bOldBedLook ? 75.f : 35.f;
 		const float Hk = FMath::Max(K - FMath::Abs(Solid - Cut), 0.f) / K;
 		return FMath::Min(Solid, Cut) - Hk * Hk * K * 0.25f;
 	}
@@ -5661,8 +5693,18 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 				// same for every block, a little lighter where a ledge's top catches dust)
 				const FVector Pc = (PA + PB + PC) / 3.f;
 				const FVector Wo(float(Seed % 97) * 3.7f, float(Seed % 89) * 2.9f, 11.f);
-				const float Band = 1.f + 0.07f * FMath::PerlinNoise3D(FVector(Pc.X / 3000.f, Pc.Y / 3000.f, Pc.Z / 160.f) + Wo)
+				float Band = 1.f + 0.07f * FMath::PerlinNoise3D(FVector(Pc.X / 3000.f, Pc.Y / 3000.f, Pc.Z / 160.f) + Wo)
 					+ 0.035f * FMath::PerlinNoise3D(Pc / 450.f + Wo * 0.7f) + 0.05f * Up;
+				// (2026-11-26: every face the same pale grey as the tops, the beds read as soft cushions. Faces are now darker
+				// than tops, with weathering streaks running down them and broad patches of tone across the wall)
+				static const bool bOldBedTone = FParse::Param(FCommandLine::Get(), TEXT("bfoldbedlook"));
+				if (!bOldBedTone)
+				{
+					const float Face = 1.f - Up;
+					const float Streak = FMath::PerlinNoise3D(FVector(Pc.X / 110.f, Pc.Y / 110.f, Pc.Z / 900.f) + Wo * 1.3f);
+					Band *= 1.f - Face * (0.22f + 0.12f * Streak);
+					Band *= 1.f + 0.1f * FMath::PerlinNoise3D(Pc / 1400.f + Wo * 0.4f) + 0.06f * Up;
+				}
 				Cl = (FLinearColor(R.Tint) * Band).ToFColor(true);
 			}
 			const int32 First = Verts.Num();
@@ -5674,7 +5716,8 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 				// (2026-11-16: beds on a fall's shaded face came out darker than the bare face round them. The ground's
 				// normals are smoothed across a 4 m step, so a sheer face of ground is shaded as if half facing the sky;
 				// a bed's flat facets faced straight out. Tipped up part way, as the ground's are, they take its light.)
-				Ns = (Ns + FVector(0.f, 0.f, 0.45f)).GetSafeNormal();
+				static const bool bOldBedTip = FParse::Param(FCommandLine::Get(), TEXT("bfoldbedlook"));
+				Ns = (Ns + FVector(0.f, 0.f, bOldBedTip ? 0.45f : 0.3f)).GetSafeNormal();          // (2026-11-26: 0.3, more shade between face and top)
 			}
 			Normals.Append({ Ns, Ns, Ns });
 			Colours.Append({ Cl, Cl, Cl });

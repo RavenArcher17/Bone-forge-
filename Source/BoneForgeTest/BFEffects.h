@@ -38,7 +38,8 @@ public:
 
 private:
 	struct FPrint { FVector At; float Yaw; float Cm; float Born; FLinearColor Col; FVector Up; int32 Toes; };
-	struct FPuff { FVector At; FVector Vel; float Cm; float Grow; float Born; float Life; FLinearColor Col; float Alpha; bool bRing; };
+	// (WaterZ: the surface of the water it's over, found on its first tick; the material hides what's under it)
+	struct FPuff { FVector At; FVector Vel; float Cm; float Grow; float Born; float Life; FLinearColor Col; float Alpha; bool bRing; float WaterZ = 0.f; bool bWaterKnown = false; };
 	TArray<FPrint> Prints;
 	TArray<FPuff> Puffs;
 	UPROPERTY() TObjectPtr<UInstancedStaticMeshComponent> PrintISM;

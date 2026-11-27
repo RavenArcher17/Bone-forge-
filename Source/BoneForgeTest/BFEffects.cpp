@@ -38,7 +38,7 @@ ABFEffects::ABFEffects()
 		I->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		I->SetCanEverAffectNavigation(false);
 		I->SetCastShadow(false);
-		I->NumCustomDataFloats = 4;
+		I->NumCustomDataFloats = 5;
 		if (UStaticMesh* M = LoadObject<UStaticMesh>(nullptr, Mesh))
 		{
 			I->SetStaticMesh(M);
@@ -332,7 +332,8 @@ void ABFEffects::Tick(float DeltaSeconds)
 	PuffISM->ClearInstances();
 	RingISM->ClearInstances();
 	TArray<float> Data;
-	Data.SetNum(4);
+	Data.SetNum(5);
+	ABFWorld* Isl = FindIsland();
 	for (int32 k = Puffs.Num() - 1; k >= 0; --k)
 	{
 		FPuff& P = Puffs[k];
@@ -355,11 +356,18 @@ void ABFEffects::Tick(float DeltaSeconds)
 		const float A = P.Alpha * (1.f - U) * FMath::SmoothStep(0.f, 0.08f, U);
 		UInstancedStaticMeshComponent* To = P.bRing ? RingISM : PuffISM;
 		const FVector S = P.bRing ? FVector(Size / 100.f, Size / 100.f, 0.01f) : FVector(Size / 100.f);
+		if (!P.bWaterKnown)
+		{
+			P.bWaterKnown = true;
+			float Wz = 0.f;
+			P.WaterZ = Isl && Isl->WaterAt(P.At + FVector(0.f, 0.f, 50.f), Wz) ? Wz : -1e7f;
+		}
 		const int32 Idx = To->AddInstance(FTransform(FRotator::ZeroRotator, P.At, S), true);
 		Data[0] = P.Col.R;
 		Data[1] = P.Col.G;
 		Data[2] = P.Col.B;
 		Data[3] = P.bRing ? A + 10.f : A;          // (2026-11-25: M_BoneForgeSpray draws a ring as it was, unfaded, by this)
+		Data[4] = P.WaterZ;
 		To->SetCustomData(Idx, Data, false);
 	}
 	PuffISM->MarkRenderStateDirty();

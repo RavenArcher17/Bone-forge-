@@ -1189,6 +1189,20 @@ Natural pass (2026-11-25, Raven: "keep working ... nothing rough ... everything 
   (logged: it falls clean to the pool), not the pool's tilted water squares within 25 m or the rapids squares in it
   (both tried flat or gone, no change). Not yet found.
 
+Rough pass (2026-11-26, Raven: "still rough, work on the things that are still rough"):
+- The shards behind island 13's 64 m fall, found: fresh water and the spray are both see-through and were drawn in an
+  order set per water tile, so on some tiles the spray showed over the pool and on others the pool hid it, in squares
+  seen slant-wise. Fresh water is now always drawn first (sort priority -1) and the spray clips itself at the water's
+  surface (ABFEffects finds each puff's water once; M_BoneForgeSpray takes it as custom data 4).
+- Grass and scrub on 30-44 deg slopes in patches, thinning as they steepen and climb (to 190 m), on the Rock biome's
+  paint only (`-bfoldalpine`); the ground's material shows painted grass up to ~45 deg (was 33). Knolls, islets and
+  the lower mountains were smooth grey heaps. The log says how many points took it (`world: slope grass`).
+- Sand: the ripples were one even 0.7 m sine that became broad stripes across a beach from a few metres off; now
+  wandering ripples faded out by 30 m, paler and grey-brown patches, less yellow, grains close up, a dark wrack line
+  at the tide's top.
+- Gorge wall beds: faces darker than their tops with streaks down them, edges less rounded (35 cm, was 75), a little
+  more shade between face and top (`-bfoldbedlook`). Still rough: their top edges are saw-toothed by the mesh grid.
+
 Editor (Raven: "I don't know how to make the wings larger so it can fly or edit the base body"):
 - Under Start from: what the body is (the trunk and its flight muscle come from the animal you start from; picking
   another starts over, Undo brings it back), and a Whole body Size (compose.py's `size`, 10-300%).

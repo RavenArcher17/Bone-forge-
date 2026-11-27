@@ -443,7 +443,10 @@ float broad = n6 * 0.45 + n5 * 0.35 + n4 * 0.12 + n3 * 0.08;
 float edge = n1 * 0.35 + n0 * 0.2;
 float green = saturate((c.g - max(c.r, c.b)) * 25.0 + edge * 0.6);          // (2026-11-25: at 12 a plain was half "other ground", its paint shown bright as it was)
 float sand = saturate((c.r - c.b) * 6.0 + edge * 0.5) * (1.0 - green);
-float rock = saturate(max((0.84 - up) / 0.2 + edge * 0.6, saturate(1.0 - abs(c.r - c.b) * 8.0) * (1.0 - green) * 0.8));
+// (2026-11-26: where the paint says grass, bare rock only from ~45 deg, not 33: slopes the island paints with grass and
+// scrub patches (ABFWorld, the Rock biome's 30-44 deg) showed them as bare rock regardless)
+float rockAt = lerp(0.84, 0.7, green);
+float rock = saturate(max((rockAt - up) / 0.2 + edge * 0.6, saturate(1.0 - abs(c.r - c.b) * 8.0) * (1.0 - green) * 0.8));
 float mott = 1.0 + 0.05 * n0 + 0.06 * n1 + 0.06 * n2 + 0.05 * n3;
 float3 o3 = c * mott * (0.9 + 0.2 * (0.5 + 0.5 * broad));
 // grass: clumps, broad dry olive and lush dark patches, a little soil showing
@@ -464,8 +467,21 @@ float soil = smoothstep(0.38, 0.85, n0 * 0.55 + n1 * 0.45) * 0.55;
 g = lerp(g, g * float3(1.18, 1.02, 0.72), 0.3 * smoothstep(0.15, 0.7, n2 * 0.6 + n1 * 0.4));
 g = lerp(g, float3(0.075, 0.058, 0.038), soil);
 // sand: darker than paint (it read near white from the air), faint ripples, wet and dark just above the sea
-float rip = sin((p.x * 0.8 + p.y * 0.6) * 9.0 + n2 * 3.0);
+// (2026-11-26, Raven: "still rough": the ripples were one even 0.7 m sine, which from a few metres off became broad
+// regular stripes across every beach, and the sand one flat yellow. Now ripples of wandering pitch and line, faded out
+// with distance; patches of paler dry sand and grey-brown; a little less yellow; dark grains and shell bits close up;
+// a line of dark wrack where the tide tops out.)
+float near = 1.0 - smoothstep(8.0, 30.0, D / 100.0);
+float2 rq = p.xy + float2(n1, n2) * 1.6;
+float rip = sin((rq.x * 0.8 + rq.y * 0.6) * (7.0 + 3.0 * n3)) * (0.4 + 0.6 * saturate(0.5 + n0)) * near;
 float3 s3 = c * 0.72 * (1.0 + 0.035 * rip + 0.05 * n1 + 0.06 * n3);
+float sl = dot(s3, float3(0.3, 0.59, 0.11));
+s3 = lerp(float3(sl, sl, sl) * float3(1.04, 1.0, 0.92), s3, 0.72);
+s3 *= lerp(float3(1.08, 1.05, 0.98), float3(0.88, 0.87, 0.86), 0.5 + 0.5 * (n4 * 0.6 + n3 * 0.4));
+float grains = smoothstep(0.86, 0.96, G.N3(p * 11.0 + 7.0)) * (1.0 - smoothstep(3.0, 9.0, D / 100.0));          // (to 30 m they showed as grey blotches)
+s3 *= 1.0 - 0.35 * grains;
+float wrack = exp(-pow((p.z - 1.35 - 0.35 * n2) / 0.18, 2.0)) * smoothstep(0.0, 0.6, n0 * 0.6 + n1 * 0.4);
+s3 = lerp(s3, float3(0.09, 0.075, 0.05), 0.55 * wrack);
 float wet = (1.0 - smoothstep(0.25, 1.1, p.z + 0.25 * n1)) * step(-3.0, p.z);
 s3 = lerp(s3, s3 * float3(0.55, 0.55, 0.6), wet);
 // rock: darker, varied in tone, cracked, stained down steep faces, lichen and moss on what faces up
@@ -525,7 +541,7 @@ float3 p = P / 100.0;
 float3 nn = normalize(N);
 float up = saturate(nn.z);
 float green = saturate((c.g - max(c.r, c.b)) * 12.0);
-float r = saturate(max((0.84 - up) / 0.2, saturate(1.0 - abs(c.r - c.b) * 8.0) * (1.0 - green) * 0.8));
+float r = saturate(max((lerp(0.84, 0.7, green) - up) / 0.2, saturate(1.0 - abs(c.r - c.b) * 8.0) * (1.0 - green) * 0.8));
 float e = 0.04;
 float h0 = G.Hgt(p, r);
 float3 gr = float3(G.Hgt(p + float3(e, 0, 0), r) - h0, G.Hgt(p + float3(0, e, 0), r) - h0, G.Hgt(p + float3(0, 0, e), r) - h0) / e;
@@ -546,7 +562,7 @@ def build_terrain_master(tiles):
     wp = mel.create_material_expression(mat, unreal.MaterialExpressionWorldPosition, -900, -200)
     fine = param(mat, unreal.MaterialExpressionTextureObjectParameter, "FineTile", -900, 200, tiles.get("trex_pebble"))
     broad = param(mat, unreal.MaterialExpressionTextureObjectParameter, "BroadTile", -900, 400, tiles.get("sauropod_mixed"))
-    ground = custom(mat, GROUND_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["P", "VC", "TFine", "TBroad", "N"], -500, 0, "Ground")
+    ground = custom(mat, GROUND_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["P", "VC", "TFine", "TBroad", "N", "D"], -500, 0, "Ground")
     nws = mel.create_material_expression(mat, unreal.MaterialExpressionVertexNormalWS, -900, 600)
     connect(nws, "", ground, "N")
     connect(wp, "", ground, "P")
@@ -559,6 +575,7 @@ def build_terrain_master(tiles):
     connect(vc, "", bump, "VC")
     connect(nws, "", bump, "N")
     connect(dist, "", bump, "D")
+    connect(dist, "", ground, "D")
     rough = param(mat, unreal.MaterialExpressionScalarParameter, "Roughness", -500, 250, 0.97)
     spec = param(mat, unreal.MaterialExpressionScalarParameter, "Specular", -500, 350, 0.2)
     mel.connect_material_property(spec, "", unreal.MaterialProperty.MP_SPECULAR)
@@ -632,7 +649,9 @@ float h011 = frac(sin(dot(i + float3(0, 1, 1), float3(127.1, 311.7, 74.7))) * 43
 float h111 = frac(sin(dot(i + float3(1, 1, 1), float3(127.1, 311.7, 74.7))) * 43758.5453);
 float n = lerp(lerp(lerp(h000, h100, f.x), lerp(h010, h110, f.x), f.y), lerp(lerp(h001, h101, f.x), lerp(h011, h111, f.x), f.y), f.z);
 float soft = smoothstep(0.0, 1.0, facing) * smoothstep(0.3, 0.95, facing + 0.9 * (n - 0.5));          // (0.55 of noise left a dome's top clear)
-return A * soft;
+// (2026-11-26: under the water's surface (W, cm, from ABFEffects) none of it: the water is drawn first now, and a
+// puff's lower half showed through it)
+return A * soft * saturate((P.z - W) / 10.0);
 """
 
 
@@ -748,11 +767,12 @@ def build_spray(cd):
     rgb2 = custom(puff, "return float3(R, G, B);", unreal.CustomMaterialOutputType.CMOT_FLOAT3, ["R", "G", "B"], -300, 0, "Colour")
     for i, k in enumerate("RGB"):
         connect(cd(puff, i, -600, -100 + 120 * i), "", rgb2, k)
-    op = custom(puff, PUFF_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT1, ["N", "V", "A", "P", "T", "L"], -300, 300, "Soft edge")
+    op = custom(puff, PUFF_HLSL, unreal.CustomMaterialOutputType.CMOT_FLOAT1, ["N", "V", "A", "P", "T", "L", "W"], -300, 300, "Soft edge")
     connect(mel.create_material_expression(puff, unreal.MaterialExpressionLocalPosition, -600, 900), "", op, "L")
     connect(mel.create_material_expression(puff, unreal.MaterialExpressionVertexNormalWS, -600, 300), "", op, "N")
     connect(mel.create_material_expression(puff, unreal.MaterialExpressionCameraVectorWS, -600, 420), "", op, "V")
     connect(cd(puff, 3, -600, 540), "", op, "A")
+    connect(cd(puff, 4, -600, 1020), "", op, "W")
     connect(mel.create_material_expression(puff, unreal.MaterialExpressionWorldPosition, -600, 660), "", op, "P")
     connect(mel.create_material_expression(puff, unreal.MaterialExpressionTime, -600, 780), "", op, "T")
     fade = mel.create_material_expression(puff, unreal.MaterialExpressionDepthFade, -100, 300)
