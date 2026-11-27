@@ -2209,12 +2209,27 @@ void ABFWorld::MakeLand()
 			}
 			for (int32 C = 0; C < N * N; ++C)
 			{
-				if (Kind[C] == 0 && DSea[C] <= 24.f && H[C] < 5.f && ToWater[C] >= 3)
+				// (2026-11-26, Raven: "still rough": land under 5 m was brought down to the beach and land at 5 m was left, and
+				// the beach's slope met the land's own height 16-24 m in: a bank 2-3 m high in a cell or two, its triangles
+				// painted rock and sand by turns, a row of grey and tan teeth along the shore, island 906. Now eased out
+				// over 10-36 m in and as the land rises from 3.5 to 7 m, so the beach rises into the land. -bfoldshorebank)
+				static const bool bOldBank = FParse::Param(FCommandLine::Get(), TEXT("bfoldshorebank"));
+				if (bOldBank && Kind[C] == 0 && DSea[C] <= 24.f && H[C] < 5.f && ToWater[C] >= 3)
 				{
 					const float Cap = 0.1f * SD[C];
 					if (H[C] > Cap)
 					{
 						H[C] = FMath::Lerp(Cap, H[C], FMath::SmoothStep(16.f, 24.f, DSea[C]));
+						++ShoreLand;
+					}
+				}
+				else if (!bOldBank && Kind[C] == 0 && DSea[C] <= 36.f && H[C] < 7.f && ToWater[C] >= 3)
+				{
+					const float Cap = 0.1f * SD[C];
+					if (H[C] > Cap)
+					{
+						const float Wt = (1.f - FMath::SmoothStep(10.f, 36.f, DSea[C])) * (1.f - FMath::SmoothStep(3.5f, 7.f, H[C]));
+						H[C] = FMath::Lerp(H[C], Cap, Wt);
 						++ShoreLand;
 					}
 				}
@@ -5657,6 +5672,31 @@ int32 ABFWorld::AddRocks(const TArray<FBFRock>& Rocks)
 						}
 					}
 					CellV[C3(x, y, z)] = V.Add(Box.Min + (FVector(x, y, z) + Sum / FMath::Max(Cross, 1)) * Res);
+				}
+			}
+		}
+		// (2026-11-26, Raven: "still rough": a gorge bed's flat top met its face in a saw-toothed edge: each point of the
+		// mesh is the average of where the rock's surface crosses its grid cell, which lies inside a sharp edge, not on it.
+		// A bed's points are now moved onto the surface along its slope, twice. -bfoldbedlook: as before.)
+		static const bool bOldBedSnap = FParse::Param(FCommandLine::Get(), TEXT("bfoldbedlook"));
+		if (R.bBed && !bOldBedSnap)
+		{
+			const float Hh = 0.25f * Res;
+			for (FVector& Pv : V)
+			{
+				for (int32 It = 0; It < 2; ++It)
+				{
+					const float D0 = RockDensity(R, Pv);
+					const FVector Gr(RockDensity(R, Pv + FVector(Hh, 0, 0)) - RockDensity(R, Pv - FVector(Hh, 0, 0)),
+						RockDensity(R, Pv + FVector(0, Hh, 0)) - RockDensity(R, Pv - FVector(0, Hh, 0)),
+						RockDensity(R, Pv + FVector(0, 0, Hh)) - RockDensity(R, Pv - FVector(0, 0, Hh)));
+					const FVector G = Gr / (2.f * Hh);
+					const double G2 = G.SizeSquared();
+					if (G2 < 1e-4)
+					{
+						break;
+					}
+					Pv -= (G * (D0 / G2)).GetClampedToMaxSize(0.5f * Res);
 				}
 			}
 		}

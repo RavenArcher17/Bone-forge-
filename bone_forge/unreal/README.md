@@ -1201,7 +1201,14 @@ Rough pass (2026-11-26, Raven: "still rough, work on the things that are still r
   wandering ripples faded out by 30 m, paler and grey-brown patches, less yellow, grains close up, a dark wrack line
   at the tide's top.
 - Gorge wall beds: faces darker than their tops with streaks down them, edges less rounded (35 cm, was 75), a little
-  more shade between face and top (`-bfoldbedlook`). Still rough: their top edges are saw-toothed by the mesh grid.
+  more shade between face and top (`-bfoldbedlook`). Their top edges were saw-toothed (a surface-nets point is the
+  average of where the surface crosses its cell, inside a sharp edge): a bed's points are now moved onto its surface
+  along the slope, twice, so the edges run straight.
+- Shores: the beach's slope met the land's height 16-24 m in, and land under 5 m was lowered while land at 5 m was
+  not: a 2-3 m bank in a cell or two, its triangles painted rock and sand by turns, a row of grey and tan teeth along
+  island 906's shore. Eased out over 10-36 m in and as the land rises from 3.5 to 7 m (`-bfoldshorebank`).
+- Still rough: a pale square of shallow water off island 906's south beach; a straight dark line across the sea off
+  island 13's sea cliff; knolls are smooth cones.
 
 Editor (Raven: "I don't know how to make the wings larger so it can fly or edit the base body"):
 - Under Start from: what the body is (the trunk and its flight muscle come from the animal you start from; picking
